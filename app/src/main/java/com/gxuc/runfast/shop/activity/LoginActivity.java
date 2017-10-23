@@ -9,6 +9,7 @@ import android.widget.EditText;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.GsonUtil;
@@ -22,10 +23,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LoginActivity extends ToolBarActivity implements Callback<String> {
+public class LoginActivity extends ToolBarActivity {
 
     @BindView(R.id.et_user_name)
     EditText etUserName;
@@ -71,32 +71,22 @@ public class LoginActivity extends ToolBarActivity implements Callback<String> {
             return;
         }
         LogUtil.d("password", MD5Util.MD5(password));
-        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), 0).enqueue(this);
+        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), 0).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealLogin(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()) {
-            String data = response.body();
-            ResolveData(data);
-        } else {
-            CustomToast.INSTANCE.showToast(this, "请求失败");
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
+    private void dealLogin(String body) {
         try {
-            JSONObject object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             String msg = object.optString("msg");
             CustomToast.INSTANCE.showToast(this, msg);

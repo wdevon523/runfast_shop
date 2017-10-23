@@ -12,6 +12,7 @@ import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 
 import org.json.JSONException;
@@ -21,13 +22,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 原密码验证修改
  */
-public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<String> {
+public class UpdateOldPwdActivity extends ToolBarActivity {
 
     @BindView(R.id.et_old_password)
     EditText etOldPassword;
@@ -64,14 +64,14 @@ public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<St
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString())){
+                if (!TextUtils.isEmpty(s.toString())) {
                     oldIsEmpty = true;
-                }else {
+                } else {
                     oldIsEmpty = false;
                 }
-                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty){
+                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty) {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay);
-                }else {
+                } else {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay_gary);
                 }
             }
@@ -89,14 +89,14 @@ public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<St
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString())){
+                if (!TextUtils.isEmpty(s.toString())) {
                     newIsEmpty = true;
-                }else {
+                } else {
                     newIsEmpty = false;
                 }
-                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty){
+                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty) {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay);
-                }else {
+                } else {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay_gary);
                 }
             }
@@ -114,14 +114,14 @@ public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<St
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString())){
+                if (!TextUtils.isEmpty(s.toString())) {
                     newAgainIsEmpty = true;
-                }else {
+                } else {
                     newAgainIsEmpty = false;
                 }
-                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty){
+                if (oldIsEmpty && newIsEmpty && newAgainIsEmpty) {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay);
-                }else {
+                } else {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay_gary);
                 }
             }
@@ -136,23 +136,47 @@ public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<St
         String newPwd = etNewPassword.getText().toString().trim();
         String newPwdAgain = etNewPasswordAgain.getText().toString().trim();
 
-        if (TextUtils.isEmpty(oldPwd)){
-            CustomToast.INSTANCE.showToast(this,"旧密码不能为空");
+        if (TextUtils.isEmpty(oldPwd)) {
+            CustomToast.INSTANCE.showToast(this, "旧密码不能为空");
             return;
         }
-        if (TextUtils.isEmpty(newPwd)){
-            CustomToast.INSTANCE.showToast(this,"旧密码不能为空");
+        if (TextUtils.isEmpty(newPwd)) {
+            CustomToast.INSTANCE.showToast(this, "旧密码不能为空");
             return;
         }
-        if (!TextUtils.equals(newPwd,newPwdAgain)){
-            CustomToast.INSTANCE.showToast(this,"两次新密码输入不一致");
+        if (!TextUtils.equals(newPwd, newPwdAgain)) {
+            CustomToast.INSTANCE.showToast(this, "两次新密码输入不一致");
             return;
         }
         User userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().updatePassword(oldPwd, newPwd,0,newPwdAgain).enqueue(this);
+        CustomApplication.getRetrofit().updatePassword(oldPwd, newPwd, 0, newPwdAgain).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealUpdatePassWord(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealUpdatePassWord(String body) {
+        try {
+            JSONObject object = new JSONObject(body);
+            boolean success = object.optBoolean("success");
+            String msg = object.optString("msg");
+            CustomToast.INSTANCE.showToast(this, msg);
+            if (success) {
+                finish();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.btn_save_password)
@@ -160,37 +184,4 @@ public class UpdateOldPwdActivity extends ToolBarActivity implements Callback<St
         editPassword();
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()){
-            String data = response.body();
-            ResolveData(data);
-        }else {
-            CustomToast.INSTANCE.showToast(this,"请求失败");
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this,"网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            CustomToast.INSTANCE.showToast(this,msg);
-            if (success){
-                finish();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 }

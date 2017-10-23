@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,7 +19,6 @@ import com.gxuc.runfast.shop.bean.coupon.CouponBean;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 
 import org.json.JSONException;
@@ -33,13 +31,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 优惠券
  */
-public class CouponActivity extends ToolBarActivity implements Callback<String> {
+public class CouponActivity extends ToolBarActivity {
 
     @BindView(R.id.view_coupon_list)
     RecyclerView recyclerView;
@@ -77,7 +74,32 @@ public class CouponActivity extends ToolBarActivity implements Callback<String> 
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().GetMyCoupan(0).enqueue(this);
+        CustomApplication.getRetrofit().GetMyCoupan(0).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealMyCoupan(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealMyCoupan(String body) {
+        CouponBeans couponBeans = GsonUtil.parseJsonWithGson(body, CouponBeans.class);
+        if (couponBeans.getRows() != null && couponBeans.getRows().size() > 0) {
+            mCouponBeanList.clear();
+            mTvUseCouponNum.setText(String.valueOf(couponBeans.getRows().size()));
+            mCouponBeanList.addAll(couponBeans.getRows());
+            mAllAdapter.notifyDataSetChanged();
+            mLlNoCoupon.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+            mLlNoCoupon.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initData() {
@@ -120,42 +142,6 @@ public class CouponActivity extends ToolBarActivity implements Callback<String> 
 
             }
         });
-    }
-
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        Log.d("params", "isSuccessful = " + response.isSuccessful());
-        if (response.isSuccessful()) {
-            Log.d("params", "response = " + data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        CouponBeans couponBeans = GsonUtil.parseJsonWithGson(data, CouponBeans.class);
-        if (couponBeans.getRows() != null && couponBeans.getRows().size() > 0) {
-            mCouponBeanList.clear();
-            mTvUseCouponNum.setText(String.valueOf(couponBeans.getRows().size()));
-            mCouponBeanList.addAll(couponBeans.getRows());
-            mAllAdapter.notifyDataSetChanged();
-            mLlNoCoupon.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.GONE);
-            mLlNoCoupon.setVisibility(View.VISIBLE);
-        }
     }
 
     @OnClick(R.id.tv_get_coupon)

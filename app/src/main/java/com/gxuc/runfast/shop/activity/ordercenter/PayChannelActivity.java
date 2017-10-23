@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -29,10 +30,9 @@ import cn.shopex.pay.Contants;
 import cn.shopex.pay.WeChatPayHandle;
 import cn.shopex.pay.http.WeiXinPayOutput;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PayChannelActivity extends ToolBarActivity implements Callback<String> {
+public class PayChannelActivity extends ToolBarActivity {
 
     @BindView(R.id.cb_weixin_pay)
     CheckBox mCbWeixinPay;
@@ -72,9 +72,9 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
     }
 
     private void requestAliPay() {
-        CustomApplication.getRetrofit().aliPay(mOrderId, "1").enqueue(new Callback<String>() {
+        CustomApplication.getRetrofit().aliPay(mOrderId, "1").enqueue(new MyCallback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
@@ -86,16 +86,16 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailureResponse(Call<String> call, Throwable t) {
 
             }
         });
     }
 
     private void requestWeiXinPay() {
-        CustomApplication.getRetrofit().weiXintPay(mOrderId, "0").enqueue(new Callback<String>() {
+        CustomApplication.getRetrofit().weiXintPay(mOrderId, "0").enqueue(new MyCallback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
                 WeiXinPayBean weiXinPayBean = GsonUtil.fromJson(data, WeiXinPayBean.class);
                 if (weiXinPayBean.success) {
@@ -105,16 +105,16 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailureResponse(Call<String> call, Throwable t) {
 
             }
         });
     }
 
     private void requestSign(final WeiXinPayBean weiXinPayBean) {
-        CustomApplication.getRetrofit().weiXintSign(weiXinPayBean.prepay_id, weiXinPayBean.map.nonceStr, weiXinPayBean.map.timeStamp, "Sign=WXPay").enqueue(new Callback<String>() {
+        CustomApplication.getRetrofit().weiXintSign(weiXinPayBean.prepay_id, weiXinPayBean.map.nonceStr, weiXinPayBean.map.timeStamp, "Sign=WXPay").enqueue(new MyCallback<String>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
@@ -126,39 +126,11 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailureResponse(Call<String> call, Throwable t) {
 
             }
         });
     }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            CustomToast.INSTANCE.showToast(this, object.optString("msg"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @OnClick({R.id.rl_wallet_pay, R.id.rl_weixin_pay, R.id.rl_ali_pay, R.id.btn_to_pay})
     public void onViewClicked(View view) {
@@ -187,7 +159,17 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
                 }
                 switch (payType) {
                     case 0:
-                        CustomApplication.getRetrofit().walletPay(mOrderId, MD5Util.MD5(userInfo.getPassword())).enqueue(this);
+                        CustomApplication.getRetrofit().walletPay(mOrderId, MD5Util.MD5(userInfo.getPassword())).enqueue(new MyCallback<String>() {
+                            @Override
+                            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                                dealWalletPay(response.body());
+                            }
+
+                            @Override
+                            public void onFailureResponse(Call<String> call, Throwable t) {
+
+                            }
+                        });
                         break;
                     case 1:
                         requestWeiXinPay();
@@ -199,6 +181,15 @@ public class PayChannelActivity extends ToolBarActivity implements Callback<Stri
                         break;
                 }
                 break;
+        }
+    }
+
+    private void dealWalletPay(String body) {
+        try {
+            JSONObject object = new JSONObject(body);
+            CustomToast.INSTANCE.showToast(this, object.optString("msg"));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

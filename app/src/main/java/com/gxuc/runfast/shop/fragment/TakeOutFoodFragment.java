@@ -29,6 +29,7 @@ import com.gxuc.runfast.shop.adapter.PageScrollAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.maintop.MapInfo;
 import com.gxuc.runfast.shop.bean.maintop.TopImages;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.view.recyclerview.HorizontalPageLayoutManager;
 import com.gxuc.runfast.shop.bean.maintop.TopImage1;
 import com.gxuc.runfast.shop.bean.mainmiddle.MiddleSorts;
@@ -66,7 +67,6 @@ import butterknife.Unbinder;
 import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.gxuc.runfast.shop.config.IntentConfig.AGENT_ID;
@@ -75,8 +75,7 @@ import static com.gxuc.runfast.shop.config.IntentConfig.AGENT_ID;
  * 首页
  * A simple {@link Fragment} subclass.
  */
-public class TakeOutFoodFragment extends Fragment implements Callback<String>,
-        BGARefreshLayout.BGARefreshLayoutDelegate,
+public class TakeOutFoodFragment extends Fragment implements BGARefreshLayout.BGARefreshLayoutDelegate,
         View.OnClickListener, PagingScrollHelper.onPageChangeListener,
         BaseQuickAdapter.RequestLoadMoreListener {
 
@@ -104,7 +103,6 @@ public class TakeOutFoodFragment extends Fragment implements Callback<String>,
     RecyclerView mRvHomeBottom;
 
     private List<BusinessInfo> businessInfos = new ArrayList<>();
-    private int netType;
     private double pointLat;
     private double pointLon;
 
@@ -306,10 +304,34 @@ public class TakeOutFoodFragment extends Fragment implements Callback<String>,
      * 上传经纬度
      */
     private void netPostAddress(Double lon, Double lat) {
-        netType = 1;
 //        CustomApplication.getRetrofit().postAddress(lon, lat).enqueue(this);
         //TODO 经纬度
-        CustomApplication.getRetrofit().postAddress(110.07, 23.38).enqueue(this);
+        CustomApplication.getRetrofit().postAddress(110.07, 23.38).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealAddress(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealAddress(String body) {
+        MapInfos mapInfos = GsonUtil.parseJsonWithGson(body, MapInfos.class);
+        mAgentId = mapInfos.getAgentId();
+        AGENT_ID = mAgentId;
+        MapInfo map1 = mapInfos.getMap();
+        if (map1 != null) {
+            pointLat = map1.getLatitude();
+            pointLon = map1.getLongitude();
+        }
+        netHomeImage(mAgentId);
+        netHomePager(mAgentId);
+        page = 1;
+        getNearbyBusiness(pointLon, pointLat, page);
     }
 
 
@@ -317,26 +339,136 @@ public class TakeOutFoodFragment extends Fragment implements Callback<String>,
      * 获取首页轮播图
      */
     private void netHomeImage(int agentId) {
-        netType = 2;
-        CustomApplication.getRetrofit().getAdvert(agentId).enqueue(this);
+        CustomApplication.getRetrofit().getAdvert(agentId).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealAdvert(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealAdvert(String body) {
+        TopImages topImages = GsonUtil.parseJsonWithGson(body, TopImages.class);
+        if (topImages != null && topImages.getRows1().size() > 0) {
+            for (TopImage topImage : topImages.getRows1()) {
+                imgurl.add(topImage);
+            }
+            mNormalAdapter.notifyDataSetChanged();
+        }
+//                LogUtil.e("getRows2", topImages.getRows2().size() + "");
+        if (topImages != null && topImages.getRows2().size() > 0) {
+            for (TopImage1 topImage : topImages.getRows2()) {
+                imgurl1.add(topImage);
+            }
+            mBottomPageAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
      * 获取首页
      */
     private void netHomePager(int agentId) {
-        netType = 3;
-        CustomApplication.getRetrofit().getHomePage(0, agentId).enqueue(this);
+        CustomApplication.getRetrofit().getHomePage(0, agentId).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealHomePage(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
 //        CustomApplication.getRetrofit().getHomePage(0, 4).enqueue(this);
+    }
+
+    private void dealHomePage(String body) {
+        MiddleSorts middleSorts = GsonUtil.parseJsonWithGson(body, MiddleSorts.class);
+        if (middleSorts != null && middleSorts.getRows().size() > 0) {
+            for (MiddleSort middle : middleSorts.getRows()) {
+                middleurl.add(middle);
+            }
+            myAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
      * 获取附近商家
      */
     private void getNearbyBusiness(Double lon, Double lat, int pager) {
-        netType = 4;
 //        CustomApplication.getRetrofit().getNearbyBusinesses(String.valueOf(lon), String.valueOf(lat), pager).enqueue(this);
-        CustomApplication.getRetrofit().getNearbyBusinesses("110.07", "23.38", pager).enqueue(this);
+        CustomApplication.getRetrofit().getNearbyBusinesses("110.07", "23.38", pager).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
+                dealNearByBusinesses(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+                CustomProgressDialog.stopProgressDialog();
+                if (mRefreshLayout != null) {
+                    mRefreshLayout.endRefreshing();
+                }
+            }
+        });
+    }
+
+    private void dealNearByBusinesses(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            if (page == 1) {
+                businessInfos.clear();
+            }
+            JSONArray bus = jsonObject.getJSONArray("rows");
+            if (bus == null || bus.length() <= 0) {
+                mAdapter.loadMoreEnd();
+                mRefreshLayout.endRefreshing();
+                return;
+            }
+            for (int i = 0; i < bus.length(); i++) {
+                JSONObject busObject = bus.getJSONObject(i);
+                BusinessInfo info = new BusinessInfo();
+                info.id = busObject.optInt("id");
+                info.mini_imgPath = busObject.optString("mini_imgPath");
+                info.imgPath = busObject.optString("imgPath");
+                info.name = busObject.optString("name");
+                info.distance = busObject.optDouble("distance");
+                info.levelId = busObject.optInt("levelId");
+                info.salesnum = busObject.optInt("salesnum");
+                info.startPay = busObject.optDouble("startPay");
+                info.busshowps = busObject.optDouble("busshowps");
+                info.baseCharge = busObject.optDouble("baseCharge");
+                LogUtil.d("baseCharge", info.baseCharge + "");
+                info.isDeliver = busObject.optInt("isDeliver");
+                info.speed = busObject.optString("speed");
+                info.alist = new ArrayList<>();
+                JSONArray alist = busObject.optJSONArray("alist");
+                if (alist != null) {
+                    int length1 = alist.length();
+                    for (int j = 0; j < length1; j++) {
+                        JSONObject alistObject = alist.getJSONObject(j);
+                        BusinessExercise exercise = new BusinessExercise();
+                        exercise.ptype = alistObject.optInt("ptype");
+                        exercise.fulls = alistObject.optDouble("fulls");
+                        exercise.lesss = alistObject.optDouble("lesss");
+                        exercise.showname = alistObject.optString("showname");
+                        info.alist.add(exercise);
+                    }
+                }
+                businessInfos.add(info);
+            }
+            mRefreshLayout.endRefreshing();
+            mAdapter.loadMoreEnd();
+            CustomProgressDialog.stopProgressDialog();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -374,123 +506,6 @@ public class TakeOutFoodFragment extends Fragment implements Callback<String>,
         pointLon = data.getDoubleExtra("pointLon", 0.0);
         tvAddress.setText(address);
         netPostAddress(pointLon, pointLat);
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-            return;
-        }
-        CustomProgressDialog.stopProgressDialog();
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(getContext(), "网络异常");
-        CustomProgressDialog.stopProgressDialog();
-        if (mRefreshLayout != null) {
-            mRefreshLayout.endRefreshing();
-        }
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            if (netType == 1) {
-                MapInfos mapInfos = GsonUtil.parseJsonWithGson(data, MapInfos.class);
-                mAgentId = mapInfos.getAgentId();
-                AGENT_ID = mAgentId;
-                MapInfo map1 = mapInfos.getMap();
-                if (map1 != null) {
-                    pointLat = map1.getLatitude();
-                    pointLon = map1.getLongitude();
-                }
-                netHomeImage(mAgentId);
-            } else if (netType == 2) {
-                TopImages topImages = GsonUtil.parseJsonWithGson(data, TopImages.class);
-                if (topImages != null && topImages.getRows1().size() > 0) {
-                    for (TopImage topImage : topImages.getRows1()) {
-                        imgurl.add(topImage);
-                    }
-                    mNormalAdapter.notifyDataSetChanged();
-                }
-//                LogUtil.e("getRows2", topImages.getRows2().size() + "");
-                if (topImages != null && topImages.getRows2().size() > 0) {
-                    for (TopImage1 topImage : topImages.getRows2()) {
-                        imgurl1.add(topImage);
-                    }
-                    mBottomPageAdapter.notifyDataSetChanged();
-                }
-
-                netHomePager(mAgentId);
-
-            } else if (netType == 3) {
-                MiddleSorts middleSorts = GsonUtil.parseJsonWithGson(data, MiddleSorts.class);
-                if (middleSorts != null && middleSorts.getRows().size() > 0) {
-                    for (MiddleSort middle : middleSorts.getRows()) {
-                        middleurl.add(middle);
-                    }
-                    myAdapter.notifyDataSetChanged();
-                }
-                page = 1;
-                getNearbyBusiness(pointLon, pointLat, page);
-            } else if (netType == 4) {
-                if (page == 1) {
-                    businessInfos.clear();
-                }
-                JSONArray bus = object.getJSONArray("rows");
-                if (bus == null || bus.length() <= 0) {
-                    mAdapter.loadMoreEnd();
-                    mRefreshLayout.endRefreshing();
-                    return;
-                }
-                for (int i = 0; i < bus.length(); i++) {
-                    JSONObject busObject = bus.getJSONObject(i);
-                    BusinessInfo info = new BusinessInfo();
-                    info.id = busObject.optInt("id");
-                    info.mini_imgPath = busObject.optString("mini_imgPath");
-                    info.imgPath = busObject.optString("imgPath");
-                    info.name = busObject.optString("name");
-                    info.distance = busObject.optDouble("distance");
-                    info.levelId = busObject.optInt("levelId");
-                    info.salesnum = busObject.optInt("salesnum");
-                    info.startPay = busObject.optDouble("startPay");
-                    info.busshowps = busObject.optDouble("busshowps");
-                    info.baseCharge = busObject.optDouble("baseCharge");
-                    LogUtil.d("baseCharge", info.baseCharge + "");
-                    info.isDeliver = busObject.optInt("isDeliver");
-                    info.speed = busObject.optString("speed");
-                    info.alist = new ArrayList<>();
-                    JSONArray alist = busObject.optJSONArray("alist");
-                    if (alist != null) {
-                        int length1 = alist.length();
-                        for (int j = 0; j < length1; j++) {
-                            JSONObject alistObject = alist.getJSONObject(j);
-                            BusinessExercise exercise = new BusinessExercise();
-                            exercise.ptype = alistObject.optInt("ptype");
-                            exercise.fulls = alistObject.optDouble("fulls");
-                            exercise.lesss = alistObject.optDouble("lesss");
-                            exercise.showname = alistObject.optString("showname");
-                            info.alist.add(exercise);
-                        }
-                    }
-                    businessInfos.add(info);
-                }
-                mRefreshLayout.endRefreshing();
-                mAdapter.loadMoreEnd();
-                CustomProgressDialog.stopProgressDialog();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

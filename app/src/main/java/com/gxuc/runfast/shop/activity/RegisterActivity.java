@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.CustomToast;
@@ -22,10 +23,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity extends ToolBarActivity implements Callback<String> {
+public class RegisterActivity extends ToolBarActivity {
 
     @BindView(R.id.et_user_name)
     EditText etUserName;
@@ -39,7 +39,6 @@ public class RegisterActivity extends ToolBarActivity implements Callback<String
     TextView tvGetCode;
     @BindView(R.id.btn_register)
     Button btnRegister;
-    private int netType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +74,39 @@ public class RegisterActivity extends ToolBarActivity implements Callback<String
             CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
             return;
         }
-        netType = 1;
-        CustomApplication.getRetrofit().getCode(accountName).enqueue(this);
+        CustomApplication.getRetrofit().getCode(accountName).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealCode(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
 
 
+    }
+
+    private void dealCode(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            boolean success = jsonObject.optBoolean("success");
+            String msg = jsonObject.optString("msg");
+            if (!success) {
+                CustomToast.INSTANCE.showToast(this, msg);
+                return;
+            }
+            Message message = handler.obtainMessage();
+            message.what = 1002;
+            message.arg1 = 59;
+            message.sendToTarget();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -90,25 +118,59 @@ public class RegisterActivity extends ToolBarActivity implements Callback<String
         String passwordAgain = etUserPasswordAgain.getText().toString().trim();
         String code = etCode.getText().toString().trim();
 
-        if (TextUtils.isEmpty(phone)){
-            CustomToast.INSTANCE.showToast(this,"请输入手机号");
+        if (TextUtils.isEmpty(phone)) {
+            CustomToast.INSTANCE.showToast(this, "请输入手机号");
             return;
         }
-        if (TextUtils.isEmpty(code)){
-            CustomToast.INSTANCE.showToast(this,"请输入验证码");
+        if (TextUtils.isEmpty(code)) {
+            CustomToast.INSTANCE.showToast(this, "请输入验证码");
             return;
         }
-        if (TextUtils.isEmpty(password)){
-            CustomToast.INSTANCE.showToast(this,"请输入密码");
+        if (TextUtils.isEmpty(password)) {
+            CustomToast.INSTANCE.showToast(this, "请输入密码");
             return;
         }
-        if (!TextUtils.equals(password,passwordAgain)){
-            CustomToast.INSTANCE.showToast(this,"两次密码输入不相同");
+        if (!TextUtils.equals(password, passwordAgain)) {
+            CustomToast.INSTANCE.showToast(this, "两次密码输入不相同");
             return;
         }
 
-        netType = 2;
-        CustomApplication.getRetrofit().postRegister(phone,password,code).enqueue(this);
+        CustomApplication.getRetrofit().postRegister(phone, password, code).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealRegister(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealRegister(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            boolean success = jsonObject.optBoolean("success");
+            String msg = jsonObject.optString("msg");
+            if (!success) {
+                CustomToast.INSTANCE.showToast(this, msg);
+                return;
+            }
+
+            CustomToast.INSTANCE.showToast(this, msg);
+            String phone = etUserName.getText().toString().trim();
+            String password = etUserPassword.getText().toString().trim();
+            Intent intent = new Intent();
+            intent.putExtra("mobile", phone);
+            intent.putExtra("password", password);
+            setResult(RESULT_OK, intent);
+            finish();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private Handler handler = new Handler() {
@@ -137,53 +199,4 @@ public class RegisterActivity extends ToolBarActivity implements Callback<String
         }
     };
 
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            if (!success){
-                CustomToast.INSTANCE.showToast(this, msg);
-                return;
-            }
-            if (netType == 1){
-                Message message = handler.obtainMessage();
-                message.what = 1002;
-                message.arg1 = 59;
-                message.sendToTarget();
-            }
-            if (netType == 2){
-                CustomToast.INSTANCE.showToast(this,msg);
-                String phone = etUserName.getText().toString().trim();
-                String password = etUserPassword.getText().toString().trim();
-                Intent intent = new Intent();
-                intent.putExtra("mobile",phone);
-                intent.putExtra("password",password);
-                setResult(RESULT_OK,intent);
-                finish();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()){
-            String data = response.body();
-            ResolveData(data);
-        }else {
-            CustomToast.INSTANCE.showToast(this,"请求失败");
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this,"网络异常");
-    }
 }

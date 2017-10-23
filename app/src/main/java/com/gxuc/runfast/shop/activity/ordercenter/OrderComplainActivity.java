@@ -9,6 +9,7 @@ import android.widget.EditText;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -23,10 +24,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class OrderComplainActivity extends ToolBarActivity implements Callback<String> {
+public class OrderComplainActivity extends ToolBarActivity {
 
     @BindView(R.id.et_order_complaint)
     EditText mEtOrderComplaint;
@@ -76,36 +76,26 @@ public class OrderComplainActivity extends ToolBarActivity implements Callback<S
         String email = mEtOrderComplaintEmail.getText().toString();
 
         CustomApplication.getRetrofit().postOrderComplaint(businessId, id,
-                email, content).enqueue(this);
+                email, content).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealOrderComplaint(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
+    private void dealOrderComplaint(String body) {
         try {
-            JSONObject object = new JSONObject(data);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            CustomToast.INSTANCE.showToast(this, msg);
+            JSONObject object = new JSONObject(body);
+            CustomToast.INSTANCE.showToast(this, object.optString("msg"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
 }

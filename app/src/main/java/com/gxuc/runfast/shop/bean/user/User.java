@@ -67,7 +67,7 @@ public class User implements Parcelable{
      * addrLat :
      */
 
-    private Integer id;
+    private int id;
     private String code;//区域编码
     private String areaName;//区域名称
     private String orgType;//所属层级

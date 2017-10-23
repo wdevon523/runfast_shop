@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.util.CustomToast;
@@ -27,13 +28,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 短信验证码修改
  */
-public class UpdateMessageActivity extends ToolBarActivity implements Callback<String> {
+public class UpdateMessageActivity extends ToolBarActivity {
 
     @BindView(R.id.et_code)
     EditText etCode;
@@ -49,7 +49,6 @@ public class UpdateMessageActivity extends ToolBarActivity implements Callback<S
     private boolean codeIsEmpty;
     private boolean newIsEmpty;
     private boolean newAgainIsEmpty;
-    private int netType;
     private int mFlags;
     private String mPhone;
 
@@ -172,16 +171,48 @@ public class UpdateMessageActivity extends ToolBarActivity implements Callback<S
                 return;
             }
 
-            netType = 1;
-            CustomApplication.getRetrofit().getEditPwdCode().enqueue(this);
+            CustomApplication.getRetrofit().getEditPwdCode().enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealCode(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
         } else {
             //|| !VaUtils.isMobileNo(accountName) 手机号正则验证
             if (TextUtils.isEmpty(mPhone) || !VaUtils.isMobileNo(mPhone)) {
                 CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
                 return;
             }
-            netType = 1;
-            CustomApplication.getRetrofit().getForgetCode(mPhone).enqueue(this);
+            CustomApplication.getRetrofit().getForgetCode(mPhone).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealCode(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void dealCode(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            boolean success = jsonObject.optBoolean("success");
+            String msg = jsonObject.optString("msg");
+            Message message = handler.obtainMessage();
+            message.what = 1002;
+            message.arg1 = 59;
+            message.sendToTarget();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -206,15 +237,47 @@ public class UpdateMessageActivity extends ToolBarActivity implements Callback<S
             return;
         }
         if (mFlags == 1) {
-            netType = 3;
-            CustomApplication.getRetrofit().updateForgotPwd(mPhone, code, newPwd).enqueue(this);
+            CustomApplication.getRetrofit().updateForgotPwd(mPhone, code, newPwd).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealPwd(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
         } else {
-            netType = 2;
             User userInfo = UserService.getUserInfo(this);
             if (userInfo == null) {
                 return;
             }
-            CustomApplication.getRetrofit().updatePassword(code, newPwd, 1, newPwdAgain).enqueue(this);
+            CustomApplication.getRetrofit().updatePassword(code, newPwd, 1, newPwdAgain).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealPwd(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+        }
+    }
+
+    private void dealPwd(String body) {
+        try {
+            JSONObject object = new JSONObject(body);
+            boolean success = object.optBoolean("success");
+            String msg = object.optString("msg");
+            CustomToast.INSTANCE.showToast(this, msg);
+            if (success) {
+                finish();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -245,44 +308,4 @@ public class UpdateMessageActivity extends ToolBarActivity implements Callback<S
         }
     };
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()) {
-            String data = response.body();
-            ResolveData(data);
-        } else {
-            CustomToast.INSTANCE.showToast(this, "请求失败");
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            if (netType == 1) {
-                Message message = handler.obtainMessage();
-                message.what = 1002;
-                message.arg1 = 59;
-                message.sendToTarget();
-            } else if (netType == 2 || netType == 3) {
-                CustomToast.INSTANCE.showToast(this, msg);
-                if (success) {
-                    finish();
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 }

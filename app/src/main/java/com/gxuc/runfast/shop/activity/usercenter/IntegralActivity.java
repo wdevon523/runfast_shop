@@ -13,6 +13,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.score.MyScore;
 import com.gxuc.runfast.shop.bean.score.MyScores;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -27,13 +28,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 积分
  */
-public class IntegralActivity extends ToolBarActivity implements Callback<String>, View.OnClickListener, LoadMoreAdapter.LoadMoreApi {
+public class IntegralActivity extends ToolBarActivity implements View.OnClickListener, LoadMoreAdapter.LoadMoreApi {
 
     @BindView(R.id.tv_integral)
     TextView tvIntegral;
@@ -63,17 +63,39 @@ public class IntegralActivity extends ToolBarActivity implements Callback<String
             return;
         }
         String score = String.valueOf(userInfo.getScore());
-        if (score.contains(".")){
-            score = score.substring(0,score.indexOf("."));
+        if (score.contains(".")) {
+            score = score.substring(0, score.indexOf("."));
         }
         tvIntegral.setText(score);
-        CustomApplication.getRetrofit().getListScore(page,10).enqueue(this);
+        CustomApplication.getRetrofit().getListScore(page, 10).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealScoreList(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealScoreList(String body) {
+        if (!TextUtils.isEmpty(body)) {
+            MyScores scores = GsonUtil.parseJsonWithGson(body, MyScores.class);
+            if (scores.getRows() != null && scores.getRows().size() > 0) {
+                mMyScores.addAll(scores.getRows());
+                moreAdapter.loadCompleted();
+            } else {
+                moreAdapter.loadAllDataCompleted();
+            }
+        }
     }
 
     private void initData() {
         mMyScores = new ArrayList<>();
         ScoreRecordAdapter mAllAdapter = new ScoreRecordAdapter(mMyScores, this, this);
-        moreAdapter = new LoadMoreAdapter(this,mAllAdapter);
+        moreAdapter = new LoadMoreAdapter(this, mAllAdapter);
         moreAdapter.setLoadMoreListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(moreAdapter);
@@ -81,39 +103,6 @@ public class IntegralActivity extends ToolBarActivity implements Callback<String
 
     @OnClick(R.id.layout_integral_rule)
     public void onViewClicked() {
-    }
-
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        Log.d("params","isSuccessful = "+response.isSuccessful());
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        if (!TextUtils.isEmpty(data)) {
-            MyScores scores = GsonUtil.parseJsonWithGson(data, MyScores.class);
-            if (scores.getRows() != null && scores.getRows().size() > 0) {
-                mMyScores.addAll(scores.getRows());
-                moreAdapter.loadCompleted();
-            }else {
-                moreAdapter.loadAllDataCompleted();
-            }
-        }
     }
 
     @Override

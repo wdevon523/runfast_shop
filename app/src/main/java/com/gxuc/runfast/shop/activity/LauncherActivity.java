@@ -10,6 +10,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
@@ -18,10 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LauncherActivity extends AppCompatActivity implements Callback<String> {
+public class LauncherActivity extends AppCompatActivity {
 
     private User userInfo;
 
@@ -65,43 +65,31 @@ public class LauncherActivity extends AppCompatActivity implements Callback<Stri
             }
         }
     };
+
     private void login() {
         userInfo = UserService.getUserInfo(this);
         if (userInfo != null) {
-            CustomApplication.getRetrofit().postLogin(userInfo.getMobile(), MD5Util.MD5(userInfo.getPassword()), 0).enqueue(this);
+            CustomApplication.getRetrofit().postLogin(userInfo.getMobile(), MD5Util.MD5(userInfo.getPassword()), 0).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealLogin(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+                    startActivity(new Intent(LauncherActivity.this, MainActivity.class));
+                    finish();
+                }
+            });
         } else {
             startActivity(new Intent(LauncherActivity.this, LoginActivity.class));
             finish();
         }
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()) {
-            String data = response.body();
-            ResolveData(data);
-        } else {
-            CustomToast.INSTANCE.showToast(this, "请求失败");
-            startActivity(new Intent(LauncherActivity.this, MainActivity.class));
-            finish();
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        startActivity(new Intent(LauncherActivity.this, MainActivity.class));
-        finish();
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
+    private void dealLogin(String body) {
         try {
-            JSONObject object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             String msg = object.optString("msg");
             if (!success) {
@@ -119,4 +107,5 @@ public class LauncherActivity extends AppCompatActivity implements Callback<Stri
             e.printStackTrace();
         }
     }
+
 }

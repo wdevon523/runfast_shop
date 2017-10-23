@@ -3,7 +3,6 @@ package com.gxuc.runfast.shop.activity.usercenter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -25,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -34,7 +33,7 @@ import retrofit2.Response;
  * @email liu594545591@126.com
  * @introduce
  */
-public class ChangeNameActivity extends ToolBarActivity implements Callback<String> {
+public class ChangeNameActivity extends ToolBarActivity {
 
 
     @BindView(R.id.et_change_info)
@@ -46,7 +45,6 @@ public class ChangeNameActivity extends ToolBarActivity implements Callback<Stri
     private User mUserInfo;
     private String mInfo;
     private int mFlags;
-    private int mType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,16 +79,34 @@ public class ChangeNameActivity extends ToolBarActivity implements Callback<Stri
         switch (mFlags) {
             case 0:
                 if (!TextUtils.isEmpty(mInfo)) {
-                    mType = 0;
-                    CustomApplication.getRetrofit().postChangeName(mInfo).enqueue(this);
+                    CustomApplication.getRetrofit().postChangeName(mInfo).enqueue(new MyCallback<String>() {
+                        @Override
+                        public void onSuccessResponse(Call<String> call, Response<String> response) {
+                            dealChangeName(response.body());
+                        }
+
+                        @Override
+                        public void onFailureResponse(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 } else {
                     CustomToast.INSTANCE.showToast(this, "昵称不可为空");
                 }
                 break;
             case 1:
                 if (ValidateUtil.isEmail(mInfo)) {
-                    mType = 1;
-                    CustomApplication.getRetrofit().postChangeEmail(mInfo).enqueue(this);
+                    CustomApplication.getRetrofit().postChangeEmail(mInfo).enqueue(new MyCallback<String>() {
+                        @Override
+                        public void onSuccessResponse(Call<String> call, Response<String> response) {
+                            dealChangeEmail(response.body());
+                        }
+
+                        @Override
+                        public void onFailureResponse(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 } else {
                     CustomToast.INSTANCE.showToast(this, "邮箱格式错误，请检查");
                 }
@@ -98,65 +114,44 @@ public class ChangeNameActivity extends ToolBarActivity implements Callback<Stri
         }
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response ="+data);
-            ResolveData(data);
+    private void dealChangeName(String body) {
+        try {
+            JSONObject object = new JSONObject(body);
+            boolean success = object.optBoolean("success");
+            if (success) {
+                mUserInfo.setNickname(mInfo);
+                UserService.saveUserInfo(mUserInfo);
+                CustomToast.INSTANCE.showToast(this, "保存成功");
+                Intent intent = new Intent();
+                intent.putExtra("nickname", mInfo);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                CustomToast.INSTANCE.showToast(this, "保存失败");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-    private void ResolveData(String data) {
-        LogUtil.d("修改", data);
-        JSONObject object = null;
-        switch (mType) {
-            case 0:
-                try {
-                    object = new JSONObject(data);
-                    boolean success = object.optBoolean("success");
-                    if (success) {
-                        mUserInfo.setNickname(mInfo);
-                        UserService.saveUserInfo(mUserInfo);
-                        CustomToast.INSTANCE.showToast(this, "保存成功");
-                        Intent intent = new Intent();
-                        intent.putExtra("nickname", mInfo);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    } else {
-                        CustomToast.INSTANCE.showToast(this, "保存失败");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            case 1:
-                try {
-                    object = new JSONObject(data);
-                    boolean success = object.optBoolean("success");
-                    if (success) {
-                        mUserInfo.setEmail(mInfo);
-                        UserService.saveUserInfo(mUserInfo);
-                        CustomToast.INSTANCE.showToast(this, "保存成功");
-                        Intent intent = new Intent();
-                        intent.putExtra("email", mInfo);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    } else {
-                        CustomToast.INSTANCE.showToast(this, "保存失败");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                break;
+    private void dealChangeEmail(String body) {
+        try {
+            JSONObject object = new JSONObject(body);
+            boolean success = object.optBoolean("success");
+            if (success) {
+                mUserInfo.setEmail(mInfo);
+                UserService.saveUserInfo(mUserInfo);
+                CustomToast.INSTANCE.showToast(this, "保存成功");
+                Intent intent = new Intent();
+                intent.putExtra("email", mInfo);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                CustomToast.INSTANCE.showToast(this, "保存失败");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
+
 }

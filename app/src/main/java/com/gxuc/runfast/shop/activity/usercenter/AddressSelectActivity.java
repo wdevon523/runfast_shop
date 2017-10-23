@@ -30,13 +30,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 收货地址管理
  */
-public class AddressSelectActivity extends ToolBarActivity implements Callback<String>, AddressSelectAdapter.OnItemClickListener {
+public class AddressSelectActivity extends ToolBarActivity implements AddressSelectAdapter.OnItemClickListener {
 
     @BindView(R.id.recycler_address_list)
     RecyclerView recyclerView;
@@ -82,26 +81,23 @@ public class AddressSelectActivity extends ToolBarActivity implements Callback<S
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postListAddress().enqueue(this);
+        CustomApplication.getRetrofit().postListAddress(userInfo.getId()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealAddressList(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    private void ResolveData(String data) {
+    private void dealAddressList(String body) {
         //处理数据 显示地址
         mData.clear();
-        AddressInfos addressInfos = GsonUtil.parseJsonWithGson(data, AddressInfos.class);
+        AddressInfos addressInfos = GsonUtil.parseJsonWithGson(body, AddressInfos.class);
         if (addressInfos.getRows().size() > 0) {
             mData.addAll(addressInfos.getRows());
             mSelectAdapter.notifyDataSetChanged();

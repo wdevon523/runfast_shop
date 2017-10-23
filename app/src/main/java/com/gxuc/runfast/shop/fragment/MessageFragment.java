@@ -17,6 +17,7 @@ import com.gxuc.runfast.shop.adapter.MessageAdapter;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 
 import java.util.ArrayList;
@@ -26,13 +27,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MessageFragment extends Fragment implements Callback<String> {
+public class MessageFragment extends Fragment {
 
 
     Unbinder unbinder;
@@ -77,7 +77,24 @@ public class MessageFragment extends Fragment implements Callback<String> {
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(this);
+        CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                dealMessageList(body);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealMessageList(String body) {
+        MessageInfos messageInfos = GsonUtil.parseJsonWithGson(body, MessageInfos.class);
+        mInfoList.addAll(messageInfos.getMessge());
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -86,22 +103,4 @@ public class MessageFragment extends Fragment implements Callback<String> {
         unbinder.unbind();
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-
-    }
-
-    private void ResolveData(String data) {
-        MessageInfos messageInfos = GsonUtil.parseJsonWithGson(data, MessageInfos.class);
-        mInfoList.addAll(messageInfos.getMessge());
-        mAdapter.notifyDataSetChanged();
-    }
 }

@@ -18,14 +18,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 代金券页
  * A simple {@link Fragment} subclass.
  */
-public class CashCouponsFragment extends Fragment implements Callback<String> {
+public class CashCouponsFragment extends Fragment {
 
 
     @BindView(R.id.recycler_cash_coupons)
@@ -63,16 +62,5 @@ public class CashCouponsFragment extends Fragment implements Callback<String> {
         super.onDestroyView();
         unbinder.unbind();
     }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-
-    }
-
 
 }

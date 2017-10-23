@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.UpdateMessageActivity;
 import com.gxuc.runfast.shop.data.IntentFlag;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.example.supportv1.utils.ValidateUtil;
@@ -25,10 +26,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ForgotPasswordActivity extends ToolBarActivity implements Callback<String> {
+public class ForgotPasswordActivity extends ToolBarActivity {
 
     @BindView(R.id.et_user_name)
     EditText mEtUserName;
@@ -95,7 +95,31 @@ public class ForgotPasswordActivity extends ToolBarActivity implements Callback<
             CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
             return;
         }
-        CustomApplication.getRetrofit().getForgetCode(accountName).enqueue(this);
+        CustomApplication.getRetrofit().getForgetCode(accountName).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealForgetCode(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealForgetCode(String body) {
+        //验证码
+        try {
+            JSONObject object = new JSONObject(body);
+            boolean success = object.getBoolean("success");
+            String msg = object.getString("msg");
+            if (success) {
+                CustomToast.INSTANCE.showToast(this, msg);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -117,34 +141,6 @@ public class ForgotPasswordActivity extends ToolBarActivity implements Callback<
         mIntent.setFlags(IntentFlag.FORGOT_PWD);
         mIntent.putExtra("phone", phone);
         startActivity(mIntent);
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    private void ResolveData(String data) {
-        //验证码
-        try {
-            JSONObject object = new JSONObject(data);
-            boolean success = object.getBoolean("success");
-            String msg = object.getString("msg");
-            if (success) {
-                CustomToast.INSTANCE.showToast(this, msg);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
     }
 
 }

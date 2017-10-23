@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,7 +20,7 @@ import com.gxuc.runfast.shop.bean.BusinessExercise;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.bean.SortInfo;
 import com.gxuc.runfast.shop.bean.mainmiddle.ClassTypeInfo;
-import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.mainmiddle.MiddleSort;
 import com.gxuc.runfast.shop.data.IntentFlag;
@@ -40,13 +39,12 @@ import butterknife.OnClick;
 import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 早餐
  */
-public class BreakfastActivity extends ToolBarActivity implements View.OnClickListener, Callback<String>, LoadMoreAdapter.LoadMoreApi, BGARefreshLayout.BGARefreshLayoutDelegate {
+public class BreakfastActivity extends ToolBarActivity implements View.OnClickListener, LoadMoreAdapter.LoadMoreApi, BGARefreshLayout.BGARefreshLayoutDelegate {
 
     @BindView(R.id.view_class_list)
     RecyclerView recyclerViewClass;
@@ -86,8 +84,6 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
 
     private BreakfastClassAdapter adapterType;
     private BreakfastSortAdapter adapterSort;
-
-    private int netType;
 
     private int page = 1;
 
@@ -160,19 +156,115 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
      * 获取商品分类
      */
     private void searchGoods(String name) {
-        netType = 1;
-        CustomApplication.getRetrofit().searchGoodsType(name).enqueue(this);
+        CustomApplication.getRetrofit().searchGoodsType(name).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealSearchGoods(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealSearchGoods(String data) {
+        ClassTypeInfos classTypeInfo = GsonUtil.parseJsonWithGson(data, ClassTypeInfos.class);
+        List<ClassTypeInfo> listTypeInfos = classTypeInfo.getBustype();
+        ClassTypeInfo info = new ClassTypeInfo();
+        info.id = 0;
+        info.name = "全部分类";
+        info.isSelect = true;
+        info.imgId = R.drawable.icon_class_all;
+        this.typeInfos.add(info);
+        for (int i = 0; i < listTypeInfos.size(); i++) {
+            info = new ClassTypeInfo();
+            info.id = listTypeInfos.get(i).getId();
+            info.name = listTypeInfos.get(i).getName();
+            info.imgId = R.drawable.icon_class_all;
+            this.typeInfos.add(info);
+        }
+        page = 1;
+        searchGoodsType(page, 10, mPositionSort, mName);
+        adapterType.notifyDataSetChanged();
     }
 
     /**
      * 分类选择
      */
     private void searchGoodsType(int page, int raw, int sorting, String name) {
-        netType = 2;
         //TODO 经纬度
         lat = 110.3;
         lon = 23.3;
-        CustomApplication.getRetrofit().searchGoods(page, raw, lon, lat, name, sorting, mSort.getAgentId()).enqueue(this);
+        CustomApplication.getRetrofit().searchGoods(page, raw, lon, lat, name, sorting, mSort.getAgentId()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealSearchGoodsType(data);
+
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealSearchGoodsType(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            JSONArray bus = jsonObject.getJSONArray("bus");
+            mTotalpage = jsonObject.optInt("totalpage");
+            if (bus == null || bus.length() <= 0) {
+                mRefreshLayout.endRefreshing();
+                loadMoreAdapter.loadAllDataCompleted();
+                return;
+            }
+            if (page == 1) {
+                businessInfos.clear();
+                loadMoreAdapter.resetLoadState();
+            }
+
+            int length = bus.length();
+            for (int i = 0; i < length; i++) {
+                JSONObject busObject = bus.getJSONObject(i);
+                BusinessInfo info = new BusinessInfo();
+                info.id = busObject.optInt("id");
+                info.mini_imgPath = busObject.optString("mini_imgPath");
+                info.imgPath = busObject.optString("imgPath");
+                info.name = busObject.optString("name");
+                info.distance = busObject.optDouble("distance");
+                info.levelId = busObject.optInt("levelId");
+                info.salesnum = busObject.optInt("levelId");
+                info.startPay = busObject.optDouble("startPay");
+                info.busshowps = busObject.optDouble("busshowps");
+                info.baseCharge = busObject.optDouble("baseCharge");
+                info.isDeliver = busObject.optInt("isDeliver");
+                info.speed = busObject.optString("speed");
+                info.alist = new ArrayList<>();
+                JSONArray alist = busObject.optJSONArray("alist");
+                if (alist != null) {
+                    int length1 = alist.length();
+                    for (int j = 0; j < length1; j++) {
+                        JSONObject alistObject = alist.getJSONObject(j);
+                        BusinessExercise exercise = new BusinessExercise();
+                        exercise.ptype = alistObject.optInt("ptype");
+                        exercise.fulls = alistObject.optDouble("fulls");
+                        exercise.lesss = alistObject.optDouble("lesss");
+                        exercise.showname = alistObject.optString("showname");
+                        info.alist.add(exercise);
+                    }
+                }
+                businessInfos.add(info);
+            }
+            loadMoreAdapter.loadCompleted();
+            mRefreshLayout.endRefreshing();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick({R.id.layout_class, R.id.layout_sort, R.id.tv_class_back})
@@ -241,9 +333,9 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                     }
                     typeInfos.get(mPosition).isSelect = true;
                     adapterType.notifyDataSetChanged();
-                    if (mPosition == 0){
+                    if (mPosition == 0) {
                         mName = mSort.getTypename();
-                    }else {
+                    } else {
                         mName = typeInfos.get(mPosition).name;
                     }
                     tvClassName.setText(typeInfos.get(mPosition).name);
@@ -332,102 +424,6 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         info.name = "送餐速度最快";
         sortInfos.add(info);
         return sortInfos;
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        Log.d("params","Success = "+response.isSuccessful());
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        mRefreshLayout.endRefreshing();
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        try {
-            JSONObject object = new JSONObject(data);
-            if (netType == 1) {
-                ClassTypeInfos classTypeInfo = GsonUtil.parseJsonWithGson(data, ClassTypeInfos.class);
-                List<ClassTypeInfo> listTypeInfos = classTypeInfo.getBustype();
-                ClassTypeInfo info = new ClassTypeInfo();
-                info.id = 0;
-                info.name = "全部分类";
-                info.isSelect = true;
-                info.imgId = R.drawable.icon_class_all;
-                this.typeInfos.add(info);
-                for (int i = 0; i < listTypeInfos.size(); i++) {
-                    info = new ClassTypeInfo();
-                    info.id = listTypeInfos.get(i).getId();
-                    info.name = listTypeInfos.get(i).getName();
-                    info.imgId = R.drawable.icon_class_all;
-                    this.typeInfos.add(info);
-                }
-                page = 1;
-                searchGoodsType(page, 10, mPositionSort, mName);
-                adapterType.notifyDataSetChanged();
-            } else if (netType == 2) {
-                JSONArray bus = object.getJSONArray("bus");
-                mTotalpage = object.optInt("totalpage");
-                if (bus == null || bus.length() <= 0) {
-                    mRefreshLayout.endRefreshing();
-                    loadMoreAdapter.loadAllDataCompleted();
-                    return;
-                }
-                if (page == 1) {
-                    businessInfos.clear();
-                    loadMoreAdapter.resetLoadState();
-                }
-
-                int length = bus.length();
-                for (int i = 0; i < length; i++) {
-                    JSONObject busObject = bus.getJSONObject(i);
-                    BusinessInfo info = new BusinessInfo();
-                    info.id = busObject.optInt("id");
-                    info.mini_imgPath = busObject.optString("mini_imgPath");
-                    info.imgPath = busObject.optString("imgPath");
-                    info.name = busObject.optString("name");
-                    info.distance = busObject.optDouble("distance");
-                    info.levelId = busObject.optInt("levelId");
-                    info.salesnum = busObject.optInt("levelId");
-                    info.startPay = busObject.optDouble("startPay");
-                    info.busshowps = busObject.optDouble("busshowps");
-                    info.baseCharge = busObject.optDouble("baseCharge");
-                    info.isDeliver = busObject.optInt("isDeliver");
-                    info.speed = busObject.optString("speed");
-                    info.alist = new ArrayList<>();
-                    JSONArray alist = busObject.optJSONArray("alist");
-                    if (alist != null) {
-                        int length1 = alist.length();
-                        for (int j = 0; j < length1; j++) {
-                            JSONObject alistObject = alist.getJSONObject(j);
-                            BusinessExercise exercise = new BusinessExercise();
-                            exercise.ptype = alistObject.optInt("ptype");
-                            exercise.fulls = alistObject.optDouble("fulls");
-                            exercise.lesss = alistObject.optDouble("lesss");
-                            exercise.showname = alistObject.optString("showname");
-                            info.alist.add(exercise);
-                        }
-                    }
-                    businessInfos.add(info);
-                }
-                loadMoreAdapter.loadCompleted();
-                mRefreshLayout.endRefreshing();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

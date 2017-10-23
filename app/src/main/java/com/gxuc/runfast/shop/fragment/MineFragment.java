@@ -29,7 +29,6 @@ import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.usercenter.JoinBusinessActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.ComplaintActivity;
@@ -40,14 +39,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MineFragment extends Fragment implements Callback<String> {
+public class MineFragment extends Fragment {
 
     @BindView(R.id.iv_head)
     ImageView ivHead;
@@ -61,7 +57,6 @@ public class MineFragment extends Fragment implements Callback<String> {
     @BindView(R.id.tv_integral_num)
     TextView tvIntegralNum;
     private User userInfo;
-    private int mNetType;
 
     public MineFragment() {
         // Required empty public constructor
@@ -179,26 +174,6 @@ public class MineFragment extends Fragment implements Callback<String> {
         }
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(getActivity(),"网络错误");
-    }
-
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
     private void ResolveData(String data) {
         Users users = GsonUtil.parseJsonWithGson(data,Users.class);
         UserService.saveUserInfo(users.getUser());

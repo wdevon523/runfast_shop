@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -14,9 +13,8 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.moneyadapter.SelectBankAdapter;
 import com.gxuc.runfast.shop.bean.user.User;
-import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
-import com.example.supportv1.utils.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,13 +26,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 选择银行卡
  */
-public class SelectBankActivity extends ToolBarActivity implements View.OnClickListener, Callback<String> {
+public class SelectBankActivity extends ToolBarActivity implements View.OnClickListener {
 
     @BindView(R.id.recycler_bank_list)
     RecyclerView recyclerView;
@@ -101,32 +98,22 @@ public class SelectBankActivity extends ToolBarActivity implements View.OnClickL
      * @param
      */
     private void getBankInfo() {
-        CustomApplication.getRetrofit().getWathdrawallList().enqueue(this);
+        CustomApplication.getRetrofit().getWathdrawallList(userInfo.getId()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealWathdrawallList(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-    /**
-     * 解析数据
-     * @param data
-     */
-    private void ResolveData(String data) {
-        LogUtil.d("修改", data);
-        JSONObject object = null;
+    private void dealWathdrawallList(String body) {
         try {
-            object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             JSONArray banks = object.getJSONArray("banks");
             int length = banks.length();
             if (length <= 0){
@@ -155,4 +142,5 @@ public class SelectBankActivity extends ToolBarActivity implements View.OnClickL
             e.printStackTrace();
         }
     }
+
 }

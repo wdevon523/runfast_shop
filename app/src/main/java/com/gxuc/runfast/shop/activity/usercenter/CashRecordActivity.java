@@ -11,6 +11,7 @@ import com.gxuc.runfast.shop.adapter.CashRecordAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.spend.AccountRecords;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.bean.spend.AccountRecord;
 import com.gxuc.runfast.shop.util.CustomToast;
@@ -24,13 +25,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 提现记录
  */
-public class CashRecordActivity extends ToolBarActivity implements View.OnClickListener, Callback<String> {
+public class CashRecordActivity extends ToolBarActivity implements View.OnClickListener {
 
     @BindView(R.id.view_money_list)
     RecyclerView recyclerView;
@@ -40,7 +40,7 @@ public class CashRecordActivity extends ToolBarActivity implements View.OnClickL
     private List<AccountRecord> mRecordList;
     private CashRecordAdapter mAllAdapter;
 
-    private int page =1;
+    private int page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,28 @@ public class CashRecordActivity extends ToolBarActivity implements View.OnClickL
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().getCashRecord(page).enqueue(this);
+        CustomApplication.getRetrofit().getCashRecord(page).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealCashRecord(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealCashRecord(String body) {
+        AccountRecords accountRecords = GsonUtil.parseJsonWithGson(body, AccountRecords.class);
+        if (accountRecords != null && accountRecords.getRows().size() > 0) {
+            mRecordList.addAll(accountRecords.getRows());
+            mTvNoCashRecord.setVisibility(View.GONE);
+            mAllAdapter.notifyDataSetChanged();
+        } else {
+            mTvNoCashRecord.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initData() {
@@ -69,36 +90,5 @@ public class CashRecordActivity extends ToolBarActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
 
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        AccountRecords accountRecords = GsonUtil.parseJsonWithGson(data, AccountRecords.class);
-        if (accountRecords != null && accountRecords.getRows().size() > 0) {
-            mRecordList.addAll(accountRecords.getRows());
-            mTvNoCashRecord.setVisibility(View.GONE);
-            mAllAdapter.notifyDataSetChanged();
-        } else {
-            mTvNoCashRecord.setVisibility(View.VISIBLE);
-        }
     }
 }

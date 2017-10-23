@@ -16,6 +16,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.lljjcoder.citypickerview.widget.CityPicker;
@@ -27,13 +28,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 添加银行卡
  */
-public class AddBankActivity extends ToolBarActivity implements Callback<String> {
+public class AddBankActivity extends ToolBarActivity {
 
     @BindView(R.id.et_bank_code)
     EditText etBankCode;
@@ -44,7 +44,6 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
     @BindView(R.id.btn_save_password)
     Button btnSavePassword;
 
-    private int netType;
     private boolean bankCodeIsEmpty;
     private boolean bankNameIsEmpty;
 
@@ -78,7 +77,7 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
                 }
                 String bankName = tvBankName.getText().toString().trim();
 
-                if (bankCodeIsEmpty && bankNameIsEmpty && !TextUtils.equals(bankName,"开户行")) {
+                if (bankCodeIsEmpty && bankNameIsEmpty && !TextUtils.equals(bankName, "开户行")) {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay);
                 } else {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay_gary);
@@ -105,7 +104,7 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
                     bankNameIsEmpty = false;
                 }
                 String bankName = tvBankName.getText().toString().trim();
-                if (bankCodeIsEmpty && bankNameIsEmpty &&!TextUtils.equals(bankName,"开户行")) {
+                if (bankCodeIsEmpty && bankNameIsEmpty && !TextUtils.equals(bankName, "开户行")) {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay);
                 } else {
                     btnSavePassword.setBackgroundResource(R.drawable.shape_button_pay_gary);
@@ -143,8 +142,35 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
      * @param
      */
     private void getBankName(String code) {
-        netType = 1;
-        CustomApplication.getRetrofit().getBankName(code).enqueue(this);
+        CustomApplication.getRetrofit().getBankName(code).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealBankName(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealBankName(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            boolean success = jsonObject.optBoolean("success");
+            if (!success) {
+                String msg = jsonObject.optString("msg");
+                CustomToast.INSTANCE.showToast(this, msg);
+                return;
+            }
+            String bankName = jsonObject.optString("bankName");
+            tvBankName.setText(bankName);
+            tvBankName.setTextColor(getResources().getColor(R.color.color_address_black));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -157,11 +183,37 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
         String code = etBankCode.getText().toString().trim();
         String bankName = tvBankName.getText().toString().trim();
         String userName = etBankUserName.getText().toString().trim();
-        if (userInfo == null){
+        if (userInfo == null) {
             return;
         }
-        netType = 2;
-        CustomApplication.getRetrofit().addBank(userName,bankName,code).enqueue(this);
+        CustomApplication.getRetrofit().addBank(userName, bankName, code).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealAddBank(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealAddBank(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            boolean success = jsonObject.optBoolean("success");
+            String msg = jsonObject.optString("msg");
+            if (!success) {
+                CustomToast.INSTANCE.showToast(this, msg);
+                return;
+            }
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -198,53 +250,4 @@ public class AddBankActivity extends ToolBarActivity implements Callback<String>
         });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params", "response = " + data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        JSONObject object = null;
-        try {
-            object = new JSONObject(data);
-            if (netType == 1) {
-                boolean success = object.optBoolean("success");
-                if (!success) {
-                    String msg = object.optString("msg");
-                    CustomToast.INSTANCE.showToast(this, msg);
-                    return;
-                }
-                String bankName = object.optString("bankName");
-                tvBankName.setText(bankName);
-                tvBankName.setTextColor(getResources().getColor(R.color.color_address_black));
-                return;
-            }
-
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            if (!success){
-                CustomToast.INSTANCE.showToast(this, msg);
-                return;
-            }
-            Intent intent = new Intent();
-            setResult(RESULT_OK,intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -48,10 +48,12 @@ import com.gxuc.runfast.shop.bean.TypeBean;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.bean.business.BusinessDetails;
 import com.gxuc.runfast.shop.bean.maintop.TopImage;
+import com.gxuc.runfast.shop.bean.order.ShoppingCartInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.fragment.BusinessInfoFragment;
 import com.gxuc.runfast.shop.fragment.EvaluateFragment;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.AppBarStateChangeListener;
@@ -89,7 +91,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import shopex.cn.sharelibrary.ShareViewDataSource;
 import shopex.cn.sharelibrary.SharedView;
@@ -99,7 +100,7 @@ import static java.lang.Double.NaN;
 /**
  * 商家界面
  */
-public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAddClick, View.OnClickListener, Callback<String>, SpecCarAdapter.UpdateSpecCountImp {
+public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAddClick, View.OnClickListener, SpecCarAdapter.UpdateSpecCountImp {
 
     @BindView(R.id.tl_list_tab)
     TabLayout mTabLayout;
@@ -194,7 +195,6 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     //类型集合
     private List<TypeBean> types = new ArrayList<>();
 
-    private int netType;
     private int businessId;
     //规格选择弹框------------
     private AlertDialog specDialog;
@@ -239,6 +239,9 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         setData();
         setListener();
         initDialog();
+        getBusiness(businessId);
+        requestShoppingCart(businessId);
+//        getBusinessCollection();
     }
 
     /**
@@ -436,14 +439,47 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * @param id
      */
     private void getBusinessDetailFromBanner(int id) {
-        netType = 6;
-        CustomApplication.getRetrofit().getBusinessInfo(id).enqueue(this);
+        CustomApplication.getRetrofit().getBusinessInfo(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealBusinessDetailFromBanner(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealBusinessDetailFromBanner(String data) {
+        BusinessDetails businessDetails = GsonUtil.parseJsonWithGson(data, BusinessDetails.class);
+        BusinessDetail business = businessDetails.getBusiness();
+        BusinessInfo info = new BusinessInfo();
+        info.name = business.getName();
+        info.imgPath = business.getImgPath();
+        info.startPay = (double) business.getStartPay();
+        info.baseCharge = (double) business.getBaseCharge();
+        info.speed = String.valueOf(business.getSpeed());
+        info.salesnum = business.getSalesnum();
+        setTitleUi(info);
     }
 
     private void getBusinessDetailFromOrder(int id) {
-        netType = 7;
         LogUtil.e("订单", id + "");
-        CustomApplication.getRetrofit().getBusinessInfo(id).enqueue(this);
+        CustomApplication.getRetrofit().getBusinessInfo(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealBusinessDetailFromBanner(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     public int getBusinessId() {
@@ -522,12 +558,92 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         }
     }
 
+    private void requestShoppingCart(int businessId) {
+        CustomApplication.getRetrofit().getShoppingCar(businessId).enqueue(new MyCallback<String>() {
+
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    ShoppingCartInfo shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
+                    if (shoppingCartInfo.shopping != null && shoppingCartInfo.shopping.size() > 0) {
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
     /**
      * 获取商品列表
      */
     private void getBusiness(int id) {
-        netType = 1;
-        CustomApplication.getRetrofit().getBusinessGoods(id).enqueue(this);
+        CustomApplication.getRetrofit().getBusinessGoods(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealBusiness(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealBusiness(String data) {
+        try {
+            JSONObject object = new JSONObject(data);
+            BusinessFragment fragment = (BusinessFragment) mFragments.get(0);
+            JSONArray gtlist = object.getJSONArray("gtlist");
+            if (gtlist == null || gtlist.length() <= 0) {
+                return;
+            }
+            int length = gtlist.length();
+            for (int i = 0; i < length; i++) {
+                JSONObject listObject = gtlist.getJSONObject(i);
+                TypeBean typeBean = new TypeBean();
+                typeBean.setName(listObject.optString("name"));
+                types.add(typeBean);
+                fragment.getTypeBeanList().add(typeBean);
+
+                JSONArray glistArray = listObject.optJSONArray("glist");
+                if (glistArray != null) {
+                    int length1 = glistArray.length();
+                    for (int j = 0; j < length1; j++) {
+                        JSONObject jsonObject = glistArray.getJSONObject(j);
+                        FoodBean foodBean = new FoodBean();
+                        foodBean.setId(jsonObject.optInt("id"));
+                        foodBean.setName(jsonObject.optString("name"));
+                        foodBean.setIcon(jsonObject.optString("imgPath"));
+                        foodBean.setType(jsonObject.optString("sellTypeName"));
+                        foodBean.setShowprice(jsonObject.optString("showprice"));
+                        foodBean.setIsonly(jsonObject.optInt("isonly"));
+                        foodBean.setPrice(BigDecimal.valueOf(jsonObject.optDouble("price")).setScale(1, BigDecimal.ROUND_HALF_DOWN));
+                        foodBean.setSale(String.valueOf(jsonObject.optInt("salesnum")));
+                        foodBean.setBusinessId(jsonObject.optInt("businessId"));
+                        foodBean.setBusinessName(jsonObject.optString("businessName"));
+                        foodBean.setAgentId(jsonObject.optInt("agentId"));
+                        foodBeens.add(foodBean);
+                        fragment.getFoodBeanList().add(foodBean);
+                    }
+                }
+            }
+            if (fragment.getFoodAdapter() != null) {
+                fragment.getFoodAdapter().notifyDataSetChanged();
+            }
+            if (fragment.getTypeAdapter() != null) {
+                fragment.getTypeAdapter().notifyDataSetChanged();
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -538,8 +654,32 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         if (userInfo == null) {
             return;
         }
-        netType = 9;
-        CustomApplication.getRetrofit().getIsShoucang(businessId, userInfo.getId()).enqueue(this);
+        CustomApplication.getRetrofit().getIsShoucang(businessId, userInfo.getId()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealBusinessCollection(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealBusinessCollection(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            String isShoucang = jsonObject.optString("isShoucang");
+            if (TextUtils.equals(isShoucang, "0")) {
+                mIvCollection.setImageResource(R.drawable.icon_collection_no);
+            } else {
+                mIvCollection.setImageResource(R.drawable.icon_collection_yes);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setTitle() {
@@ -612,20 +752,44 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * 喜爱的商家
      */
     private void saveFavorite() {
-        netType = 5;
         User userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
 
-        CustomApplication.getRetrofit().postSaveShop(businessId, 1).enqueue(this);
+        CustomApplication.getRetrofit().postSaveShop(businessId, 1).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealSaveShop(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealSaveShop(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            if (jsonObject.optString("succ").equals("收藏成功！")) {
+                mIvCollection.setImageResource(R.drawable.icon_collection_yes);
+            } else if (jsonObject.optString("succ").equals("已取消收藏！")) {
+                mIvCollection.setImageResource(R.drawable.icon_collection_no);
+            }
+            CustomToast.INSTANCE.showToast(this, jsonObject.getString("succ"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * 购物车
      */
     private void saveOrderCar(User userInfo) {
-        netType = 8;
         List<ShoppingTrolley> trolleys = new ArrayList<>();
         for (int i = 0; i < carFoods.size(); i++) {
             mFoodBean = carFoods.get(i);
@@ -649,7 +813,36 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 
         String goodJson = new Gson().toJson(carBean);
         LogUtil.e("购物车", goodJson);
-        CustomApplication.getRetrofit().OrderCar(goodJson).enqueue(this);
+        CustomApplication.getRetrofit().OrderCar(goodJson).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealOrderCart(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealOrderCart(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            if ((jsonObject.optBoolean("success"))) {
+                List<FoodBean> flist = carFoods;
+                startActivity(new Intent(this, ConfirmOrderActivity.class)
+                        .putExtra("foodBean", (Serializable) flist)
+                        .putExtra("price", decimal)
+                        .putExtra("salePrice", salePrice)
+                        .putExtra("businessId", businessId));
+            } else {
+                CustomToast.INSTANCE.showToast(this, jsonObject.optString("msg"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -1073,8 +1266,71 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * 获取商品规格
      */
     private void getGoodsSpec(int id) {
-        netType = 3;
-        CustomApplication.getRetrofit().getGoodsSpec(id).enqueue(this);
+        CustomApplication.getRetrofit().getGoodsSpec(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealGoodsSpec(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealGoodsSpec(String data) {
+        try {
+            JSONObject jsonObject = new JSONObject(data);
+            specBeanList.clear();
+            JSONObject goodsSell = jsonObject.getJSONObject("goods");
+            JSONArray standardList = goodsSell.getJSONArray("standardList");
+            JSONArray optionList = goodsSell.getJSONArray("optionList");
+            int standarLength = standardList.length();
+            int optionLength = optionList.length();
+            if (standarLength > 0) {
+                for (int i = 0; i < standarLength; i++) {
+                    SpecBean specBean = GsonUtil.parseJsonWithGson(standardList.getJSONObject(i).toString(), SpecBean.class);
+                    specBeanList.add(specBean);
+                }
+                addItem(specBeanList, layoutSpec);
+                tvSpecPrice.setText(specBeanList.get(0).getPrice() + "");
+            }
+            if (optionLength > 0) {
+                for (int i = 0; i < optionLength; i++) {
+                    JSONObject optionObject = optionList.getJSONObject(i);
+                    OptionBean optionBean = new OptionBean();
+                    optionBean.id = optionObject.optInt("id");
+                    optionBean.name = optionObject.optString("name");
+                    optionBean.subOption = new ArrayList<>();
+                    JSONArray subOption = optionObject.getJSONArray("subOption");
+                    int subLength = subOption.length();
+                    if (subLength > 0) {
+                        for (int j = 0; j < subLength; j++) {
+                            JSONObject subObject = subOption.getJSONObject(j);
+                            SubOptionBean subOptionBean = new SubOptionBean();
+                            subOptionBean.id = subObject.optInt("id");
+                            subOptionBean.name = subObject.optString("name");
+                            subOptionBean.sort = subObject.optInt("sort");
+                            optionBean.subOption.add(subOptionBean);
+                        }
+                    }
+                    optionBeenList.add(optionBean);
+                }
+                tvSpecProperty.setText(optionBeenList.get(0).name + "：");
+                addItemOption(optionBeenList.get(0).subOption, layoutProduct);
+                if (optionLength > 1) {
+                    layoutGood.setVisibility(View.VISIBLE);
+                    tvSpecPropertyTwo.setText(optionBeenList.get(1).name + "：");
+                    addItemOptionTwo(optionBeenList.get(1).subOption, layoutProductTwo);
+                } else {
+                    layoutGood.setVisibility(View.GONE);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -1237,172 +1493,26 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * 获取商品详情
      */
     private void getGoodsDetail(int id) {
-        netType = 2;
-        CustomApplication.getRetrofit().getGoodsDetail(id).enqueue(this);
+        CustomApplication.getRetrofit().getGoodsDetail(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String data = response.body();
+                dealGoodsDetail(data);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params", "response = " + data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
+    private void dealGoodsDetail(String data) {
         try {
-            JSONObject object = new JSONObject(data);
-            if (netType == 9) {
-                String isShoucang = object.optString("isShoucang");
-                if (TextUtils.equals(isShoucang, "0")) {
-                    mIvCollection.setImageResource(R.drawable.icon_collection_no);
-                } else {
-                    mIvCollection.setImageResource(R.drawable.icon_collection_yes);
-                }
-                return;
-            }
-            if (netType == 1) {
-                BusinessFragment fragment = (BusinessFragment) mFragments.get(0);
-                JSONArray gtlist = object.getJSONArray("gtlist");
-                if (gtlist == null || gtlist.length() <= 0) {
-                    return;
-                }
-                int length = gtlist.length();
-                for (int i = 0; i < length; i++) {
-                    JSONObject listObject = gtlist.getJSONObject(i);
-                    TypeBean typeBean = new TypeBean();
-                    typeBean.setName(listObject.optString("name"));
-                    types.add(typeBean);
-                    fragment.getTypeBeanList().add(typeBean);
-
-                    JSONArray glistArray = listObject.optJSONArray("glist");
-                    if (glistArray != null) {
-                        int length1 = glistArray.length();
-                        for (int j = 0; j < length1; j++) {
-                            JSONObject jsonObject = glistArray.getJSONObject(j);
-                            FoodBean foodBean = new FoodBean();
-                            foodBean.setId(jsonObject.optInt("id"));
-                            foodBean.setName(jsonObject.optString("name"));
-                            foodBean.setIcon(jsonObject.optString("imgPath"));
-                            foodBean.setType(jsonObject.optString("sellTypeName"));
-                            foodBean.setShowprice(jsonObject.optString("showprice"));
-                            foodBean.setIsonly(jsonObject.optInt("isonly"));
-                            foodBean.setPrice(BigDecimal.valueOf(jsonObject.optDouble("price")).setScale(1, BigDecimal.ROUND_HALF_DOWN));
-                            foodBean.setSale(String.valueOf(jsonObject.optInt("salesnum")));
-                            foodBean.setBusinessId(jsonObject.optInt("businessId"));
-                            foodBean.setBusinessName(jsonObject.optString("businessName"));
-                            foodBean.setAgentId(jsonObject.optInt("agentId"));
-                            foodBeens.add(foodBean);
-                            fragment.getFoodBeanList().add(foodBean);
-                        }
-                    }
-                }
-                if (fragment.getFoodAdapter() != null) {
-                    fragment.getFoodAdapter().notifyDataSetChanged();
-                }
-                if (fragment.getTypeAdapter() != null) {
-                    fragment.getTypeAdapter().notifyDataSetChanged();
-                }
-                getBusinessCollection();
-            }
-            if (netType == 2) {
-                JSONObject goodsSell = object.getJSONObject("goodsSell");
-                String imgPath = goodsSell.optString("imgPath");
-                x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + imgPath, NetConfig.optionsPagerCache);
-            }
-            if (netType == 3) {
-                specBeanList.clear();
-                JSONObject goodsSell = object.getJSONObject("goods");
-                JSONArray standardList = goodsSell.getJSONArray("standardList");
-                JSONArray optionList = goodsSell.getJSONArray("optionList");
-                int standarLength = standardList.length();
-                int optionLength = optionList.length();
-                if (standarLength > 0) {
-                    for (int i = 0; i < standarLength; i++) {
-                        SpecBean specBean = GsonUtil.parseJsonWithGson(standardList.getJSONObject(i).toString(), SpecBean.class);
-                        specBeanList.add(specBean);
-                    }
-                    addItem(specBeanList, layoutSpec);
-                    tvSpecPrice.setText(specBeanList.get(0).getPrice() + "");
-                }
-                if (optionLength > 0) {
-                    for (int i = 0; i < optionLength; i++) {
-                        JSONObject optionObject = optionList.getJSONObject(i);
-                        OptionBean optionBean = new OptionBean();
-                        optionBean.id = optionObject.optInt("id");
-                        optionBean.name = optionObject.optString("name");
-                        optionBean.subOption = new ArrayList<>();
-                        JSONArray subOption = optionObject.getJSONArray("subOption");
-                        int subLength = subOption.length();
-                        if (subLength > 0) {
-                            for (int j = 0; j < subLength; j++) {
-                                JSONObject subObject = subOption.getJSONObject(j);
-                                SubOptionBean subOptionBean = new SubOptionBean();
-                                subOptionBean.id = subObject.optInt("id");
-                                subOptionBean.name = subObject.optString("name");
-                                subOptionBean.sort = subObject.optInt("sort");
-                                optionBean.subOption.add(subOptionBean);
-                            }
-                        }
-                        optionBeenList.add(optionBean);
-                    }
-                    tvSpecProperty.setText(optionBeenList.get(0).name + "：");
-                    addItemOption(optionBeenList.get(0).subOption, layoutProduct);
-                    if (optionLength > 1) {
-                        layoutGood.setVisibility(View.VISIBLE);
-                        tvSpecPropertyTwo.setText(optionBeenList.get(1).name + "：");
-                        addItemOptionTwo(optionBeenList.get(1).subOption, layoutProductTwo);
-                    } else {
-                        layoutGood.setVisibility(View.GONE);
-                    }
-                }
-            }
-            if (netType == 5) {
-                if (object.optString("succ").equals("收藏成功！")) {
-                    mIvCollection.setImageResource(R.drawable.icon_collection_yes);
-                } else if (object.optString("succ").equals("已取消收藏！")) {
-                    mIvCollection.setImageResource(R.drawable.icon_collection_no);
-                }
-                CustomToast.INSTANCE.showToast(this, object.getString("succ"));
-            }
-
-            if (netType == 6 || netType == 7) {
-                BusinessDetails businessDetails = GsonUtil.parseJsonWithGson(data, BusinessDetails.class);
-                BusinessDetail business = businessDetails.getBusiness();
-                BusinessInfo info = new BusinessInfo();
-                info.name = business.getName();
-                info.imgPath = business.getImgPath();
-                info.startPay = (double) business.getStartPay();
-                info.baseCharge = (double) business.getBaseCharge();
-                info.speed = String.valueOf(business.getSpeed());
-                info.salesnum = business.getSalesnum();
-                getBusiness(business.getId());
-                setTitleUi(info);
-            }
-            if (netType == 8) {
-                if ((object.optBoolean("success"))) {
-                    List<FoodBean> flist = carFoods;
-                    startActivity(new Intent(this, ConfirmOrderActivity.class)
-                            .putExtra("foodBean", (Serializable) flist)
-                            .putExtra("price", decimal)
-                            .putExtra("salePrice", salePrice)
-                            .putExtra("businessId", businessId));
-                } else {
-                    CustomToast.INSTANCE.showToast(this, object.optString("msg"));
-                }
-            }
-
+            JSONObject jsonObject = new JSONObject(data);
+            JSONObject goodsSell = jsonObject.getJSONObject("goodsSell");
+            String imgPath = goodsSell.optString("imgPath");
+            x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + imgPath, NetConfig.optionsPagerCache);
         } catch (JSONException e) {
             e.printStackTrace();
         }

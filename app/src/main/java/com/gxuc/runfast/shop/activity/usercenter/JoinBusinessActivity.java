@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -19,13 +20,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 加盟
  */
-public class JoinBusinessActivity extends ToolBarActivity implements Callback<String> {
+public class JoinBusinessActivity extends ToolBarActivity {
 
     @BindView(R.id.et_business_name)
     EditText mEtBusinessName;
@@ -83,27 +83,22 @@ public class JoinBusinessActivity extends ToolBarActivity implements Callback<St
                 mEtBusinessUsrAddress.getText().toString(),
                 TextUtils.isEmpty(mEtBusinessRemarks.getText().toString())?"":mEtBusinessRemarks.getText().toString(),
                 mEtBusinessJoinAddress.getText().toString()
-                ).enqueue(this);
+                ).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealJoinLeague(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        if (response.isSuccessful()){
-            String data = response.body();
-            ResolveData(data);
-        }else {
-            CustomToast.INSTANCE.showToast(this,"请求失败");
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-
-    }
-
-    private void ResolveData(String data) {
+    private void dealJoinLeague(String body) {
         try {
-            JSONObject object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             String succ = object.optString("succ");
             CustomToast.INSTANCE.showToast(this,succ);
             finish();
@@ -111,4 +106,5 @@ public class JoinBusinessActivity extends ToolBarActivity implements Callback<St
             e.printStackTrace();
         }
     }
+
 }

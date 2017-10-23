@@ -8,7 +8,6 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +18,11 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.bean.order.OrderInfos;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderDetailActivity;
 import com.gxuc.runfast.shop.adapter.OrderListAdapter;
 import com.gxuc.runfast.shop.bean.user.User;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 
 import java.util.ArrayList;
@@ -34,14 +33,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 订单页
  * A simple {@link Fragment} subclass.
  */
-public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener, Callback<String> {
+public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener {
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -95,7 +93,7 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         getOrderList();
     }
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -111,7 +109,26 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postOrderList(1, 10).enqueue(this);
+        CustomApplication.getRetrofit().postOrderList(1, 10).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealOrderList(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealOrderList(String body) {
+        OrderInfos orderInfos = GsonUtil.parseJsonWithGson(body, OrderInfos.class);
+        if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
+            layoutNotOrder.setVisibility(View.GONE);
+        }
+        mOrderInfos.addAll(orderInfos.getRows());
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -132,27 +149,4 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         startActivity(intent);
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","responseOrder ="+data);
-            ResolveData(data);
-        }
-    }
-
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(getContext(), "网络异常");
-    }
-
-    private void ResolveData(String data) {
-        OrderInfos orderInfos = GsonUtil.parseJsonWithGson(data, OrderInfos.class);
-        if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
-            layoutNotOrder.setVisibility(View.GONE);
-        }
-        mOrderInfos.addAll(orderInfos.getRows());
-        adapter.notifyDataSetChanged();
-    }
 }

@@ -16,6 +16,7 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.adapter.BusinessAdapter;
 import com.gxuc.runfast.shop.bean.TypeBean;
 import com.gxuc.runfast.shop.fragment.BusinessFragment;
+import com.gxuc.runfast.shop.impl.MyCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,10 +29,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BusinessInfoActivity extends AppCompatActivity implements Callback<String> {
+public class BusinessInfoActivity extends AppCompatActivity {
 
     @BindView(R.id.vp_list_view)
     ViewPager mViewPager;
@@ -83,30 +83,22 @@ public class BusinessInfoActivity extends AppCompatActivity implements Callback<
      * 获取商品列表
      */
     private void getBusiness(int id) {
-        CustomApplication.getRetrofit().getBusinessGoods(id).enqueue(this);
+        CustomApplication.getRetrofit().getBusinessGoods(id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealBusiness(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-
-    public void toggleCar(View view) {
-
-    }
-
-    public void goAccount(View view) {
-
-    }
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params", "response = " + data);
-            ResolveData(data);
-        }
-    }
-
-    private void ResolveData(String data) {
+    private void dealBusiness(String body) {
         try {
-            JSONObject object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             BusinessFragment fragment = (BusinessFragment) mFragments.get(0);
             JSONArray gtlist = object.getJSONArray("gtlist");
             if (gtlist == null || gtlist.length() <= 0) {
@@ -151,8 +143,13 @@ public class BusinessInfoActivity extends AppCompatActivity implements Callback<
         }
     }
 
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
+
+    public void toggleCar(View view) {
 
     }
+
+    public void goAccount(View view) {
+
+    }
+
 }

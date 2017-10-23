@@ -427,7 +427,7 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.USER_ADDRESS_LIST)
-    Call<String> postListAddress();
+    Call<String> postListAddress(@Field("id") int id);
 
     /**
      * 消息列表
@@ -596,10 +596,11 @@ public interface NetInterface {
      * 提现银行卡列表
      *
      * @return
+     * @param id
      */
     @FormUrlEncoded
     @POST(UrlConstant.WATHDRAWALL_LIST)
-    Call<String> getWathdrawallList();
+    Call<String> getWathdrawallList(@Field("id") int id);
 
     /**
      * 获取银行卡
@@ -656,7 +657,7 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.MY_ENSHRINE)
-    Call<String> getEnshrine();
+    Call<String> getEnshrine(@Field("page") int page);
 
 
     /**

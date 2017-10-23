@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyAllFragment;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyExpenditureFragment;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyIncomeFragment;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
@@ -26,13 +27,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * 收支明细
  */
-public class MoneyDetailActivity extends ToolBarActivity implements Callback<String> {
+public class MoneyDetailActivity extends ToolBarActivity {
 
     @BindView(R.id.tl_list_tab)
     TabLayout mTabLayout;
@@ -87,31 +87,21 @@ public class MoneyDetailActivity extends ToolBarActivity implements Callback<Str
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().getListConsume(page,0).enqueue(this);
+        CustomApplication.getRetrofit().getListConsume(page,0).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealConsumeList(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-
-    /**
-     * 解析数据
-     *
-     * @param data
-     */
-    private void ResolveData(String data) {
-        AccountRecords accountRecords = GsonUtil.parseJsonWithGson(data, AccountRecords.class);
+    private void dealConsumeList(String body) {
+        AccountRecords accountRecords = GsonUtil.parseJsonWithGson(body, AccountRecords.class);
         if (accountRecords != null && accountRecords.getRows().size() > 0) {
             Bundle bundle = new Bundle();
             bundle.putParcelable("record", accountRecords);

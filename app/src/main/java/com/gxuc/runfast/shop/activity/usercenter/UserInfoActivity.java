@@ -38,12 +38,12 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.data.IntentFlag;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.PhotoUtils;
 import com.gxuc.runfast.shop.R;
 import com.example.supportv1.utils.FileUtil;
-import com.example.supportv1.utils.LogUtil;
 import com.example.supportv1.utils.PermissionUtils;
 
 import org.json.JSONException;
@@ -68,7 +68,7 @@ import retrofit2.Response;
 /**
  * 个人信息
  */
-public class UserInfoActivity extends ToolBarActivity implements View.OnClickListener, retrofit2.Callback<String> {
+public class UserInfoActivity extends ToolBarActivity implements View.OnClickListener {
 
     @BindView(R.id.tv_address_button)
     TextView tvAddressButton;
@@ -116,8 +116,8 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
     }
 
     private void updateUi() {
-        if (!TextUtils.isEmpty(userInfo.getPic())){
-            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl+userInfo.getPic(), NetConfig.optionsHeadImage);
+        if (!TextUtils.isEmpty(userInfo.getPic())) {
+            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.getPic(), NetConfig.optionsHeadImage);
         }
         tvUserNickname.setText(TextUtils.isEmpty(userInfo.getNickname()) ? userInfo.getMobile() : userInfo.getNickname());
         tvUserPhone.setText(TextUtils.isEmpty(userInfo.getMobile()) ? "添加" : userInfo.getMobile());
@@ -140,6 +140,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     Manifest.permission.CAMERA}, 100);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -443,7 +444,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     userInfo.setPic(imagePath);
                     updateUserInfo(imagePath);
                     UserService.saveUserInfo(userInfo);
-                    x.image().bind(ivHead,UrlConstant.ImageHeadBaseUrl+imagePath, NetConfig.optionsHeadImage);
+                    x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + imagePath, NetConfig.optionsHeadImage);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -469,32 +470,26 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
     /**
      * 上传头像
+     *
      * @param imagePath
      */
     private void updateUserInfo(String imagePath) {
-        CustomApplication.getRetrofit().updateHead(imagePath).enqueue(this);
+        CustomApplication.getRetrofit().updateHead(imagePath).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealUpdateUserInfo(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
-
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            Log.d("params","response ="+data);
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(this, "网络错误");
-    }
-
-    private void ResolveData(String data) {
-        LogUtil.d("修改", data);
-        JSONObject object = null;
+    private void dealUpdateUserInfo(String body) {
         try {
-            object = new JSONObject(data);
+            JSONObject  object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             if (success) {
                 CustomToast.INSTANCE.showToast(this, "更换成功");
@@ -505,6 +500,5 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
             e.printStackTrace();
         }
     }
-
 
 }

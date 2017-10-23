@@ -18,6 +18,7 @@ import com.gxuc.runfast.shop.adapter.BreakfastAdapter;
 import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.bean.BusinessExercise;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
 import com.gxuc.runfast.shop.R;
@@ -38,10 +39,9 @@ import butterknife.OnClick;
 import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchProductActivity extends ToolBarActivity implements Callback<String>, LoadMoreAdapter.LoadMoreApi, View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
+public class SearchProductActivity extends ToolBarActivity implements LoadMoreAdapter.LoadMoreApi, View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate {
 
     @BindView(R.id.et_search_name)
     EditText etSearchName;
@@ -132,26 +132,23 @@ public class SearchProductActivity extends ToolBarActivity implements Callback<S
      * 搜索商品
      */
     private void searchGoods(String name) {
-        CustomApplication.getRetrofit().searchGoods(1, 10, 110.0, 23.0, name, 1, 4).enqueue(this);
+        CustomApplication.getRetrofit().searchGoods(1, 10, 110.0, 23.0, name, 1, 4).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                dealSearchGoods(body);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+                mRefreshLayout.endRefreshing();
+            }
+        });
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        if (response.isSuccessful()) {
-            ResolveData(data);
-        }
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        mRefreshLayout.endRefreshing();
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    private void ResolveData(String data) {
+    private void dealSearchGoods(String body) {
         try {
-            JSONObject object = new JSONObject(data);
+            JSONObject object = new JSONObject(body);
             JSONArray bus = object.getJSONArray("bus");
             if (bus == null || bus.length() <= 0) {
                 mRefreshLayout.endRefreshing();
@@ -203,7 +200,6 @@ public class SearchProductActivity extends ToolBarActivity implements Callback<S
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.gxuc.runfast.shop.activity.usercenter;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
 import com.gxuc.runfast.shop.adapter.EnshrineAdapter;
@@ -11,12 +10,12 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.enshrien.Enshrine;
 import com.gxuc.runfast.shop.bean.enshrien.Enshrines;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.bean.user.User;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 
 import java.util.ArrayList;
@@ -27,10 +26,9 @@ import butterknife.ButterKnife;
 import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
 import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, LoadMoreAdapter.LoadMoreApi, Callback<String> {
+public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, LoadMoreAdapter.LoadMoreApi {
 
     @BindView(R.id.recycler_my_enshrine)
     RecyclerView recyclerViewList;
@@ -56,8 +54,32 @@ public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickL
 
     private void getEnshrineData() {
         User userInfo = UserService.getUserInfo(this);
-        if (userInfo !=null) {
-            CustomApplication.getRetrofit().getEnshrine().enqueue(this);
+        if (userInfo != null) {
+            CustomApplication.getRetrofit().getEnshrine(page).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    dealEnshrine(response.body());
+                    mRefreshLayout.endRefreshing();
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+                    mRefreshLayout.endRefreshing();
+                }
+            });
+        }
+    }
+
+    private void dealEnshrine(String body) {
+        if (body != null) {
+            Enshrines enshrines = GsonUtil.parseJsonWithGson(body, Enshrines.class);
+            if (enshrines == null || enshrines.getEnshrine() == null || enshrines.getEnshrine().size() <= 0) {
+                loadMoreAdapter.loadAllDataCompleted();
+                return;
+            }
+            mEnshrines.addAll(enshrines.getEnshrine());
+            loadMoreAdapter.loadAllDataCompleted();
+            mRefreshLayout.endRefreshing();
         }
     }
 
@@ -108,34 +130,4 @@ public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickL
         getEnshrineData();
     }
 
-    @Override
-    public void onResponse(Call<String> call, Response<String> response) {
-        String data = response.body();
-        Log.d("params","Success = "+response.isSuccessful());
-        if (response.isSuccessful()) {
-            Log.d("params","response = "+data);
-            ResolveData(data);
-            return;
-        }
-        mRefreshLayout.endRefreshing();
-    }
-
-    @Override
-    public void onFailure(Call<String> call, Throwable t) {
-        mRefreshLayout.endRefreshing();
-        CustomToast.INSTANCE.showToast(this, "网络异常");
-    }
-
-    private void ResolveData(String data) {
-        if (data != null) {
-            Enshrines enshrines = GsonUtil.parseJsonWithGson(data, Enshrines.class);
-            if (enshrines == null || enshrines.getEnshrine() == null || enshrines.getEnshrine().size() <= 0){
-                loadMoreAdapter.loadAllDataCompleted();
-                return;
-            }
-            mEnshrines.addAll(enshrines.getEnshrine());
-            loadMoreAdapter.loadAllDataCompleted();
-            mRefreshLayout.endRefreshing();
-        }
-    }
 }

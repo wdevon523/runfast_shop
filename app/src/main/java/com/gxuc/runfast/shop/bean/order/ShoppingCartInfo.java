@@ -15,10 +15,13 @@ public class ShoppingCartInfo {
      */
 
     public int num;
-    public String prices;
+    public String tejia;
+    public String totalprice;
+    public String zidingdan;
+    public String packing;
     public String disprice;
-    public String tpacking;
+    public String prices;
     public String totalpay;
-    public List<ShoppingCartGoodsInfo> rows;
+    public List<ShoppingCartGoodsInfo> shopping;
 
 }
