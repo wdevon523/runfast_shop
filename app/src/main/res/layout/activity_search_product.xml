@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.example.runfastshop.com.example.runfast.activity.SearchProductActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_background"
+        android:gravity="center_vertical"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp">
+
+        <ImageView
+            android:id="@+id/iv_search_back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/icon_back"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_search_background_scroll"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/icon_search"/>
+
+            <EditText
+                android:id="@+id/et_search_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:background="@null"
+                android:hint="输入商家、商品名称"
+                android:singleLine="true"
+                android:textColor="@color/color_text_gray"
+                android:textColorHint="@color/color_text_gray"
+                android:textSize="14sp"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_cancel_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="搜索"
+            android:textColor="@color/color_address_black"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_white">
+
+        <LinearLayout
+            android:id="@+id/ll_search_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="历史搜索"
+                android:textColor="@color/color_address_black"
+                android:textSize="14sp"/>
+
+            <com.gxuc.runfast.shop.view.ZFlowLayout
+                android:id="@+id/flow_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="13dp"/>
+        </LinearLayout>
+
+        <cn.bingoogolapple.refreshlayout.BGARefreshLayout
+            android:id="@+id/rl_search_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/view_search_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/color_line_back"/>
+        </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
+    </RelativeLayout>
+
+</LinearLayout>
