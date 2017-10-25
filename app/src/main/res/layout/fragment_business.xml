@@ -8,7 +8,7 @@
     android:orientation="horizontal"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/scroll_behavior"
-    tools:context="com.example.runfastshop.com.example.runfast.fragment.BusinessFragment">
+    tools:context=".fragment.BusinessFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler1"

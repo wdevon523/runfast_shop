@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.ConfirmOrderActivity">
+    tools:context=".activity.ConfirmOrderActivity">
 
     <include layout="@layout/layout_title" />
 
@@ -178,7 +178,8 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingLeft="15dp"
-                        android:paddingRight="15dp">
+                        android:paddingRight="15dp"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="0dp"
@@ -315,6 +316,7 @@
                             android:id="@+id/layout_coupons"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content">
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

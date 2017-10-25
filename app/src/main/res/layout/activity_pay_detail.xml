@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/color_white"
     android:orientation="vertical"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.PayDetailActivity">
+    tools:context=".activity.PayDetailActivity">
     <include layout="@layout/layout_title"/>
     <LinearLayout
         android:id="@+id/layout_detail"

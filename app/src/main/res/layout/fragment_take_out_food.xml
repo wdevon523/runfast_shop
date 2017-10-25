@@ -4,7 +4,7 @@
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              android:background="@color/color_food_gray"
-             tools:context="com.example.runfastshop.com.example.runfast.fragment.TakeOutFoodFragment">
+             tools:context=".fragment.TakeOutFoodFragment">
 
 
     <cn.bingoogolapple.refreshlayout.BGARefreshLayout

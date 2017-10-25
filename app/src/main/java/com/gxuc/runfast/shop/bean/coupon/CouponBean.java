@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @introduce 优惠券
  */
 public class CouponBean implements Serializable{
-    private Integer id;
+    private String id;
     private int couponId; //优惠券id
     private Integer cuserId; //领取用户id
     private String cuserName; //领取用户名称
@@ -32,11 +32,11 @@ public class CouponBean implements Serializable{
     private Integer type;//优惠券类型1商城0外卖
     private Integer yiyuangou;// 1一元购等价返券
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

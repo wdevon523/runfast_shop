@@ -665,24 +665,20 @@ public interface NetInterface {
      *
      * @param businessId
      * @param userAddressId
-     * @param rid
-     * @param yhprice
-     * @param businesspay
-     * @param totalpay
-     * @param orderCode
-     * @param t
+     * @param couponId
      * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.CREATE_ORDER)
-    Call<String> createOrder(@Field("businessId") Integer businessId,
-                             @Field("userAddressId") Integer userAddressId,
-                             @Field("rid") String rid,
-                             @Field("yhprice") String yhprice,
-                             @Field("businesspay") String businesspay,
-                             @Field("totalpay") String totalpay,
-                             @Field("orderCode") String orderCode,
-                             @Field("t") String t);
+    Call<String> createOrder(@Field("businessId") int businessId,
+                             @Field("userAddressId") int userAddressId,
+                             @Field("couponId") String couponId);
+//                             @Field("rid") String rid,
+//                             @Field("yhprice") String yhprice,
+//                             @Field("businesspay") String businesspay,
+//                             @Field("totalpay") String totalpay,
+//                             @Field("orderCode") String orderCode,
+//                             @Field("t") String t);
 
     /**
      * 添加购物车
@@ -770,7 +766,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_SHOPPING_CART)
-    Call<String> getShoppingCar(@Field("bid") Integer bid);
+//    Call<String> getShoppingCar(@Field("bid") Integer bid);
+    Call<String> getShoppingCar(@Field("businessId") Integer bid);
 
     /**
      * 选择收货地址

@@ -131,6 +131,8 @@ public class TakeOutFoodFragment extends Fragment implements BGARefreshLayout.BG
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
+    //声明AMapLocationClientOption对象
+    public AMapLocationClientOption mLocationOption = null;
 
     //声明定位回调监听器
     public AMapLocationListener mLocationListener = new AMapLocationListener() {
@@ -160,9 +162,6 @@ public class TakeOutFoodFragment extends Fragment implements BGARefreshLayout.BG
             }
         }
     };
-    //声明AMapLocationClientOption对象
-    public AMapLocationClientOption mLocationOption = null;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

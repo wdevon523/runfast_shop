@@ -48,6 +48,7 @@ import com.gxuc.runfast.shop.bean.TypeBean;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.bean.business.BusinessDetails;
 import com.gxuc.runfast.shop.bean.maintop.TopImage;
+import com.gxuc.runfast.shop.bean.order.ShoppingCartGoodsInfo;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
@@ -212,6 +213,8 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     private TextView tvSpecPropertyTwo;
     private ZFlowLayout layoutProductTwo;
     private LinearLayout layoutGood;
+    private LinearLayout layoutGoodOne;
+    private LinearLayout layoutGoodTwo;
     private Integer point = 0;
     private FoodBean foodBeanDetail;
     private String specName;
@@ -224,6 +227,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     private Double startPay;
     //配送费
     private Double salePrice;
+    private int typeId;
 
     //-----------------
 
@@ -239,8 +243,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         setData();
         setListener();
         initDialog();
-        getBusiness(businessId);
-        requestShoppingCart(businessId);
+//        getBusiness(businessId);
 //        getBusinessCollection();
     }
 
@@ -259,7 +262,11 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         layoutProduct = (ZFlowLayout) view.findViewById(R.id.flow_product_property);
         layoutProductTwo = (ZFlowLayout) view.findViewById(R.id.flow_product_property_two);
 
-        layoutGood = (LinearLayout) view.findViewById(R.id.layout_product_two);
+
+
+        layoutGood = (LinearLayout) view.findViewById(R.id.layout_product);
+        layoutGoodOne = (LinearLayout) view.findViewById(R.id.layout_product_one);
+        layoutGoodTwo = (LinearLayout) view.findViewById(R.id.layout_product_two);
         tvSpecSelect = (TextView) view.findViewById(R.id.tv_select_spec);
         ImageView ivCloseSpec = (ImageView) view.findViewById(R.id.iv_close_spec);
 
@@ -558,25 +565,6 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         }
     }
 
-    private void requestShoppingCart(int businessId) {
-        CustomApplication.getRetrofit().getShoppingCar(businessId).enqueue(new MyCallback<String>() {
-
-            @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    ShoppingCartInfo shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
-                    if (shoppingCartInfo.shopping != null && shoppingCartInfo.shopping.size() > 0) {
-
-                    }
-                }
-            }
-
-            @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
-
-            }
-        });
-    }
 
     /**
      * 获取商品列表
@@ -587,6 +575,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
                 dealBusiness(data);
+                requestShoppingCart(businessId);
             }
 
             @Override
@@ -644,6 +633,48 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void requestShoppingCart(int businessId) {
+        CustomApplication.getRetrofit().getShoppingCar(businessId).enqueue(new MyCallback<String>() {
+
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    ShoppingCartInfo shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
+                    if (shoppingCartInfo.shoppings != null && shoppingCartInfo.shoppings.size() > 0) {
+                        fillShoppingCartView(shoppingCartInfo);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void fillShoppingCartView(ShoppingCartInfo shoppingCartInfo) {
+        carFoods.clear();
+        for (int i = 0; i < foodBeens.size(); i++) {
+
+            for (int j = 0; j < shoppingCartInfo.shoppings.size(); j++) {
+                if (foodBeens.get(i).getId() == shoppingCartInfo.shoppings.get(j).goodsSellId) {
+                    foodBeens.get(i).setSelectCount(Long.valueOf(shoppingCartInfo.shoppings.get(j).num));
+                    if (foodBeens.get(i).getIsonly() == 1) {
+                        foodBeens.get(i).setGoodsSpecId(shoppingCartInfo.shoppings.get(j).goodsSellStandardId);
+                        foodBeens.get(i).setGoodsSpec(shoppingCartInfo.shoppings.get(j).goodsSellStandardName);
+                        foodBeens.get(i).setGoodsSellOptionId(shoppingCartInfo.shoppings.get(j).goodsSellOptionId);
+                        foodBeens.get(i).setGoodsSellOptionName(shoppingCartInfo.shoppings.get(j).goodsSellOptionName);
+                    }
+                    carFoods.add(foodBeens.get(i));
+                }
+            }
+        }
+        updateAmount(BigDecimal.valueOf(Double.valueOf(shoppingCartInfo.totalprice)));
+        ((BusinessFragment) mFragments.get(0)).getFoodAdapter().notifyDataSetChanged();
+        carAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -795,9 +826,12 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             mFoodBean = carFoods.get(i);
             ShoppingTrolley trolley = new ShoppingTrolley();
             trolley.setGoodsSellId(mFoodBean.getId());
-            if (carFoods.get(i).getStandardList() != null && carFoods.get(i).getStandardList().size() > 0) {
-                trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
-            }
+            trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
+            trolley.setGoodsSellOptionId(mFoodBean.getGoodsSellOptionId());
+            trolley.setOpenid(mFoodBean.getOptionIds());
+//            if (carFoods.get(i).getStandardList() != null && carFoods.get(i).getStandardList().size() > 0) {
+//                trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
+//            }
             //TODO 子选项
 //            trolley.setOptionIds(carFoods.get(i).get);
             trolley.setNum((int) mFoodBean.getSelectCount());
@@ -1103,7 +1137,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 hasFood = true;
                 if (foodBean.getSelectCount() == 0 && fb.getPrice().equals(foodBean.getPrice())
                         && TextUtils.equals(fb.getGoodsSpec(), foodBean.getGoodsSpec())
-                        && TextUtils.equals(fb.getGoodsType(), foodBean.getGoodsType())
+                        && TextUtils.equals(fb.getGoodsSellOptionName(), foodBean.getGoodsSellOptionName())
                         && TextUtils.equals(fb.getGoodsTypeTwo(), foodBean.getGoodsTypeTwo())) {
                     p = i;
                 } else {
@@ -1112,7 +1146,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 
                     if (fb.getPrice().equals(foodBean.getPrice())
                             && TextUtils.equals(fb.getGoodsSpec(), foodBean.getGoodsSpec())
-                            && TextUtils.equals(fb.getGoodsType(), foodBean.getGoodsType())
+                            && TextUtils.equals(fb.getGoodsSellOptionName(), foodBean.getGoodsSellOptionName())
                             && TextUtils.equals(fb.getGoodsTypeTwo(), foodBean.getGoodsTypeTwo())) {
                         isEquals = true;
                         fb.setSelectCount(foodBean.getSelectCount());
@@ -1206,13 +1240,11 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                     tvSpecTitle.setText(foodBeanSpec.getName());
                     tvSpecPrice.setText(foodBeanSpec.getPrice() + "");
                     getGoodsSpec(foodBeanSpec.getId());
-                    specDialog.show();
                     break;
                 case R.id.layout_detail_spec://商品详情框
                     tvSpecTitle.setText(foodBeanDetail.getName());
                     tvSpecPrice.setText(foodBeanDetail.getPrice() + "");
                     getGoodsSpec(foodBeanDetail.getId());
-                    specDialog.show();
                     break;
                 case R.id.tv_select_spec://规格框
                     boolean isCarFoodData = false;
@@ -1222,7 +1254,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                             if (fbSpec.getId() == carFoods.get(i).getId()
                                     && carFoods.get(i).getPrice().equals(BigDecimal.valueOf(Double.parseDouble(tvSpecPrice.getText().toString().trim())))
                                     && TextUtils.equals(carFoods.get(i).getGoodsSpec(), specName)
-                                    && TextUtils.equals(carFoods.get(i).getGoodsType(), typeName)
+                                    && TextUtils.equals(carFoods.get(i).getGoodsSellOptionName(), typeName)
                                     && TextUtils.equals(carFoods.get(i).getGoodsTypeTwo(), typeNameTwo)) {
                                 fbSpec = carFoods.get(i);
                                 isCarFoodData = true;
@@ -1244,10 +1276,11 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         foodBeanTwo.setType(fbSpec.getType());
                         foodBeanTwo.setIsonly(fbSpec.getIsonly());
                         foodBeanTwo.setShowprice(fbSpec.getShowprice());
-                        foodBeanTwo.setGoodsSpec(specName);
-                        foodBeanTwo.setGoodsType(typeName);
-                        foodBeanTwo.setGoodsTypeTwo(typeNameTwo);
                         foodBeanTwo.setGoodsSpecId(specId);
+                        foodBeanTwo.setGoodsSpec(specName);
+                        foodBeanTwo.setGoodsSellOptionId(typeId);
+                        foodBeanTwo.setGoodsSellOptionName(typeName);
+                        foodBeanTwo.setGoodsTypeTwo(typeNameTwo);
 
                         onAddClickSpec(tvAdd, foodBeanTwo);
                     }
@@ -1271,6 +1304,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
                 dealGoodsSpec(data);
+                specDialog.show();
             }
 
             @Override
@@ -1320,13 +1354,17 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 }
                 tvSpecProperty.setText(optionBeenList.get(0).name + "：");
                 addItemOption(optionBeenList.get(0).subOption, layoutProduct);
+                layoutGoodOne.setVisibility(View.VISIBLE);
                 if (optionLength > 1) {
-                    layoutGood.setVisibility(View.VISIBLE);
+                    layoutGoodTwo.setVisibility(View.VISIBLE);
                     tvSpecPropertyTwo.setText(optionBeenList.get(1).name + "：");
                     addItemOptionTwo(optionBeenList.get(1).subOption, layoutProductTwo);
                 } else {
-                    layoutGood.setVisibility(View.GONE);
+                    layoutGoodTwo.setVisibility(View.GONE);
                 }
+            } else {
+                layoutGoodOne.setVisibility(View.GONE);
+                layoutGoodTwo.setVisibility(View.GONE);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1343,7 +1381,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     public void addItem(final List<SpecBean> data, final ZFlowLayout flowLayout) {
         flowLayout.removeAllViews();
         final ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 10, 10);// 设置边距
+        layoutParams.setMargins(0, 0, 30, 0);// 设置边距
 
         for (int i = 0; i < data.size(); i++) {
 
@@ -1406,12 +1444,14 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             }
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             typeName = data.get(0).name;
+            typeId = data.get(0).id;
             textView.setTag(i);
             textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Integer point = (Integer) v.getTag();
                     typeName = data.get(point).name;
+                    typeId = data.get(point).id;
                     for (int j = 0; j < flowLayout.getChildCount(); j++) {
                         if (j == point) {
                             ((TextView) flowLayout.getChildAt(j)).setTextColor(getResources().getColor(R.color.color_white));

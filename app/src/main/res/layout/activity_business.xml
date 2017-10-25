@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/rootview"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.BusinessActivity">
+    tools:context=".activity.BusinessActivity">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"

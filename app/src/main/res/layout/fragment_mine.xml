@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color_food_gray"
-    tools:context="com.example.runfastshop.com.example.runfast.fragment.MineFragment">
+    tools:context=".fragment.MineFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -8,7 +8,7 @@
     android:background="@color/color_food_gray"
     android:orientation="vertical"
 
-    tools:context="com.example.runfastshop.com.example.runfast.activity.usercenter.WalletActivity">
+    tools:context=".activity.usercenter.WalletActivity">
     <include layout="@layout/layout_title"/>
 
     <ScrollView

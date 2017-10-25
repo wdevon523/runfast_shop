@@ -23,8 +23,9 @@ public abstract class MyCallback<T> implements Callback<T> {
         if (body.contains("{\"relogin\":1}")) {
             //跳转到登录页面
             Intent intent = new Intent(CustomApplication.getContext(), LoginActivity.class);
+            intent.putExtra("isRelogin", true);
 //            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             CustomApplication.getContext().startActivity(intent);
         } else {
             onSuccessResponse(call, response);

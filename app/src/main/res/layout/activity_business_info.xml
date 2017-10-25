@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.BusinessInfoActivity">
+    tools:context=".activity.BusinessInfoActivity">
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_list_view"
         android:layout_width="match_parent"

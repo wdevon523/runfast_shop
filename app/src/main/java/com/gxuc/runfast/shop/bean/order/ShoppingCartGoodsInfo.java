@@ -43,14 +43,14 @@ public class ShoppingCartGoodsInfo {
     public String cname;
     public int businessId;
     public String businessName;
-    public Object barCode;
+    public String barCode;
     public String goodsSellName;
     public int goodsSellId;
     public int goodsSellStandardId;
     public String goodsSellStandardName;
     public int goodsSellOptionId;
     public String goodsSellOptionName;
-    public String optionIds;
+    public Object optionIds;
     public String num;
     public String price;
     public String openid;
@@ -58,16 +58,19 @@ public class ShoppingCartGoodsInfo {
     public int ptype;
     public String pricedis;
     public String disprice;
-    public Object islimited;
-    public Object limitNum;
-    public Object list;
+    public String islimited;
+    public int limitNum;
+    public String total;
+    public String full;
+    public String couponid;
+    public String list;
     public double showprice;
     public Object showid;
     public Object goods;
     public Object acid;
-    public Object acidName;
-    public Object atype;
-    public Object goodsSellRecordId;
+    public String acidName;
+    public String atype;
+    public String goodsSellRecordId;
 
     public ShoppingCartGoodsInfo() {
     }

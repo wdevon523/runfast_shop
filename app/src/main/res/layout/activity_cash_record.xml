@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/color_wallet_white"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.usercenter.CashRecordActivity">
+    tools:context=".activity.usercenter.CashRecordActivity">
 
     <include layout="@layout/layout_title"/>
     <RelativeLayout

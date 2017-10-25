@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/color_food_gray"
-    tools:context="com.example.runfastshop.com.example.runfast.activity.usercenter.UserBankActivity">
+    tools:context=".activity.usercenter.UserBankActivity">
 
     <include layout="@layout/layout_title"/>
 

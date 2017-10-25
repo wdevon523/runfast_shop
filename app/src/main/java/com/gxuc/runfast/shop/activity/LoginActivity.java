@@ -32,12 +32,23 @@ public class LoginActivity extends ToolBarActivity {
 
     @BindView(R.id.et_user_password)
     EditText etUserPassword;
+    private boolean isRelogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        isRelogin = getIntent().getBooleanExtra("isRelogin", false);
+        initView();
+    }
+
+    private void initView() {
+        User userInfo = UserService.getUserInfo(this);
+        if (userInfo != null) {
+            etUserName.setText(userInfo.getMobile());
+            etUserPassword.setText(userInfo.getPassword());
+        }
     }
 
     @OnClick({R.id.btn_login, R.id.btn_register, R.id.tv_forgot_password})
@@ -98,7 +109,9 @@ public class LoginActivity extends ToolBarActivity {
             user.setPassword(etUserPassword.getText().toString().trim());
             UserService.saveUserInfo(user);
             UserService.setAutoLogin("1");
-            startActivity(new Intent(this,MainActivity.class));
+            if (!isRelogin) {
+                startActivity(new Intent(this, MainActivity.class));
+            }
             finish();
         } catch (JSONException e) {
             e.printStackTrace();

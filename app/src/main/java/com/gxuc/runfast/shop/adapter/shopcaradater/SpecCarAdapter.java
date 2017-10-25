@@ -56,8 +56,8 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
             holder.tvSpec.setText(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? "" : foodBean.getGoodsSpec());
             holder.tvSpec.setVisibility(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? View.GONE : View.VISIBLE);
 
-            holder.tvType.setText(TextUtils.isEmpty(foodBean.getGoodsType()) ? "" : foodBean.getGoodsType());
-            holder.tvType.setVisibility(TextUtils.isEmpty(foodBean.getGoodsType()) ? View.GONE : View.VISIBLE);
+            holder.tvType.setText(TextUtils.isEmpty(foodBean.getGoodsSellOptionName()) ? "" : foodBean.getGoodsSellOptionName());
+            holder.tvType.setVisibility(TextUtils.isEmpty(foodBean.getGoodsSellOptionName()) ? View.GONE : View.VISIBLE);
 
             holder.tvTypeTwo.setText(TextUtils.isEmpty(foodBean.getGoodsTypeTwo()) ? "" : foodBean.getGoodsTypeTwo());
             holder.tvTypeTwo.setVisibility(TextUtils.isEmpty(foodBean.getGoodsTypeTwo()) ? View.GONE : View.VISIBLE);

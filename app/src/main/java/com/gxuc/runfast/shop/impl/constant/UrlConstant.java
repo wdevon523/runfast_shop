@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.impl.constant;
 
 
 import com.gxuc.runfast.shop.BuildConfig;
+import com.gxuc.runfast.shop.data.ApiServiceFactory;
 
 /**
  * 常量
@@ -11,7 +12,7 @@ import com.gxuc.runfast.shop.BuildConfig;
  */
 public class UrlConstant {
 
-    public static final String BaseUrl = BuildConfig.BASE_URL;
+    public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
     public static final String ImageBaseUrl = "http://www.gxptkc.com";
     public static final String ImageHeadBaseUrl = "http://120.77.70.27/";
@@ -25,7 +26,7 @@ public class UrlConstant {
     /**
      * 初始化
      */
-    public static final String INIT = BuildConfig.BASE_URL + "init";
+    public static final String INIT = BaseUrl + "init";
 
     /***
      * 上传文件
@@ -342,7 +343,8 @@ public class UrlConstant {
     /**
      * 生成订单
      */
-    public static final String CREATE_ORDER = "pay/addGoodsSellRecord.do";
+//    public static final String CREATE_ORDER = "pay/addGoodsSellRecord.do";
+    public static final String CREATE_ORDER = "pay/addGoodsSellRecordadd.do";
     /**
      * 添加购物车
      */
@@ -378,7 +380,8 @@ public class UrlConstant {
     /**
      * 获取购物车
      */
-    public static final String GET_SHOPPING_CART = "pay/getCart.do";
+//    public static final String GET_SHOPPING_CART = "pay/getCart.do";
+    public static final String GET_SHOPPING_CART = "pay/fillinorder.do";
     /**
      * 选择优惠券
      */

@@ -24,6 +24,33 @@ public class FoodBean implements Serializable{
 	private String goodsType;//
 	private String goodsTypeTwo;//
 	private Integer goodsTypeSpecId;//子规格Id
+	private Integer goodsSellOptionId;//商品选项ID
+	private String goodsSellOptionName;//商品选项名称
+	private String optionIds;//商品选项ID
+
+	public Integer getGoodsSellOptionId() {
+		return goodsSellOptionId;
+	}
+
+	public void setGoodsSellOptionId(Integer goodsSellOptionId) {
+		this.goodsSellOptionId = goodsSellOptionId;
+	}
+
+	public String getGoodsSellOptionName() {
+		return goodsSellOptionName;
+	}
+
+	public void setGoodsSellOptionName(String goodsSellOptionName) {
+		this.goodsSellOptionName = goodsSellOptionName;
+	}
+
+	public String getOptionIds() {
+		return optionIds;
+	}
+
+	public void setOptionIds(String optionIds) {
+		this.optionIds = optionIds;
+	}
 
 	private Integer id;
 	private String businessName;//商家名称

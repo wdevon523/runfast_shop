@@ -89,7 +89,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     private Integer mAddressId;
     private BigDecimal mDecimalCoupon;
     private GoodsSellRecordChildren mChildren;
-    private List<GoodsSellRecordChildren> mGoodsSellRecordChildrens;
+    //    private List<GoodsSellRecordChildren> mGoodsSellRecordChildrens;
+    private List<ShoppingCartGoodsInfo> mGoodsSellRecordChildrens = new ArrayList<>();
     private Intent mIntent;
     private String mSubtract;
     private int businessId;
@@ -99,6 +100,9 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     private ShoppingCartGoodsInfo shoppingCartGoodsInfo1;
     private ShoppingCartGoodsInfo shoppingCartGoodsInfo2;
     private ShoppingCartGoodsInfo shoppingCartGoodsInfo3;
+    private CouponBean couponBean;
+
+    private String couponId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,8 +128,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
-                    if (shoppingCartInfo.shopping != null && shoppingCartInfo.shopping.size() > 0) {
-                        shoppingCartGoodsList = shoppingCartInfo.shopping;
+                    if (shoppingCartInfo.shoppings != null && shoppingCartInfo.shoppings.size() > 0) {
+                        shoppingCartGoodsList = shoppingCartInfo.shoppings;
                         fillInfo();
                     }
                 }
@@ -142,13 +146,13 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         shoppingCartGoodsInfo1 = new ShoppingCartGoodsInfo();
         shoppingCartGoodsInfo1.goodsSellName = "配送费";
         shoppingCartGoodsInfo1.num = "";
-        shoppingCartGoodsInfo1.price = shoppingCartInfo.totalpay;
+//        shoppingCartGoodsInfo1.price = shoppingCartInfo.totalprice;
         shoppingCartGoodsList.add(shoppingCartGoodsInfo1);
 
         shoppingCartGoodsInfo2 = new ShoppingCartGoodsInfo();
         shoppingCartGoodsInfo2.goodsSellName = "包装费";
         shoppingCartGoodsInfo2.num = "";
-        shoppingCartGoodsInfo2.price = shoppingCartInfo.packing;
+        shoppingCartGoodsInfo2.price = shoppingCartInfo.tpacking;
         shoppingCartGoodsList.add(shoppingCartGoodsInfo2);
 
         shoppingCartGoodsInfo3 = new ShoppingCartGoodsInfo();
@@ -159,10 +163,10 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
         adapter.setData(shoppingCartGoodsList);
 
-        tvOrderPrice.setText(shoppingCartInfo.prices);
+        tvOrderPrice.setText(shoppingCartInfo.totalprice);
         tvCouponPrice.setText(shoppingCartInfo.disprice);
-        tvSubPrice.setText(shoppingCartInfo.totalpay);
-        tvTotalPrice.setText(shoppingCartInfo.prices);
+        tvSubPrice.setText(shoppingCartInfo.totalprice);
+        tvTotalPrice.setText(shoppingCartInfo.totalprice);
     }
 
     private void initData() {
@@ -315,26 +319,32 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     private void toPay() {
         User userInfo = UserService.getUserInfo(this);
         if (userInfo != null) {
-            mGoodsSellRecordChildrens.add(mChildren);
+            mGoodsSellRecordChildrens.clear();
+            mGoodsSellRecordChildrens.addAll(shoppingCartGoodsList);
             Gson gson = new Gson();
             String goodsJson = gson.toJson(mGoodsSellRecordChildrens);
-            mSubtract = shoppingCartInfo.prices;
+            mSubtract = shoppingCartInfo.totalprice;
             //TODO  参数含义
-            CustomApplication.getRetrofit().createOrder(businessId, mAddressId, "0", "0",
-                    mSubtract,
+            CustomApplication.getRetrofit().createOrder(businessId,
+                    mAddressId,
+                    couponId)
+//                    "0",
+//                    "0",
+//                    mSubtract,
+//                    "0.01",
+//                    "",
+//                    goodsJson)
+                    .enqueue(new MyCallback<String>() {
+                        @Override
+                        public void onSuccessResponse(Call<String> call, Response<String> response) {
+                            dealCreatOrder(response.body());
+                        }
 
-                    "0.01",
-                    "", goodsJson).enqueue(new MyCallback<String>() {
-                @Override
-                public void onSuccessResponse(Call<String> call, Response<String> response) {
-                    dealCreatOrder(response.body());
-                }
+                        @Override
+                        public void onFailureResponse(Call<String> call, Throwable t) {
 
-                @Override
-                public void onFailureResponse(Call<String> call, Throwable t) {
-
-                }
-            });
+                        }
+                    });
         }
     }
 
@@ -383,12 +393,13 @@ public class ConfirmOrderActivity extends ToolBarActivity {
             AddressInfo addressInfo = data.getParcelableExtra("addressInfo");
             updateAddr(addressInfo, true);
         } else if (resultCode == IntentConfig.COUPON_SELECT) {
-            CouponBean couponBean = (CouponBean) data.getSerializableExtra("coupon");
+            couponBean = (CouponBean) data.getSerializableExtra("coupon");
             updateCoupon(couponBean);
         }
     }
 
     private void updateCoupon(CouponBean couponBean) {
+        couponId = couponBean.getId();
 
     }
 
