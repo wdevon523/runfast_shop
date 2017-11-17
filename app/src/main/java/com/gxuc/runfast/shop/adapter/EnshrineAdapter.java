@@ -13,6 +13,7 @@ import com.gxuc.runfast.shop.bean.enshrien.Enshrine;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.willy.ratingbar.ScaleRatingBar;
 
 import org.xutils.x;
 
@@ -26,24 +27,26 @@ import static java.lang.Double.NaN;
  * @email liu594545591@126.com
  * @introduce
  */
-public class EnshrineAdapter  extends RecyclerView.Adapter<EnshrineAdapter.EnshrineViewHolder> {
+public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.EnshrineViewHolder> implements View.OnClickListener {
 
     private List<Enshrine> data;
-
     private Context context;
+    private OnItemClickListener mOnItemClickListener = null;
 
-    private View.OnClickListener listener;
-
-    public EnshrineAdapter(List<Enshrine> data, Context context, View.OnClickListener listener) {
+    public EnshrineAdapter(List<Enshrine> data, Context context) {
         this.data = data;
         this.context = context;
-        this.listener = listener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
     }
 
     @Override
     public EnshrineViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_my_enshrien, parent, false);
         EnshrineViewHolder viewHolder = new EnshrineViewHolder(view);
+        view.setOnClickListener(this);
         return viewHolder;
     }
 
@@ -54,10 +57,13 @@ public class EnshrineAdapter  extends RecyclerView.Adapter<EnshrineAdapter.Enshr
             x.image().bind(holder.ivBusinessLogo, UrlConstant.ImageBaseUrl + enshrine.imgPath, NetConfig.optionsPagerCache);
             holder.tvBusinessName.setText(enshrine.shopname);
 //            holder.tvSaleDistance.setText(String.valueOf(new DecimalFormat("#0.0").format(enshrine.distance)) + "km");
-//            holder.tvBusinessLevel.setText(String.valueOf(enshrine.levelId));
-//            holder.tvBusinessSaleNum.setText("月售" + String.valueOf(enshrine.salesnum) + "单");
-            holder.tvSaleStartPay.setText(enshrine.startPay == NaN ? "¥ 0元起送" : "¥ " + String.valueOf(enshrine.startPay) + "起送");
+            holder.tvBusinessLevel.setText(String.valueOf(enshrine.levelId));
+            holder.tvBusinessSaleNum.setText("月售" + String.valueOf(enshrine.salesnum) + "单");
+            holder.tvSaleStartPay.setText(enshrine.startPay.isNaN() ? "¥ 0元起送" : "¥ " + String.valueOf(enshrine.startPay) + "起送");
 //            holder.tvSalePrice.setText(enshrine.baseCharge == NaN ? "配送费¥0" : "配送费¥" + String.valueOf(enshrine.baseCharge));
+            holder.tvSalePrice.setText("配送费¥" + enshrine.startPay);
+            holder.rbOrderEvaluate.setRating(enshrine.levelId);
+            holder.rbOrderEvaluate.setTouchable(false);
 //            holder.tvSaleTime.setText(enshrine.speed);
 //            if (enshrine.isDeliver == 0) {
 //                holder.ivCharge.setVisibility(View.VISIBLE);
@@ -90,8 +96,7 @@ public class EnshrineAdapter  extends RecyclerView.Adapter<EnshrineAdapter.Enshr
 //                }
 //            }
 
-            holder.layoutItem.setTag(position);
-            holder.layoutItem.setOnClickListener(listener);
+            holder.layoutItem.setTag(enshrine);
         }
     }
 
@@ -109,6 +114,7 @@ public class EnshrineAdapter  extends RecyclerView.Adapter<EnshrineAdapter.Enshr
         //活动页
         public LinearLayout layoutSubPrice, layoutDiscount;
         public TextView tvSubPrice, tvDiscount;
+        public ScaleRatingBar rbOrderEvaluate;
 
         public EnshrineViewHolder(View itemView) {
             super(itemView);
@@ -126,9 +132,22 @@ public class EnshrineAdapter  extends RecyclerView.Adapter<EnshrineAdapter.Enshr
             tvSalePrice = (TextView) itemView.findViewById(R.id.tv_sale_price);
             tvSubPrice = (TextView) itemView.findViewById(R.id.tv_sub_price);
             tvDiscount = (TextView) itemView.findViewById(R.id.tv_discount);
+            rbOrderEvaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
             layoutSubPrice = (LinearLayout) itemView.findViewById(R.id.layout_sub_price);
             layoutDiscount = (LinearLayout) itemView.findViewById(R.id.layout_discount);
+        }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, Enshrine enshrine);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mOnItemClickListener != null) {
+            //注意这里使用getTag方法获取position
+            mOnItemClickListener.onItemClick(v, (Enshrine) v.getTag());
         }
     }
 }

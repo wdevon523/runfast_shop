@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <com.facebook.drawee.view.SimpleDraweeView
+    <ImageView
         android:id="@+id/iv_home_middle_img"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_centerInParent="true"
-        />
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/tv_home_middle_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_home_middle_img"
-        android:layout_centerHorizontal="true"
-        />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dimen_5_dp" />
 
-</RelativeLayout>
+</LinearLayout>

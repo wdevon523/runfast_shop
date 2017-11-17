@@ -16,9 +16,13 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.data.DataLayer;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.NetInterface;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.GetJsonDataUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citypickerview.widget.CityPicker;
 
 import org.json.JSONException;
@@ -29,6 +33,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * 添加银行卡
@@ -46,6 +53,8 @@ public class AddBankActivity extends ToolBarActivity {
 
     private boolean bankCodeIsEmpty;
     private boolean bankNameIsEmpty;
+    private JSONObject bankJson;
+    private NetInterface netInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,24 +123,51 @@ public class AddBankActivity extends ToolBarActivity {
     }
 
     private void initData() {
-        etBankCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {// 此处为得到焦点时的处理内容
-                    String code = etBankCode.getText().toString().trim();
-                    if (!TextUtils.isEmpty(code)) {
-                        getBankName(code);
-                    }
-                }
-            }
-        });
+
+        Retrofit mRetrofit = new Retrofit.Builder()
+                .baseUrl("https://ccdcapi.alipay.com/")
+                //增加返回值为String的支持
+                .addConverterFactory(ScalarsConverterFactory.create())
+                //添加转换工厂，用于解析json并转化为javaBean
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(DataLayer.getClient())
+                .build();
+
+        netInterface = mRetrofit.create(NetInterface.class);
+
+        String json = new GetJsonDataUtil().getJson(this, "bank_name.json");
+        try {
+            bankJson = new JSONObject(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+//        etBankCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (!hasFocus) {// 此处为得到焦点时的处理内容
+//                    String code = etBankCode.getText().toString().trim();
+//                    if (!TextUtils.isEmpty(code)) {
+//                        getBankName(code);
+//                    }
+//                }
+//            }
+//        });
     }
 
-    @OnClick({R.id.btn_save_password})
+    @OnClick({R.id.btn_save_password, R.id.tv_bank_name})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_save_password:
                 addBank();
+                break;
+
+            case R.id.tv_bank_name:
+                String code = etBankCode.getText().toString().trim();
+                if (!TextUtils.isEmpty(code)) {
+                    getBankName(code);
+                }
                 break;
         }
     }
@@ -142,7 +178,8 @@ public class AddBankActivity extends ToolBarActivity {
      * @param
      */
     private void getBankName(String code) {
-        CustomApplication.getRetrofit().getBankName(code).enqueue(new MyCallback<String>() {
+
+        netInterface.getBankName(code, true).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealBankName(response.body());
@@ -153,20 +190,33 @@ public class AddBankActivity extends ToolBarActivity {
 
             }
         });
+//        CustomApplication.getRetrofit().getBankName(code, true).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void dealBankName(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            boolean success = jsonObject.optBoolean("success");
-            if (!success) {
-                String msg = jsonObject.optString("msg");
-                CustomToast.INSTANCE.showToast(this, msg);
-                return;
+            if (jsonObject.optBoolean("validated")) {
+
+                String bank = jsonObject.optString("bank");
+                tvBankName.setText(bankJson.optString(bank));
+                tvBankName.setTextColor(getResources().getColor(R.color.color_address_black));
+
+            } else {
+                ToastUtil.showToast("请输入正确的银行卡号");
+                tvBankName.setText("");
             }
-            String bankName = jsonObject.optString("bankName");
-            tvBankName.setText(bankName);
-            tvBankName.setTextColor(getResources().getColor(R.color.color_address_black));
+
 
         } catch (JSONException e) {
             e.printStackTrace();

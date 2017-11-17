@@ -17,10 +17,10 @@ public class ShoppingTrolley {
     private String businessName;//商家名称
     private String barCode;//商品编码
     private String goodsSellName;//商品名称
-    private Integer goodsSellId;//商品id
-    private Integer goodsSellStandardId;//商品规格ID
+    private int goodsSellId;//商品id
+    private String goodsSellStandardId;//商品规格ID
     private String goodsSellStandardName;//商品规格名称
-    private Integer goodsSellOptionId;//商品选项ID
+    private String goodsSellOptionId;//商品选项ID
     private String goodsSellOptionName;//商品选项名称
     private String optionIds;//商品选项ID
     private Integer num;//数量
@@ -90,19 +90,19 @@ public class ShoppingTrolley {
         this.goodsSellName = goodsSellName;
     }
 
-    public Integer getGoodsSellId() {
+    public int getGoodsSellId() {
         return goodsSellId;
     }
 
-    public void setGoodsSellId(Integer goodsSellId) {
+    public void setGoodsSellId(int goodsSellId) {
         this.goodsSellId = goodsSellId;
     }
 
-    public Integer getGoodsSellStandardId() {
+    public String getGoodsSellStandardId() {
         return goodsSellStandardId;
     }
 
-    public void setGoodsSellStandardId(Integer goodsSellStandardId) {
+    public void setGoodsSellStandardId(String goodsSellStandardId) {
         this.goodsSellStandardId = goodsSellStandardId;
     }
 
@@ -114,11 +114,11 @@ public class ShoppingTrolley {
         this.goodsSellStandardName = goodsSellStandardName;
     }
 
-    public Integer getGoodsSellOptionId() {
+    public String getGoodsSellOptionId() {
         return goodsSellOptionId;
     }
 
-    public void setGoodsSellOptionId(Integer goodsSellOptionId) {
+    public void setGoodsSellOptionId(String goodsSellOptionId) {
         this.goodsSellOptionId = goodsSellOptionId;
     }
 

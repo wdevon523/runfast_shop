@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,6 +36,10 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.google.gson.Gson;
+import com.gxuc.runfast.shop.util.ToastUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -103,6 +108,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     private CouponBean couponBean;
 
     private String couponId;
+    private double shippingPrice;
+    private double couponPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,15 +117,16 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         setContentView(R.layout.activity_confirm_order);
         ButterKnife.bind(this);
         initData();
-        getRedData();
+        requestShoppingCart();
+//        getRedData();
         getCouponData();
-        getAddressData();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        requestShoppingCart();
+
     }
 
     private void requestShoppingCart() {
@@ -126,13 +134,13 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
-                    if (shoppingCartInfo.shoppings != null && shoppingCartInfo.shoppings.size() > 0) {
-                        shoppingCartGoodsList = shoppingCartInfo.shoppings;
-                        fillInfo();
-                    }
+                shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
+                if (shoppingCartInfo.shoppings != null && shoppingCartInfo.shoppings.size() > 0) {
+                    shoppingCartGoodsList = shoppingCartInfo.shoppings;
+                    fillInfo();
                 }
+//                getAddressData();
+                updateAddr(new AddressInfo(), false);
             }
 
             @Override
@@ -146,11 +154,11 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         shoppingCartGoodsInfo1 = new ShoppingCartGoodsInfo();
         shoppingCartGoodsInfo1.goodsSellName = "配送费";
         shoppingCartGoodsInfo1.num = "";
-//        shoppingCartGoodsInfo1.price = shoppingCartInfo.totalprice;
+        shoppingCartGoodsInfo1.price = shippingPrice + "";
         shoppingCartGoodsList.add(shoppingCartGoodsInfo1);
 
         shoppingCartGoodsInfo2 = new ShoppingCartGoodsInfo();
-        shoppingCartGoodsInfo2.goodsSellName = "包装费";
+        shoppingCartGoodsInfo2.goodsSellName = "餐盒费";
         shoppingCartGoodsInfo2.num = "";
         shoppingCartGoodsInfo2.price = shoppingCartInfo.tpacking;
         shoppingCartGoodsList.add(shoppingCartGoodsInfo2);
@@ -158,19 +166,23 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         shoppingCartGoodsInfo3 = new ShoppingCartGoodsInfo();
         shoppingCartGoodsInfo3.goodsSellName = "优惠券";
         shoppingCartGoodsInfo3.num = "";
-        shoppingCartGoodsInfo3.price = shoppingCartInfo.disprice;
+        shoppingCartGoodsInfo3.price = "";
         shoppingCartGoodsList.add(shoppingCartGoodsInfo3);
 
         adapter.setData(shoppingCartGoodsList);
+        tvBusinessName.setText(shoppingCartInfo.shoppings.get(0).businessName);
 
-        tvOrderPrice.setText(shoppingCartInfo.totalprice);
-        tvCouponPrice.setText(shoppingCartInfo.disprice);
-        tvSubPrice.setText(shoppingCartInfo.totalprice);
-        tvTotalPrice.setText(shoppingCartInfo.totalprice);
+        updateMoney();
+    }
+
+    private void updateMoney() {
+        tvOrderPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.price) + shippingPrice - couponPrice));
+        tvCouponPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totaldisprice) + couponPrice));
+        tvSubPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
+        tvTotalPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
     }
 
     private void initData() {
-
         businessId = getIntent().getIntExtra("businessId", 0);
         adapter = new BalanceProductAdapter(shoppingCartGoodsList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -233,16 +245,13 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     }
 
     private void dealMyCoupon(String body) {
-        if (!TextUtils.isEmpty(body)) {
-            CouponBeans couponBeans = GsonUtil.parseJsonWithGson(body, CouponBeans.class);
-            if (couponBeans.getRows() != null) {
-                int number = couponBeans.getRows().size() > 0 ? couponBeans.getRows().size() : 0;
-                tvCashCoupon.setText("可用优惠券" + number + "个");
-                return;
-            }
-            tvCashCoupon.setText("暂无可用优惠券");
+        CouponBeans couponBeans = GsonUtil.parseJsonWithGson(body, CouponBeans.class);
+        if (couponBeans.getRows() != null) {
+//            tvCashCoupon.setText("可用优惠券" + number + "个");
+            tvRedPacket.setText("可用红包" + couponBeans.getRows().size() + "个");
         } else {
-            tvCashCoupon.setText("暂无可用优惠券");
+//            tvCashCoupon.setText("暂无可用优惠券");
+            tvRedPacket.setText("暂无可用红包");
         }
     }
 
@@ -268,12 +277,38 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         AddressInfos addressInfos = GsonUtil.parseJsonWithGson(body, AddressInfos.class);
         if (addressInfos != null) {
             if (addressInfos.getRows() != null && addressInfos.getRows().size() > 0) {
-                updateAddr(addressInfos.getRows().get(0), true);
-                mAddressId = addressInfos.getRows().get(0).getId();
+                AddressInfo addressInfo = addressInfos.getRows().get(0);
+                updateAddr(addressInfo, true);
+                mAddressId = addressInfo.getId();
+                requestSelectAddr(addressInfo);
             } else {
                 updateAddr(new AddressInfo(), false);
             }
         }
+    }
+
+    private void requestSelectAddr(AddressInfo addressInfo) {
+        CustomApplication.getRetrofit().selectAddr(businessId, addressInfo.getLatitude(), addressInfo.getLongitude(), shoppingCartInfo.isfull, shoppingCartInfo.totalprice).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    if (jsonObject.optBoolean("success")) {
+                        shippingPrice = jsonObject.optDouble("total");
+                        shoppingCartGoodsInfo1.price = String.valueOf(shippingPrice);
+                        adapter.notifyDataSetChanged();
+                        updateMoney();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     @OnClick({R.id.layout_user_address, R.id.layout_pay_mode, R.id.layout_red_packet, R.id.layout_cash_coupon, R.id.layout_flavor, R.id.tv_pay})
@@ -282,6 +317,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
             case R.id.layout_user_address:
                 Intent intent = new Intent(this, AddressSelectActivity.class);
                 intent.putExtra("bid", businessId);
+                intent.putExtra("isfull", shoppingCartInfo.isfull);
+                intent.putExtra("full", shoppingCartInfo.totalprice);
                 intent.setFlags(IntentFlag.ORDER_ADDRESS);
                 startActivityForResult(intent, IntentConfig.REQUEST_CODE);
                 break;
@@ -292,6 +329,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
                 Intent data = new Intent(this, CouponActivity.class);
                 data.putExtra("isChoose", true);
                 data.putExtra("bid", businessId);
+                data.putExtra("totalPrice", shoppingCartInfo.totalprice);
                 startActivityForResult(data, IntentConfig.REQUEST_CODE);
                 break;
             case R.id.layout_cash_coupon:
@@ -318,6 +356,11 @@ public class ConfirmOrderActivity extends ToolBarActivity {
      */
     private void toPay() {
         User userInfo = UserService.getUserInfo(this);
+        if (mAddressId == null) {
+            ToastUtil.showToast("请选择收货地址");
+            return;
+        }
+
         if (userInfo != null) {
             mGoodsSellRecordChildrens.clear();
             mGoodsSellRecordChildrens.addAll(shoppingCartGoodsList);
@@ -353,9 +396,12 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         if (codeInfo != null) {
             if (codeInfo.isSuccess()) {
                 mIntent = new Intent(this, PayChannelActivity.class);
-                mIntent.putExtra("orderId", codeInfo.getId());
-                mIntent.putExtra("price", codeInfo.getGoodsSellRecord().getTotalpay());
+//                mIntent.putExtra("orderId", codeInfo.getId());
+//                mIntent.putExtra("price", codeInfo.getGoodsSellRecord().getTotalpay());
+//                mIntent.putExtra("businessName", codeInfo.getGoodsSellRecord().getBusinessName());
+                mIntent.putExtra("orderInfo", codeInfo.getGoodsSellRecord());
                 startActivity(mIntent);
+                finish();
             } else {
                 CustomToast.INSTANCE.showToast(this, codeInfo.getMsg());
             }
@@ -391,6 +437,11 @@ public class ConfirmOrderActivity extends ToolBarActivity {
                 mTvOrderRemark.setText(data.getStringExtra("order_remark"));
         } else if (resultCode == IntentConfig.ADDRESS_SELECT) {
             AddressInfo addressInfo = data.getParcelableExtra("addressInfo");
+            shippingPrice = data.getDoubleExtra("shippingPrice", 0);
+            shoppingCartGoodsInfo1.price = String.valueOf(shippingPrice);
+            adapter.notifyDataSetChanged();
+            updateMoney();
+            mAddressId = addressInfo.getId();
             updateAddr(addressInfo, true);
         } else if (resultCode == IntentConfig.COUPON_SELECT) {
             couponBean = (CouponBean) data.getSerializableExtra("coupon");
@@ -400,7 +451,11 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
     private void updateCoupon(CouponBean couponBean) {
         couponId = couponBean.getId();
-
+        couponPrice = couponBean.getPrice();
+        shoppingCartGoodsInfo3.price = String.valueOf(couponPrice);
+        tvRedPacket.setText("¥" + couponPrice);
+        adapter.notifyDataSetChanged();
+        updateMoney();
     }
 
 }

@@ -22,9 +22,11 @@ import com.gxuc.runfast.shop.activity.usercenter.IntegralActivity;
 import com.gxuc.runfast.shop.activity.usercenter.MyEnshrineActivity;
 import com.gxuc.runfast.shop.activity.usercenter.UserInfoActivity;
 import com.gxuc.runfast.shop.activity.usercenter.WalletActivity;
+import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.Users;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.usercenter.JoinBusinessActivity;
 import com.gxuc.runfast.shop.bean.user.User;
@@ -33,12 +35,16 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.ComplaintActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.x;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -76,9 +82,9 @@ public class MineFragment extends Fragment {
         userInfo = UserService.getUserInfo(getActivity());
         if (userInfo == null) {
             clearUi();
-            return;
+        } else {
+            requestGetUserInfo();
         }
-        updateUi();
     }
 
     /**
@@ -87,26 +93,27 @@ public class MineFragment extends Fragment {
     private void clearUi() {
         ivHead.setImageResource(R.drawable.icon_default_head);
         tvUserName.setText("登录/注册");
-        tvWalletMoney.setText("0元");
-        tvCouponsNum.setText("0个");
-        tvIntegralNum.setText("0分");
+        tvWalletMoney.setText("0");
+        tvCouponsNum.setText("0");
+        tvIntegralNum.setText("0");
     }
 
     /**
      * 更新页面
      */
     private void updateUi() {
-        if (!TextUtils.isEmpty(userInfo.getPic())){
-            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl+userInfo.getPic(), NetConfig.optionsHeadImage);
+        userInfo = UserService.getUserInfo(getActivity());
+        if (!TextUtils.isEmpty(userInfo.getPic())) {
+            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.getPic(), NetConfig.optionsHeadImage);
         }
-        tvUserName.setText(TextUtils.isEmpty(userInfo.getNickname())?userInfo.getMobile():userInfo.getNickname());
-        tvWalletMoney.setText(userInfo.getShowremainder()+"元");
-        tvCouponsNum.setText((userInfo.getRnum() == null)?"0个":(userInfo.getRnum()+"个"));
+        tvUserName.setText(TextUtils.isEmpty(userInfo.getNickname()) ? userInfo.getMobile() : userInfo.getNickname());
+        tvWalletMoney.setText(userInfo.getShowremainder() + "");
+        tvCouponsNum.setText((TextUtils.isEmpty(userInfo.getUnusedCoupon())) ? "0" : userInfo.getUnusedCoupon());
         String score = String.valueOf(userInfo.getScore());
-        if (score.contains(".")){
-            score = score.substring(0,score.indexOf("."));
+        if (score.contains(".")) {
+            score = score.substring(0, score.indexOf("."));
         }
-        tvIntegralNum.setText((userInfo.getScore() == null)?"0分":(score+"分"));
+        tvIntegralNum.setText((userInfo.getScore() == null) ? "0" : (score + ""));
     }
 
     @Override
@@ -116,12 +123,50 @@ public class MineFragment extends Fragment {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden && userInfo != null) {
+            requestGetUserInfo();
+        }
+    }
+
+    private void requestGetUserInfo() {
+        CustomApplication.getRetrofit().getUserInfo(userInfo.getId()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                dealUserInfo(body);
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealUserInfo(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            String cuser = jsonObject.optString("cuser");
+            User user = GsonUtil.fromJson(cuser, User.class);
+            user.setPassword(userInfo.getPassword());
+            user.setUnusedCoupon(jsonObject.optString("unusedCoupon"));
+            UserService.saveUserInfo(user);
+
+            updateUi();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_head, R.id.layout_help_center, R.id.layout_my_wallet, R.id.layout_coupons, R.id.layout_integral, R.id.layout_address, R.id.layout_collection, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about})
+    @OnClick({R.id.iv_head, R.id.tv_user_name, R.id.layout_help_center, R.id.layout_my_wallet, R.id.layout_coupons, R.id.layout_integral, R.id.layout_address, R.id.layout_collection, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_head://头像
@@ -131,21 +176,26 @@ public class MineFragment extends Fragment {
                 }
                 startActivity(new Intent(getContext(), UserInfoActivity.class));
                 break;
+            case R.id.tv_user_name://登陆注册
+                if (userInfo == null || userInfo.getId() == null) {
+                    startActivity(new Intent(getContext(), LoginActivity.class));
+                }
+                break;
             case R.id.layout_help_center://帮助中心
                 startActivity(new Intent(getContext(), HelpCenterActivity.class));
                 break;
             case R.id.layout_my_wallet://我的钱包余额
-                if (UserService.getUserInfo(getActivity())!=null) {
+                if (UserService.getUserInfo(getActivity()) != null) {
                     startActivity(new Intent(getContext(), WalletActivity.class));
                 }
                 break;
             case R.id.layout_coupons://优惠券
-                if (UserService.getUserInfo(getActivity())!=null) {
+                if (UserService.getUserInfo(getActivity()) != null) {
                     startActivity(new Intent(getContext(), CouponActivity.class));
                 }
                 break;
             case R.id.layout_integral://积分
-                if (UserService.getUserInfo(getActivity())!=null) {
+                if (UserService.getUserInfo(getActivity()) != null) {
                     startActivity(new Intent(getContext(), IntegralActivity.class));
                 }
                 break;
@@ -155,7 +205,7 @@ public class MineFragment extends Fragment {
                 startActivity(intent);
                 break;
             case R.id.layout_collection://收藏
-                if (UserService.getUserInfo(getActivity())!=null) {
+                if (UserService.getUserInfo(getActivity()) != null) {
                     startActivity(new Intent(getContext(), MyEnshrineActivity.class));
                 }
                 break;
@@ -172,10 +222,5 @@ public class MineFragment extends Fragment {
                 startActivity(new Intent(getContext(), AboutActivity.class));
                 break;
         }
-    }
-
-    private void ResolveData(String data) {
-        Users users = GsonUtil.parseJsonWithGson(data,Users.class);
-        UserService.saveUserInfo(users.getUser());
     }
 }

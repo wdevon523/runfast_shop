@@ -45,6 +45,7 @@ import com.gxuc.runfast.shop.util.PhotoUtils;
 import com.gxuc.runfast.shop.R;
 import com.example.supportv1.utils.FileUtil;
 import com.example.supportv1.utils.PermissionUtils;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -262,10 +263,36 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
         @Override
         public void onClick(DialogInterface dialog, int which) {
-            UserService.setAutoLogin("0");
-            UserService.clearUserInfo();
-            finish();
+            requestLogout();
         }
+    }
+
+    private void requestLogout() {
+        CustomApplication.getRetrofit().Logout(userInfo.getMobile()).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        UserService.setAutoLogin("0");
+                        UserService.clearUserInfo();
+                        finish();
+                    } else {
+                        ToastUtil.showToast("退出失败");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+//
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
     }
 
     @Override
@@ -489,7 +516,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
     private void dealUpdateUserInfo(String body) {
         try {
-            JSONObject  object = new JSONObject(body);
+            JSONObject object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             if (success) {
                 CustomToast.INSTANCE.showToast(this, "更换成功");

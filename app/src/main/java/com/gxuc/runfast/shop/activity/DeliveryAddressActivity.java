@@ -116,14 +116,13 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
     }
 
 
-
     private void initData() {
         adapter = new AddressLocationAdapter(addresses, this, this);
         recyclerViewAddress.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerViewAddress.setAdapter(adapter);
 
         AddressSearchAdapter adapter1 = new AddressSearchAdapter(addressSearch, this, this);
-        searchAdapter = new LoadMoreAdapter(this,adapter1);
+        searchAdapter = new LoadMoreAdapter(this, adapter1);
         searchAdapter.setLoadMoreListener(this);
         recyclerViewSearchAddress.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerViewSearchAddress.setAdapter(searchAdapter);
@@ -158,7 +157,7 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
         geocodeSearch.setOnGeocodeSearchListener(this);
     }
 
-    @OnClick({R.id.tv_location_city, R.id.iv_refresh, R.id.tv_search_name,R.id.tv_cancel_search})
+    @OnClick({R.id.tv_location_city, R.id.iv_refresh, R.id.tv_search_name, R.id.tv_cancel_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_location_city:
@@ -250,6 +249,7 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
 
     /**
      * 通过经纬度来获取附近兴趣点
+     *
      * @param lat
      * @param lng
      * @param radius
@@ -313,9 +313,9 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
     public void onClick(View v) {
         Integer position = (Integer) v.getTag();
         Intent intent = new Intent();
-        intent.putExtra("address", isSearch?addressSearch.get(position).title:addresses.get(position).title);
-        intent.putExtra("pointLat", isSearch?addressSearch.get(position).latLng.latitude:addresses.get(position).latLng.latitude);
-        intent.putExtra("pointLon", isSearch?addressSearch.get(position).latLng.longitude:addresses.get(position).latLng.longitude);
+        intent.putExtra("address", isSearch ? addressSearch.get(position).title : addresses.get(position).title);
+        intent.putExtra("pointLat", isSearch ? addressSearch.get(position).latLng.latitude : addresses.get(position).latLng.latitude);
+        intent.putExtra("pointLon", isSearch ? addressSearch.get(position).latLng.longitude : addresses.get(position).latLng.longitude);
         setResult(1002, intent);
         finish();
     }

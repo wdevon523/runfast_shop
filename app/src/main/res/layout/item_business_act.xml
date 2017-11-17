@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_discount"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/iv_act"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_2_dp"
+        android:src="@drawable/icon_fracture" />
+
+    <TextView
+        android:id="@+id/tv_act"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_toRightOf="@+id/iv_act"
+        android:layout_toLeftOf="@+id/tv_act_all"
+        android:textColor="@color/color_text_gray"
+        android:textSize="@dimen/dimen_13_dp" />
+
+    <TextView
+        android:id="@+id/tv_act_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:drawableLeft="@drawable/icon_bottom_arrow"
+        android:drawablePadding="@dimen/dimen_3_dp"
+        android:text="全部"
+        android:visibility="gone" />
+
+
+</RelativeLayout>

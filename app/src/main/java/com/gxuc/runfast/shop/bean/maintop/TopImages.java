@@ -13,7 +13,7 @@ public class TopImages {
 
     private List<TopImage1> rows2 ;
 
-    private List<TopImage2> rows3 ;
+    private List<TopImage1> rows3 ;
 
     public List<TopImage> getRows1() {
         return rows1;
@@ -31,11 +31,11 @@ public class TopImages {
         this.rows2 = rows2;
     }
 
-    public List<TopImage2> getRows3() {
+    public List<TopImage1> getRows3() {
         return rows3;
     }
 
-    public void setRows3(List<TopImage2> rows3) {
+    public void setRows3(List<TopImage1> rows3) {
         this.rows3 = rows3;
     }
 }

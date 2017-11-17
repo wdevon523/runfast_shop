@@ -1,12 +1,28 @@
 package com.gxuc.runfast.shop.activity.ordercenter;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
@@ -17,6 +33,8 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
 import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.util.ViewUtils;
+import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 
 import org.json.JSONException;
@@ -35,11 +53,11 @@ import retrofit2.Response;
 public class PayChannelActivity extends ToolBarActivity {
 
     @BindView(R.id.cb_weixin_pay)
-    CheckBox mCbWeixinPay;
+    ImageView mCbWeixinPay;
     @BindView(R.id.cb_wallet_pay)
-    CheckBox mCbWalletPay;
+    ImageView mCbWalletPay;
     @BindView(R.id.cb_ali_pay)
-    CheckBox mCbAliPay;
+    ImageView mCbAliPay;
     @BindView(R.id.btn_to_pay)
     Button mBtnToPay;
     @BindView(R.id.rl_wallet_pay)
@@ -50,10 +68,11 @@ public class PayChannelActivity extends ToolBarActivity {
     RelativeLayout rlAliPay;
 
     private int payType = 0;//0钱包 1微信 2支付宝
-    private int mOrderId;
-    private double mPrice;
     private User userInfo;
     private IWXAPI wxapi;
+    private AlertDialog alertDialog;
+    private Dialog mPayInputDialog;
+    private OrderInfo orderInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +85,44 @@ public class PayChannelActivity extends ToolBarActivity {
     private void initView() {
         wxapi = WeChatPayHandle.createWXAPI(this, Contants.WEI_XIN_ID);
         userInfo = UserService.getUserInfo(this);
-        mOrderId = getIntent().getIntExtra("orderId", 0);
-        mPrice = getIntent().getDoubleExtra("price", 0.0);
-        mBtnToPay.setText("确认支付 ¥ " + mPrice);
+//        mOrderId = getIntent().getIntExtra("orderId", 0);
+//        mPrice = getIntent().getDoubleExtra("price", 0.0);
+//        businessName = getIntent().getStringExtra("businessName");
+        orderInfo = getIntent().getParcelableExtra("orderInfo");
+        mBtnToPay.setText("确认支付 ¥ " + orderInfo.getPrice());
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (alertDialog != null && alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                } else {
+                    showWarnDialog();
+                }
+            }
+        });
+    }
+
+    private void showWarnDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        TextView tv = new TextView(this);
+        tv.setText("订单已生成，是否取消支付");
+        tv.setTextColor(Color.parseColor("#757575"));
+        tv.setTextSize(14);
+        tv.setPadding(ViewUtils.dip2px(this, 16), ViewUtils.dip2px(this, 16), 0, 0);
+        alertDialog = builder
+                .setNegativeButton("取消", null)
+                .setCustomTitle(tv)
+                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).show();
+
     }
 
     private void requestAliPay() {
-        CustomApplication.getRetrofit().aliPay(mOrderId, "1").enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().aliPay(orderInfo.getId(), "1").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -93,7 +143,7 @@ public class PayChannelActivity extends ToolBarActivity {
     }
 
     private void requestWeiXinPay() {
-        CustomApplication.getRetrofit().weiXintPay(mOrderId, "0").enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().weiXintPay(orderInfo.getId(), "0").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -137,21 +187,21 @@ public class PayChannelActivity extends ToolBarActivity {
         switch (view.getId()) {
             case R.id.rl_wallet_pay:
                 payType = 0;
-                mCbWalletPay.setBackgroundResource(R.drawable.pay_type_check);
-                mCbWeixinPay.setBackgroundResource(R.drawable.pay_type_nocheck);
-                mCbAliPay.setBackgroundResource(R.drawable.pay_type_nocheck);
+                mCbWalletPay.setImageResource(R.drawable.pay_type_check);
+                mCbWeixinPay.setImageResource(R.drawable.pay_type_nocheck);
+                mCbAliPay.setImageResource(R.drawable.pay_type_nocheck);
                 break;
             case R.id.rl_weixin_pay:
                 payType = 1;
-                mCbWeixinPay.setBackgroundResource(R.drawable.pay_type_check);
-                mCbWalletPay.setBackgroundResource(R.drawable.pay_type_nocheck);
-                mCbAliPay.setBackgroundResource(R.drawable.pay_type_nocheck);
+                mCbWeixinPay.setImageResource(R.drawable.pay_type_check);
+                mCbWalletPay.setImageResource(R.drawable.pay_type_nocheck);
+                mCbAliPay.setImageResource(R.drawable.pay_type_nocheck);
                 break;
             case R.id.rl_ali_pay:
                 payType = 2;
-                mCbAliPay.setBackgroundResource(R.drawable.pay_type_check);
-                mCbWeixinPay.setBackgroundResource(R.drawable.pay_type_nocheck);
-                mCbWalletPay.setBackgroundResource(R.drawable.pay_type_nocheck);
+                mCbAliPay.setImageResource(R.drawable.pay_type_check);
+                mCbWeixinPay.setImageResource(R.drawable.pay_type_nocheck);
+                mCbWalletPay.setImageResource(R.drawable.pay_type_nocheck);
                 break;
             case R.id.btn_to_pay:
                 if (userInfo == null) {
@@ -159,17 +209,7 @@ public class PayChannelActivity extends ToolBarActivity {
                 }
                 switch (payType) {
                     case 0:
-                        CustomApplication.getRetrofit().walletPay(mOrderId, MD5Util.MD5(userInfo.getPassword())).enqueue(new MyCallback<String>() {
-                            @Override
-                            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                                dealWalletPay(response.body());
-                            }
-
-                            @Override
-                            public void onFailureResponse(Call<String> call, Throwable t) {
-
-                            }
-                        });
+                        showPayInputDialog();
                         break;
                     case 1:
                         requestWeiXinPay();
@@ -184,10 +224,77 @@ public class PayChannelActivity extends ToolBarActivity {
         }
     }
 
+    private void requestWalletPay(String password) {
+        CustomApplication.getRetrofit().walletPay(orderInfo.getId(), MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                dealWalletPay(response.body());
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void showPayInputDialog() {
+
+        if (mPayInputDialog != null) {
+            mPayInputDialog.dismiss();
+        }
+
+        mPayInputDialog = new Dialog(this, R.style.my_dialog);
+        LinearLayout root = (LinearLayout) LayoutInflater.from(this).inflate(
+                R.layout.dialog_pay_inputting, null);
+        ImageView ivClose = (ImageView) root.findViewById(R.id.iv_close);
+        TextView tvBusinessName = (TextView) root.findViewById(R.id.tv_business_name);
+        TextView tvPayPrice = (TextView) root.findViewById(R.id.tv_pay_price);
+        final EditText etPayPassword = (EditText) root.findViewById(R.id.et_pay_password);
+        TextView tvPay = (TextView) root.findViewById(R.id.tv_pay);
+        tvBusinessName.setText(orderInfo.getBusinessName());
+        tvPayPrice.setText("¥" + orderInfo.getPrice());
+
+        mPayInputDialog.setContentView(root);
+        Window dialogWindow = mPayInputDialog.getWindow();
+        dialogWindow.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 获取对话框当前的参数值
+        lp.width = (int) getResources().getDimension(R.dimen.dimen_300_dp);
+        lp.height = lp.WRAP_CONTENT;
+        lp.x = 0;
+        lp.y = 400;
+        lp.alpha = 5f;
+        dialogWindow.setAttributes(lp);
+        mPayInputDialog.setCanceledOnTouchOutside(false);
+        mPayInputDialog.show();
+
+
+        ivClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mPayInputDialog != null) {
+                    mPayInputDialog.dismiss();
+                }
+            }
+        });
+
+        tvPay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String password = etPayPassword.getText().toString();
+                requestWalletPay(password);
+            }
+        });
+    }
+
     private void dealWalletPay(String body) {
         try {
             JSONObject object = new JSONObject(body);
             CustomToast.INSTANCE.showToast(this, object.optString("msg"));
+            if (object.optBoolean("success")) {
+                startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
+                finish();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -240,6 +347,27 @@ public class PayChannelActivity extends ToolBarActivity {
 //        } catch (AliPayHandle.APliPaySetingInfoNullException e) {
 //            e.printStackTrace();
 //        }
-
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            if (mPayInputDialog != null) {
+                if (mPayInputDialog.isShowing()) {
+                    mPayInputDialog.dismiss();
+                    return true;
+                }
+            }
+
+            if (alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                }
+            }
+            showWarnDialog();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }

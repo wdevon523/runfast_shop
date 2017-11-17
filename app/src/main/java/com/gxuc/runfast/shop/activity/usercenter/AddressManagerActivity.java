@@ -60,8 +60,6 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
 
     @BindView(R.id.map)
     MapView mMapView;
-    AMap aMap;
-    MyLocationStyle myLocationStyle;
     @BindView(R.id.iv_sign)
     ImageView ivSign;
     @BindView(R.id.view_address_list)
@@ -78,6 +76,9 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     RecyclerView recyclerViewNearby;
     @BindView(R.id.layout_address_title)
     LinearLayout layoutAddressTitle;
+
+    private AMap aMap;
+    private MyLocationStyle myLocationStyle;
 
     private List<Address> addresses = new ArrayList<>();
     private List<Address> addressSearch = new ArrayList<>();
@@ -109,7 +110,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             //申请WRITE_EXTERNAL_STORAGE权限
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                     1001);//自定义的code
-        }else {
+        } else {
             initMap();
         }
         initData();
@@ -134,13 +135,13 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     private void initData() {
         managerAdapter = new AddressManagerAdapter(addresses, this, this);
         AddressSearchAdapter adapter = new AddressSearchAdapter(addressSearch, this, this);
-        searchAdapter = new LoadMoreAdapter(this,adapter);
+        searchAdapter = new LoadMoreAdapter(this, adapter);
         searchAdapter.setLoadMoreListener(this);
     }
 
     private void initMap() {
         myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
+        myLocationStyle.interval(5000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
         myLocationStyle.showMyLocation(true);//设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_mylocation)));//
@@ -195,7 +196,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
         poiSearch.searchPOIAsyn();
     }
 
-    private PoiSearch.OnPoiSearchListener poiSearchImp  = new  PoiSearch.OnPoiSearchListener(){
+    private PoiSearch.OnPoiSearchListener poiSearchImp = new PoiSearch.OnPoiSearchListener() {
 
         @Override
         public void onPoiSearched(PoiResult poiResult, int a) {
@@ -365,15 +366,15 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
         if (v != null) {
             Integer position = (Integer) v.getTag();
             Intent intent = new Intent();
-            intent.putExtra("address", isSearch?addressSearch.get(position).title:addresses.get(position).title);
-            intent.putExtra("addressInfo",mAddress);
-            intent.putExtra("addressLat",mAddressInfo);
+            intent.putExtra("address", isSearch ? addressSearch.get(position).title : addresses.get(position).title);
+            intent.putExtra("addressInfo", mAddress);
+            intent.putExtra("addressLat", mAddressInfo);
             setResult(RESULT_OK, intent);
             finish();
         }
     }
 
-    @OnClick({R.id.iv_back, R.id.iv_refresh, R.id.layout_address_name})
+    @OnClick({R.id.iv_back, R.id.iv_refresh, R.id.layout_address_name, R.id.tv_current_address})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -383,9 +384,19 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             case R.id.iv_refresh:
                 break;
             case R.id.layout_address_name:
-                isSearch = true;
-                layoutAddressTitle.setVisibility(View.GONE);
-                regeocodeSearch(myLocation.getLatitude(), myLocation.getLongitude(), 3000);
+                if (myLocation != null) {
+                    isSearch = true;
+                    layoutAddressTitle.setVisibility(View.GONE);
+                    regeocodeSearch(myLocation.getLatitude(), myLocation.getLongitude(), 3000);
+                }
+                break;
+            case R.id.tv_current_address:
+//                Intent intent = new Intent();
+//                intent.putExtra("address", isSearch?addressSearch.get(0).title:addresses.get(0).title);
+//                intent.putExtra("addressInfo",mAddress);
+//                intent.putExtra("addressLat",mAddressInfo);
+//                setResult(RESULT_OK, intent);
+//                finish();
                 break;
         }
     }

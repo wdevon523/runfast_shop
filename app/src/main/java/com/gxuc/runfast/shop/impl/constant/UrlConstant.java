@@ -1,7 +1,6 @@
 package com.gxuc.runfast.shop.impl.constant;
 
 
-import com.gxuc.runfast.shop.BuildConfig;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 
 /**
@@ -12,9 +11,12 @@ import com.gxuc.runfast.shop.data.ApiServiceFactory;
  */
 public class UrlConstant {
 
+    public static final String HOST = ApiServiceFactory.HOST;
     public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
     public static final String ImageBaseUrl = "http://www.gxptkc.com";
+//    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
+
     public static final String ImageHeadBaseUrl = "http://120.77.70.27/";
 
 //    public static final String BaseUrl = "http://115.28.39.61:28080/wanglu/";
@@ -41,12 +43,17 @@ public class UrlConstant {
     /**
      * 获取首页轮播图
      */
-    public static final String GET_ADVERT = "getAdvert.do";
+    public static final String GET_ADVERT = "getAdvertadd.do";
 
     /**
      * 登录
      */
     public static final String LOGIN = "login.do";
+
+    /**
+     * 登出
+     */
+    public static final String LOGOUT = "logout.do";
 
     /**
      * 注册
@@ -71,7 +78,7 @@ public class UrlConstant {
     /**
      * 主页
      */
-    public static final String HOME_PAGE = "getHomepage.do";
+    public static final String HOME_PAGE = "getHomepageadd.do";
 
     /**
      * 商家列表
@@ -96,7 +103,7 @@ public class UrlConstant {
     /***
      * 上传图片
      */
-    public static final String UPLOAD_PIC = BaseUrl +"fileUpload.do";
+    public static final String UPLOAD_PIC = HOST + "fileUpload.do";
 
     /***
      * 更换头像
@@ -121,10 +128,15 @@ public class UrlConstant {
      */
     public static final String GET_GOODS_LIST = "business/getGoods.do";
 
+    /***
+     * 商家活动列表
+     */
+    public static final String GET_BUSINESS_ACTIVITY = "business/getactivify.do";
+
     /**
      * 地图定位上传
      */
-    public static final String GET_ADDRESS = "getaddress.do";
+    public static final String GET_ADDRESS = "getaddressadd.do";
 
 
     /**
@@ -317,9 +329,9 @@ public class UrlConstant {
      */
     public static final String WATHDRAWALL_LIST = "wallet/withdrawal1.do";
     /**
-     * 获取银行卡
+     * 获取银行卡开户行
      */
-    public static final String GET_BANK_NAME = "wallet/getBankName.do";
+    public static final String GET_BANK_NAME = "validateAndCacheCardInfo.json?_input_charset=utf-8";
     /**
      * 添加银行卡
      */
@@ -396,4 +408,19 @@ public class UrlConstant {
      * 评价
      */
     public static final String EVALUATION = "userComment/poaddBusinessComment.do";
+
+    /**
+     * 微信充值
+     */
+    public static final String WEIXIN_RECHARGE = "pay/wxRecharge.do";
+
+    /**
+     * 再来一单
+     */
+    public static final String BUY_AGAIN = "pay/recuraddcart.do";
+
+    /**
+     * 获取用户信息
+     */
+    public static final String GET_USER_INFO = "user/userinfo.do";
 }

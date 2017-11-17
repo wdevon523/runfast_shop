@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.bean.order.OrderInfos;
@@ -39,7 +41,7 @@ import retrofit2.Response;
  * 订单页
  * A simple {@link Fragment} subclass.
  */
-public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener {
+public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener, LoadMoreAdapter.LoadMoreApi {
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -52,7 +54,10 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     RelativeLayout layoutNotOrder;
 
     private List<OrderInfo> mOrderInfos = new ArrayList<>();
+    private LoadMoreAdapter moreAdapter;
     private OrderListAdapter adapter;
+    private int page = 1;
+    private User userInfo;
 
     public OrderFragment() {
         // Required empty public constructor
@@ -77,9 +82,11 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
             layoutNotOrder.setVisibility(View.VISIBLE);
         }
         adapter = new OrderListAdapter(mOrderInfos, getActivity(), this);
+        moreAdapter = new LoadMoreAdapter(getActivity(), adapter);
+        moreAdapter.setLoadMoreListener(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
 
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(moreAdapter);
     }
 
 
@@ -90,7 +97,22 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     @Override
     public void onResume() {
         super.onResume();
+        userInfo = UserService.getUserInfo(getActivity());
         getOrderList();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (userInfo == null) {
+                mOrderInfos.clear();
+                moreAdapter.loadCompleted();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                return;
+            }
+            getOrderList();
+        }
     }
 
     private Handler handler = new Handler() {
@@ -105,11 +127,14 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
      *
      */
     private void getOrderList() {
-        User userInfo = UserService.getUserInfo(getActivity());
+
+
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postOrderList(1, 10).enqueue(new MyCallback<String>() {
+
+
+        CustomApplication.getRetrofit().postOrderList(page, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealOrderList(response.body());
@@ -127,8 +152,14 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
             layoutNotOrder.setVisibility(View.GONE);
         }
+        if (page == 1) {
+            mOrderInfos.clear();
+            moreAdapter.resetLoadState();
+        }
+
         mOrderInfos.addAll(orderInfos.getRows());
         adapter.notifyDataSetChanged();
+        moreAdapter.loadCompleted();
     }
 
     @Override
@@ -149,4 +180,9 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         startActivity(intent);
     }
 
+    @Override
+    public void loadMore() {
+        page += 1;
+        getOrderList();
+    }
 }

@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.willy.ratingbar.ScaleRatingBar;
 
 import org.xutils.x;
 
@@ -46,52 +47,99 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
     }
 
     @Override
-    public void onBindViewHolder(BreakfastViewHolder holder, int position) {
+    public void onBindViewHolder(final BreakfastViewHolder holder, int position) {
         BusinessInfo businessInfo = data.get(position);
         if (businessInfo != null) {
-            x.image().bind(holder.ivBusinessLogo, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath, NetConfig.optionsPagerCache);
-            holder.tvBusinessName.setText(businessInfo.name);
-            holder.tvSaleDistance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfo.distance)) + "km");
-            holder.tvBusinessLevel.setText(String.valueOf(businessInfo.levelId));
-            holder.tvBusinessSaleNum.setText("月售" + String.valueOf(businessInfo.salesnum) + "单");
-            holder.tvSaleStartPay.setText(businessInfo.startPay == null ? "¥ 0元起送" : "¥ " + String.valueOf(businessInfo.startPay) + "起送");
+            holder.tv_business_name.setText(businessInfo.name);
+            holder.tv_business_levelId.setText(String.valueOf(businessInfo.levelId));
+            holder.rb_order_evaluate.setRating(businessInfo.levelId);
+            holder.rb_order_evaluate.setTouchable(false);
+            holder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfo.distance)) + "km");
+            holder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfo.salesnum) + "单");
+            holder.tv_sale_startPay.setText(businessInfo.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfo.startPay));
+            holder.tv_sale_time.setText(businessInfo.speed);
 
-            holder.tvSaleTime.setText(businessInfo.speed);
             if (businessInfo.isDeliver == 0) {
-                holder.tvSalePrice.setText(businessInfo.baseCharge == null ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.baseCharge));
-                holder.ivCharge.setVisibility(View.VISIBLE);
+               holder.tv_sale_price.setText(businessInfo.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.charge));
+               holder.iv_is_charge.setVisibility(View.VISIBLE);
             } else {
-                holder.ivCharge.setVisibility(View.GONE);
-                holder.tvSalePrice.setText(businessInfo.busshowps == null ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.busshowps));
+               holder.tv_sale_price.setText(businessInfo.busshowps.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.busshowps));
+               holder.iv_is_charge.setVisibility(View.GONE);
             }
 
-            List<BusinessExercise> alist = businessInfo.alist;
-
-            if (alist != null) {
-                int size = alist.size();
-                if (size > 0) {
-                    for (int i = 0; i < alist.size(); i++) {
-                        BusinessExercise exercise = alist.get(i);
-                        switch (exercise.ptype) {
-                            case 1:
-                                holder.layoutSubPrice.setVisibility(View.VISIBLE);
-                                holder.tvSubPrice.setText(exercise.showname);
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                break;
-                            case 4:
-                                holder.layoutDiscount.setVisibility(View.VISIBLE);
-                                holder.tvDiscount.setText(exercise.showname);
-                                break;
-                        }
+            final List<BusinessExercise> alist = businessInfo.alist;
+           holder.ll_contain_act.removeAllViews();
+           holder.ll_contain_act.setTag(false);
+            if (alist != null && alist.size() > 0) {
+                for (int i = 0; i < alist.size(); i++) {
+                    View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
+                    ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
+                    TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
+                    tvAct.setText(alist.get(i).showname);
+                    showActImage(ivAct, alist.get(i));
+                    if (i > 1) {
+                        view.setVisibility(View.GONE);
                     }
+                   holder.ll_contain_act.addView(view);
                 }
+
+                if (alist.size() > 2) {
+                   holder.ll_contain_act.getChildAt(0).findViewById(R.id.tv_act_all).setVisibility(View.VISIBLE);
+                }
+
             }
 
-            holder.layoutItem.setTag(position);
-            holder.layoutItem.setOnClickListener(listener);
+           holder.ll_contain_act.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (alist.size() > 2) {
+                        boolean showStatus = false;
+                        for (int i = 0; i < alist.size(); i++) {
+                           holder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
+                            if (i > 1) {
+                                if ((boolean)holder.ll_contain_act.getTag()) {
+                                   holder.ll_contain_act.getChildAt(i).setVisibility(View.GONE);
+                                    showStatus = false;
+                                } else {
+                                   holder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
+                                    showStatus = true;
+                                }
+                            }
+                        }
+                       holder.ll_contain_act.setTag(showStatus);
+                    }
+
+                }
+            });
+
+            x.image().bind(holder.iv_business_logo, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath, NetConfig.optionsPagerCache);
+            //GlideUtils.loadImage(3,item.getImages().getLarge(), (ImageView) helper.getView(R.id.iv_item_movie_top));
+            holder.layout_breakfast_item.setTag(position);
+           holder.layout_breakfast_item.setOnClickListener(listener);
+        }
+    }
+
+    private void showActImage(ImageView ivAct, BusinessExercise businessExercise) {
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        switch (businessExercise.ptype) {
+            case 1:
+                ivAct.setImageResource(R.drawable.icon_reduce);
+                break;
+            case 2:
+                ivAct.setImageResource(R.drawable.icon_fracture);
+                break;
+            case 3:
+                ivAct.setImageResource(R.drawable.icon_give);
+                break;
+            case 4:
+                ivAct.setImageResource(R.drawable.icon_special);
+                break;
+            case 5:
+                ivAct.setImageResource(R.drawable.icon_reduce);
+                break;
+            case 6:
+                ivAct.setImageResource(R.drawable.icon_reduce);
+                break;
         }
     }
 
@@ -102,33 +150,31 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
 
     public class BreakfastViewHolder extends RecyclerView.ViewHolder {
 
-        public LinearLayout layoutItem;
-        public ImageView ivBusinessLogo, ivCharge;
-        public TextView tvBusinessName, tvBusinessLevel, tvBusinessSaleNum, tvSaleDistance, tvSaleTime, tvSaleStartPay, tvSalePrice;
+        TextView tv_business_name, tv_business_levelId, tv_sale_distance,
+                tv_business_sales_num, tv_sale_startPay, tv_sale_time, tv_sale_price;
 
-        //活动页
-        public LinearLayout layoutSubPrice, layoutDiscount;
-        public TextView tvSubPrice, tvDiscount;
+        ImageView iv_is_charge, iv_business_logo;
 
-        public BreakfastViewHolder(View itemView) {
+        LinearLayout ll_contain_act, layout_breakfast_item;
+
+        ScaleRatingBar rb_order_evaluate;
+
+        BreakfastViewHolder(View itemView) {
             super(itemView);
-            layoutItem = (LinearLayout) itemView.findViewById(R.id.layout_breakfast_item);
+            tv_business_name = (TextView) itemView.findViewById(R.id.tv_business_name);
+            tv_business_levelId = (TextView) itemView.findViewById(R.id.tv_business_levelId);
+            tv_sale_distance = (TextView) itemView.findViewById(R.id.tv_sale_distance);
+            tv_business_sales_num = (TextView) itemView.findViewById(R.id.tv_business_sales_num);
+            tv_sale_startPay = (TextView) itemView.findViewById(R.id.tv_sale_startPay);
+            tv_sale_time = (TextView) itemView.findViewById(R.id.tv_sale_time);
+            tv_sale_price = (TextView) itemView.findViewById(R.id.tv_sale_price);
+            iv_is_charge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
+            iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
 
-            ivBusinessLogo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
-            ivCharge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
+            rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
-            tvBusinessName = (TextView) itemView.findViewById(R.id.tv_business_name);
-            tvBusinessLevel = (TextView) itemView.findViewById(R.id.tv_business_levelId);
-            tvBusinessSaleNum = (TextView) itemView.findViewById(R.id.tv_business_sales_num);
-            tvSaleDistance = (TextView) itemView.findViewById(R.id.tv_sale_distance);
-            tvSaleTime = (TextView) itemView.findViewById(R.id.tv_sale_time);
-            tvSaleStartPay = (TextView) itemView.findViewById(R.id.tv_sale_startPay);
-            tvSalePrice = (TextView) itemView.findViewById(R.id.tv_sale_price);
-            tvSubPrice = (TextView) itemView.findViewById(R.id.tv_sub_price);
-            tvDiscount = (TextView) itemView.findViewById(R.id.tv_discount);
-
-            layoutSubPrice = (LinearLayout) itemView.findViewById(R.id.layout_sub_price);
-            layoutDiscount = (LinearLayout) itemView.findViewById(R.id.layout_discount);
+            ll_contain_act = (LinearLayout) itemView.findViewById(R.id.ll_contain_act);
+            layout_breakfast_item = (LinearLayout) itemView.findViewById(R.id.layout_breakfast_item);
         }
     }
 }

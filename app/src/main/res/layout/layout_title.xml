@@ -6,7 +6,7 @@
     android:layout_height="?attr/actionBarSize"
     android:background="@drawable/title_background"
     android:fitsSystemWindows="true"
-    app:theme="@style/ToolbarStyle">
+    android:theme="@style/ToolbarStyle">
 
     <TextView
         android:id="@+id/toolbar_title"

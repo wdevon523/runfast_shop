@@ -43,11 +43,13 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        if (UserService.isAutoLogin()) {
+//        if (UserService.isAutoLogin()) {
             handler.sendEmptyMessageDelayed(2001, 2000);
-        } else {
-            handler.sendEmptyMessageDelayed(2002, 2000);
-        }
+//        } else {
+////            handler.sendEmptyMessageDelayed(2002, 2000);
+//            startActivity(new Intent(this, LoginActivity.class));
+//            finish();
+//        }
     }
 
     private Handler handler = new Handler() {
@@ -77,12 +79,14 @@ public class LauncherActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailureResponse(Call<String> call, Throwable t) {
+//                    startActivity(new Intent(LauncherActivity.this, LoginActivity.class));
                     startActivity(new Intent(LauncherActivity.this, MainActivity.class));
                     finish();
                 }
             });
         } else {
-            startActivity(new Intent(LauncherActivity.this, LoginActivity.class));
+//            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
     }
@@ -92,17 +96,21 @@ public class LauncherActivity extends AppCompatActivity {
             JSONObject object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             String msg = object.optString("msg");
+            CustomApplication.isRelogining = false;
             if (!success) {
                 CustomToast.INSTANCE.showToast(this, msg);
-                startActivity(new Intent(this, LoginActivity.class));
+//                startActivity(new Intent(this, LoginActivity.class));
+                startActivity(new Intent(this, MainActivity.class));
+                finish();
+            } else {
+//                CustomApplication.isRelogining = false;
+                JSONObject app_cuser = object.getJSONObject("app_cuser");
+                User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
+                user.setPassword(userInfo.getPassword());
+                UserService.saveUserInfo(user);
+                startActivity(new Intent(this, MainActivity.class));
                 finish();
             }
-            JSONObject app_cuser = object.getJSONObject("app_cuser");
-            User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
-            user.setPassword(userInfo.getPassword());
-            UserService.saveUserInfo(user);
-            startActivity(new Intent(LauncherActivity.this, MainActivity.class));
-            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }

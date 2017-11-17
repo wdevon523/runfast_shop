@@ -44,7 +44,7 @@
             android:textSize="12sp" />
     </LinearLayout>
 
-    <com.gxuc.runfast.shop.view.MaxHeightRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/car_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

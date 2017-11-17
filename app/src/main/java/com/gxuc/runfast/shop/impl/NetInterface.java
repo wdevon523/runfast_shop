@@ -125,6 +125,15 @@ public interface NetInterface {
     Call<String> getBusinessGoods(@Field("id") Integer id);
 
     /**
+     * 获取商品活动过
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_ACTIVITY)
+    Call<String> getBusinessActivity(@Field("id") Integer id);
+
+    /**
      * 获取商品规格
      *
      * @return
@@ -149,7 +158,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_IS_SHOUCANG)
-    Call<String> getIsShoucang(@Field("busId") Integer busId,
+    Call<String> getIsShoucang(@Field("shopId") Integer shopId,
+                               @Field("type") Integer type,
                                @Field("uId") Integer uId);
 
     /**
@@ -265,6 +275,16 @@ public interface NetInterface {
     Call<String> postLogin(@Field("mobile") String mobile,
                            @Field("password") String password,
                            @Field("bptype") Integer bptype);
+
+    /**
+     * 登出
+     *
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.LOGOUT)
+    Call<String> Logout(@Field("mobile") String mobile);
 
     /**
      * 注册请求
@@ -595,8 +615,8 @@ public interface NetInterface {
     /**
      * 提现银行卡列表
      *
-     * @return
      * @param id
+     * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.WATHDRAWALL_LIST)
@@ -609,7 +629,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_BANK_NAME)
-    Call<String> getBankName(@Field("cardNo") String cardNo);
+    Call<String> getBankName(@Field("cardNo") String cardNo,
+                             @Field("cardBinCheck") boolean isCardBinCheck);
 
     /**
      * 添加银行卡
@@ -781,8 +802,9 @@ public interface NetInterface {
     @POST(UrlConstant.SELECT_ADDR)
     Call<String> selectAddr(@Field("bid") int bid,
                             @Field("lat") String lat,
-                            @Field("lng") String lng
-    );
+                            @Field("lng") String lng,
+                            @Field("isfull") int isfull,
+                            @Field("full") String full);
 
     /**
      * 选择优惠券
@@ -805,10 +827,51 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.EVALUATION)
     Call<String> postEvaluation(@Field("goodsSellRecordId") int goodsSellRecordId,
-                              @Field("score") int Score,
-                              @Field("shangstr") String shangstr,
-                              @Field("delicerScore") int delicerScore,
-                              @Field("delicerContent") String delicerContent,
-                              @Field("content") String content,
-                              @Field("isDeliver") int isDeliver);
+                                @Field("score") int Score,
+                                @Field("shangstr") String shangstr,
+                                @Field("delicerScore") int delicerScore,
+                                @Field("delicerContent") String delicerContent,
+                                @Field("content") String content,
+                                @Field("isDeliver") int isDeliver);
+
+    /**
+     * 微信充值
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.WEIXIN_RECHARGE)
+    Call<String> weiXinRecharge(@Field("monetary") String monetary);
+
+    /**
+     * 支付宝充值
+     *
+     * @param id
+     * @param orderType 1-支付宝付款|2-支付宝充值
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ALIPAY_PAY)
+    Call<String> aliPayRecharge(@Field("monetary") String id,
+                                @Field("orderType") String orderType,
+                                @Field("payType") String payType);
+
+    /**
+     * 再来一单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BUY_AGAIN)
+    Call<String> buyAgain(@Field("orderId") int orderId);
+
+    /**
+     * 获取用户信息
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_USER_INFO)
+    Call<String> getUserInfo(@Field("uId") int uId);
+
 }

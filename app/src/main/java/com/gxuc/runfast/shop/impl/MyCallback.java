@@ -6,7 +6,9 @@ import android.content.Intent;
 import com.gxuc.runfast.shop.activity.LoginActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.util.CustomToast;
+import com.lljjcoder.citylist.Toast.ToastUtils;
 
+import cn.shopex.pay.Contants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,14 +21,27 @@ public abstract class MyCallback<T> implements Callback<T> {
 
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
+        if (!response.isSuccessful()) {
+            CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+            return;
+        }
+
+//        if (response.body() == null) {
+//            CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+//            return;
+//        }
         String body = response.body().toString();
         if (body.contains("{\"relogin\":1}")) {
-            //跳转到登录页面
-            Intent intent = new Intent(CustomApplication.getContext(), LoginActivity.class);
-            intent.putExtra("isRelogin", true);
+            if (!CustomApplication.isRelogining) {
+                CustomApplication.isRelogining = true;
+                //跳转到登录页面
+                Intent intent = new Intent(CustomApplication.getContext(), LoginActivity.class);
+                intent.putExtra("isRelogin", true);
 //            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 //            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            CustomApplication.getContext().startActivity(intent);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                CustomApplication.getContext().startActivity(intent);
+            }
         } else {
             onSuccessResponse(call, response);
         }

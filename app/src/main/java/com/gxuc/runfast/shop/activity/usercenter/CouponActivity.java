@@ -20,6 +20,7 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.lljjcoder.citylist.Toast.ToastUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +52,7 @@ public class CouponActivity extends ToolBarActivity {
     private CouponsAdapter mAllAdapter;
     private boolean isChoose;
     private int bid;
+    private String totalPrice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +107,7 @@ public class CouponActivity extends ToolBarActivity {
     private void initData() {
         isChoose = getIntent().getBooleanExtra("isChoose", false);
         bid = getIntent().getIntExtra("bid", 0);
+        totalPrice = getIntent().getStringExtra("totalPrice");
 
         mCouponBeanList = new ArrayList<>();
         mAllAdapter = new CouponsAdapter(mCouponBeanList, this);
@@ -112,7 +115,15 @@ public class CouponActivity extends ToolBarActivity {
             @Override
             public void onItemClick(View view, CouponBean couponBean) {
                 if (isChoose) {
-                    requestSelectCoupon(couponBean);
+//                    requestSelectCoupon(couponBean);
+                    if (Double.valueOf(totalPrice) > couponBean.getFull()) {
+                        Intent intent = new Intent();
+                        intent.putExtra("coupon", couponBean);
+                        setResult(IntentConfig.COUPON_SELECT, intent);
+                        finish();
+                    } else {
+                        ToastUtils.showShortToast(CouponActivity.this, "暂不能使用该优惠券");
+                    }
                 }
             }
         });

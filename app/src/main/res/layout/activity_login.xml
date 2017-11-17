@@ -1,83 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/color_white"
+    android:orientation="vertical"
     android:paddingLeft="30dp"
-    android:paddingRight="30dp"
-    tools:context=".activity.LoginActivity">
+    android:paddingRight="30dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="跑腿快车登录"
-        android:textSize="26sp"
         android:layout_marginTop="78dp"
-        android:textColor="@color/color_address_black"/>
+        android:text="跑腿快车登录"
+        android:textColor="@color/color_address_black"
+        android:textSize="26sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="50dp"
         android:background="@color/color_white"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/et_user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:inputType="phone"
-            android:textSize="15sp"
             android:hint="请输入手机号"
+            android:inputType="phone"
             android:singleLine="true"
-            android:textColorHint="#CCCCCC"
             android:textColor="@color/color_address_black"
-            />
+            android:textColorHint="#CCCCCC"
+            android:textSize="15sp" />
 
     </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/color_line_back"/>
+        android:background="@color/color_line_back" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/color_white"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <EditText
             android:id="@+id/et_user_password"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@null"
-            android:inputType="textPassword"
-            android:textSize="15sp"
             android:hint="请输入密码"
+            android:inputType="textPassword"
             android:singleLine="true"
-            android:textColorHint="#CCCCCC"
             android:textColor="@color/color_address_black"
-            />
+            android:textColorHint="#CCCCCC"
+            android:textSize="15sp" />
+
         <TextView
             android:id="@+id/tv_forgot_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="忘记密码"
-            android:textSize="14sp"
-            android:textColor="@color/color_pay_mode"/>
+            android:textColor="@color/color_pay_mode"
+            android:textSize="14sp" />
 
     </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/color_line_back"/>
+        android:background="@color/color_line_back" />
 
     <Button
         android:id="@+id/btn_login"
@@ -86,8 +84,9 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/shape_button_orange"
         android:text="登录"
-        android:textSize="18sp"
-        android:textColor="@android:color/white"/>
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/btn_register"
         android:layout_width="match_parent"
@@ -95,6 +94,6 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/text_button_register"
         android:text="快速注册"
-        android:textSize="18sp"
-        android:textColor="@color/color_not_order_black"/>
+        android:textColor="@color/color_not_order_black"
+        android:textSize="18sp" />
 </LinearLayout>

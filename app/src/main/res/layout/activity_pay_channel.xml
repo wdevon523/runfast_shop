@@ -42,15 +42,14 @@
             android:layout_toRightOf="@id/iv_wallet_pay"
             android:text="余额支付" />
 
-        <CheckBox
+        <ImageView
             android:id="@+id/cb_wallet_pay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dimen_15_dp"
-            android:background="@drawable/pay_type_check"
-            android:button="@null" />
+            android:src="@drawable/pay_type_check" />
 
     </RelativeLayout>
 
@@ -82,15 +81,14 @@
             android:layout_toRightOf="@id/iv_weixin_pay"
             android:text="微信支付" />
 
-        <CheckBox
+        <ImageView
             android:id="@+id/cb_weixin_pay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dimen_15_dp"
-            android:background="@drawable/pay_type_nocheck"
-            android:button="@null" />
+            android:src="@drawable/pay_type_nocheck" />
 
     </RelativeLayout>
 
@@ -122,15 +120,14 @@
             android:layout_toRightOf="@id/iv_ali_pay"
             android:text="支付宝支付" />
 
-        <CheckBox
+        <ImageView
             android:id="@+id/cb_ali_pay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dimen_15_dp"
-            android:background="@drawable/pay_type_nocheck"
-            android:button="@null" />
+            android:src="@drawable/pay_type_nocheck" />
     </RelativeLayout>
 
     <Button

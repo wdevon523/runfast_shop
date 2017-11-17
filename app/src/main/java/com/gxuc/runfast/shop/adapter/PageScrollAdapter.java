@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BreakfastActivity;
@@ -13,6 +14,8 @@ import com.gxuc.runfast.shop.bean.mainmiddle.MiddleSort;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.R;
 import com.facebook.drawee.view.SimpleDraweeView;
+
+import org.xutils.x;
 
 import java.util.List;
 
@@ -25,7 +28,8 @@ public class PageScrollAdapter extends RecyclerView.Adapter<PageScrollAdapter.My
     private List<MiddleSort> data;
 
     private Context mContext;
-    public PageScrollAdapter(Context context,List<MiddleSort> data) {
+
+    public PageScrollAdapter(Context context, List<MiddleSort> data) {
         this.data = data;
         mContext = context;
     }
@@ -41,12 +45,13 @@ public class PageScrollAdapter extends RecyclerView.Adapter<PageScrollAdapter.My
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final MiddleSort middleSort = data.get(position);
         holder.tv_home_middle_name.setText(middleSort.getTypename());
-        holder.iv_home_middle_img.setImageURI(ApiServiceFactory.BASE_IMG_URL + middleSort.getIcon());
+//        holder.iv_home_middle_img.setImageURI(ApiServiceFactory.BASE_IMG_URL+ middleSort.getIcon());
+        x.image().bind(holder.iv_home_middle_img, ApiServiceFactory.BASE_IMG_URL + middleSort.getIcon());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, BreakfastActivity.class);
-                intent.putExtra("middleData",middleSort);
+                intent.putExtra("middleData", middleSort);
                 mContext.startActivity(intent);
             }
         });
@@ -60,12 +65,12 @@ public class PageScrollAdapter extends RecyclerView.Adapter<PageScrollAdapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         TextView tv_home_middle_name;
-        SimpleDraweeView iv_home_middle_img;
+        ImageView iv_home_middle_img;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             tv_home_middle_name = (TextView) itemView.findViewById(R.id.tv_home_middle_name);
-            iv_home_middle_img = (SimpleDraweeView) itemView.findViewById(R.id.iv_home_middle_img);
+            iv_home_middle_img = (ImageView) itemView.findViewById(R.id.iv_home_middle_img);
         }
     }
 }

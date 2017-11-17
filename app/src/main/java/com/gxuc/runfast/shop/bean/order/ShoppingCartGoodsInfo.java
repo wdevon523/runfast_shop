@@ -46,11 +46,11 @@ public class ShoppingCartGoodsInfo {
     public String barCode;
     public String goodsSellName;
     public int goodsSellId;
-    public int goodsSellStandardId;
+    public String goodsSellStandardId;
     public String goodsSellStandardName;
-    public int goodsSellOptionId;
+    public String goodsSellOptionId;
     public String goodsSellOptionName;
-    public Object optionIds;
+    public String optionIds;
     public String num;
     public String price;
     public String openid;

@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
 
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
 //        applicationId "com.gxuc.runfast.shop"
@@ -60,6 +60,7 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    google()
 }
 
 dependencies {
@@ -72,12 +73,13 @@ dependencies {
     compile project(':citypickerview')
     compile project(':shareLib')
     compile project(':shopexpay')
-    compile files('libs/alipaySdk-20170725.jar')
+//    compile files('libs/alipaySdk-20170725.jar')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'org.xutils:xutils:3.5.0'
-    compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'com.githang:status-bar-compat:0.5.3'
     compile 'com.facebook.fresco:fresco:1.2.0'
     compile 'jp.wasabeef:fresco-processors:2.1.0'
@@ -96,7 +98,6 @@ dependencies {
     //widget
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.0'
     androidTestCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.github.ome450901:SimpleRatingBar:1.3.2'
     compile 'com.hyman:flowlayout-lib:1.1.2'

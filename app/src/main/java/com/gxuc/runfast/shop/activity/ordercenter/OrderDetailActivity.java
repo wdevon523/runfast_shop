@@ -14,11 +14,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.adapter.OrderGoodsAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.R;
@@ -26,6 +28,9 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.example.supportv1.utils.ImageLoaderUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -131,7 +136,7 @@ public class OrderDetailActivity extends ToolBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getNetData();
+//        getNetData();
     }
 
     private void getOrderDetail(Integer id, User userInfo) {
@@ -300,7 +305,8 @@ public class OrderDetailActivity extends ToolBarActivity {
         switch (view.getId()) {
             //再次购买
             case R.id.btn_buy_again:
-                startActivity(new Intent(this, OrderEvaluationActivity.class));
+                requestBuyAgain();
+//                startActivity(new Intent(this, OrderEvaluationActivity.class));
                 break;
             //立即支付
             case R.id.btn_pay_now:
@@ -355,6 +361,31 @@ public class OrderDetailActivity extends ToolBarActivity {
                 startActivity(evaluationIntent);
                 break;
         }
+    }
+
+    private void requestBuyAgain() {
+        CustomApplication.getRetrofit().buyAgain(orderId).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        Intent intent = new Intent(OrderDetailActivity.this, BusinessActivity.class);
+                        intent.setFlags(IntentFlag.ORDER_LIST);
+                        intent.putExtra("orderInfo", orderDetailInfo.goodsSellRecord.businessId);
+                        startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     private void requestConfirmCompleted() {

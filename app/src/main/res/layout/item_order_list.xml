@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="18dp">
+    android:paddingBottom="@dimen/dimen_5_dp"
+    android:paddingTop="@dimen/dimen_5_dp">
 
     <TextView
         android:id="@+id/tv_product_name"
-        android:layout_width="0dp"
-        android:layout_weight="2.5"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:text="鸡排"
-        android:textSize="13sp"
-        android:textColor="@color/color_address_black"/>
+        android:textColor="@color/color_address_black"
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/tv_product_num"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/dimen_80_dp"
         android:text="x1"
-        android:textSize="13sp"
-        android:textColor="@color/color_text_gray"/>
+        android:textColor="@color/color_text_gray"
+        android:textSize="13sp" />
+
     <TextView
         android:id="@+id/tv_product_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:text="¥ 17"
-        android:textSize="13sp"
-        android:textColor="@color/color_address_black"/>
-</LinearLayout>
+        android:textColor="@color/color_address_black"
+        android:textSize="13sp" />
+</RelativeLayout>

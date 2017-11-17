@@ -130,7 +130,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
         }
         if (mAddressLat != null) {
             CustomApplication.getRetrofit().postEditAddress(mAddressInfo.getId(),
-                    mUserName, mUserPhone, mAddress,
+                    mUserName, mUserPhone, mAddressInfo.getAddress(),
                     mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
                     mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict())
                     .enqueue(new MyCallback<String>() {

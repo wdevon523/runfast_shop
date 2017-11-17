@@ -10,13 +10,21 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderComplainActivity;
+import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.R;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.gxuc.runfast.shop.impl.MyCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 /**
  * Created by 天上白玉京 on 2017/7/28.
@@ -87,17 +95,22 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         }
 
         holder.tv_order_shop_time.setText(orderInfo.getAccptTime());
-        holder.tv_order_shop_content.setText(orderInfo.getGoodsSellName());
-        holder.tv_order_shop_price.setText(String.valueOf(orderInfo.getPrice()));
+        if (orderInfo.getGoodsTotal() > 1) {
+            holder.tv_order_shop_content.setText(orderInfo.getGoodsSellName() + "等" + orderInfo.getGoodsTotal() + "件商品");
+        } else {
+            holder.tv_order_shop_content.setText(orderInfo.getGoodsSellName());
+        }
+        holder.tv_order_shop_price.setText("¥ " + String.valueOf(orderInfo.getPrice()));
         holder.iv_order_shop.setImageURI(ApiServiceFactory.BASE_IMG_URL + orderInfo.getLogo());
         holder.tv_order_shop_again.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, BusinessActivity.class);
-                intent.setFlags(IntentFlag.ORDER_LIST);
-                intent.putExtra("orderInfo", orderInfo.getBusinessId());
-                intent.putExtra("orderInfos", orderInfo);
-                context.startActivity(intent);
+//                Intent intent = new Intent(context, BusinessActivity.class);
+//                intent.setFlags(IntentFlag.ORDER_LIST);
+//                intent.putExtra("orderInfo", orderInfo.getBusinessId());
+//                intent.putExtra("orderInfos", orderInfo);
+//                context.startActivity(intent);
+                requestBuyAgain(orderInfo.getId(), orderInfo.getBusinessId());
             }
         });
         holder.tv_order_shop_complain.setOnClickListener(new View.OnClickListener() {
@@ -109,6 +122,31 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             }
         });
 
+    }
+
+    private void requestBuyAgain(int orderId, final int businessId) {
+        CustomApplication.getRetrofit().buyAgain(orderId).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        Intent intent = new Intent(context, BusinessActivity.class);
+                        intent.setFlags(IntentFlag.ORDER_LIST);
+                        intent.putExtra("orderInfo", businessId);
+                        context.startActivity(intent);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

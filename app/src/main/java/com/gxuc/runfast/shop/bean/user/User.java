@@ -122,6 +122,15 @@ public class User implements Parcelable{
     private String addrContent;//地址详细
     private String addrLog;//地址经度
     private String addrLat;//地址纬度
+    private String unusedCoupon;//可用优惠券数量
+
+    public String getUnusedCoupon() {
+        return unusedCoupon;
+    }
+
+    public void setUnusedCoupon(String unusedCoupon) {
+        this.unusedCoupon = unusedCoupon;
+    }
 
     public Integer getId() {
         return id;

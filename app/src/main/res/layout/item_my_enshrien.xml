@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:background="@color/color_white"
-              android:layout_marginBottom="1dp"
-              android:paddingBottom="15dp"
-              android:id="@+id/layout_breakfast_item"
-              android:layout_height="wrap_content">
+    xmlns:rb="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_breakfast_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="1dp"
+    android:background="@color/color_white"
+    android:orientation="horizontal"
+    android:paddingBottom="15dp">
 
     <ImageView
         android:id="@+id/iv_business_logo"
@@ -16,12 +17,12 @@
         android:layout_marginRight="10dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/image_background"
-        android:src="@drawable/icon_default_head"/>
+        android:src="@drawable/icon_default_head" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="15dp"
         android:orientation="vertical">
 
         <TextView
@@ -35,20 +36,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
+            android:layout_marginTop="@dimen/dimen_3_dp"
             android:orientation="horizontal">
 
-            <RatingBar
+            <com.willy.ratingbar.ScaleRatingBar
                 android:id="@+id/rb_order_evaluate"
-                style="@style/RatingBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:isIndicator="true"
-                android:numStars="5"
-                android:rating="0"
-                android:stepSize="4.1" />
+                rb:drawableEmpty="@drawable/icon_unselected"
+                rb:drawableFilled="@drawable/icon_selected"
+                rb:numStars="5"
+                rb:starPadding="1dp" />
 
             <TextView
                 android:id="@+id/tv_business_levelId"
@@ -64,14 +64,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="月售1289单"
-                android:visibility="gone"
-                android:textColor="@color/color_text_gray_two" />
+                android:textColor="@color/color_text_gray_two"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/tv_sale_distance"
@@ -100,7 +101,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="@dimen/dimen_5_dp"
             android:orientation="horizontal">
 
             <TextView
@@ -123,6 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="配送费¥3"
+                android:visibility="invisible"
                 android:textColor="@color/color_text_gray_two" />
 
             <ImageView
@@ -139,9 +141,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:visibility="gone"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -162,9 +164,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:visibility="gone"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="wrap_content"

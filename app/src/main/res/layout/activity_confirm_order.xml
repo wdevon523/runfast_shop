@@ -155,6 +155,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="20dp"
                             android:gravity="center"
+                            android:text="暂无可用红包"
                             android:textColor="@color/color_red"
                             android:textSize="13sp" />
 

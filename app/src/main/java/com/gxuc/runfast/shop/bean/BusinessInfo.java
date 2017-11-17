@@ -16,6 +16,8 @@ public class BusinessInfo implements Serializable{
 
     public String name;//商家名称
 
+    public String content;//商家公告
+
     public String imgPath;//商家图片logo
 
     public int isopen;//是否营业 0营业 1休息
@@ -34,11 +36,13 @@ public class BusinessInfo implements Serializable{
 
     public String speed;//送餐速度
 
-    public int levelId;//商家等级
+    public float levelId;//商家等级
 
     public Double startPay;//起送价
 
     public Double busshowps;//商家配送费
+
+    public Double charge;//基础配送费
 
     public Double baseCharge;//基础配送费
 

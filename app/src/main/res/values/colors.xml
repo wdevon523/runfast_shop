@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#1b1b1b</color>
-    <color name="colorAccent">#FF4081</color>
+    <!--<color name="colorAccent">#FF4081</color>-->
+    <color name="colorAccent">#fb7d30</color>
 
     <color name="color_title">#ffffff</color>
     <color name="color_login_gray">#E6E6E6</color>
@@ -403,11 +404,13 @@
     <color name="text_666666">#666666</color>
     <color name="text_999999">#999999</color>
     <color name="text_cccccc">#cccccc</color>
+    <color name="bg_80ffffff">#80ffffff</color>
     <color name="text_fb7d30">#fb7d30</color>
     <color name="view_e5e5e5">#e5e5e5</color>
     <color name="bg_fff4ed">#fff4ed</color>
     <color name="bg_f9f9f9">#f9f9f9</color>
     <color name="bg_fbf9e8">#fbf9e8</color>
     <color name="bg_ef8f3d">#ef8f3d</color>
+    <color name="bg_f3f4f5">#f3f4f5</color>
 
 </resources>

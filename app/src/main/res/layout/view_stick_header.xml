@@ -19,4 +19,5 @@
         android:layout_gravity="bottom"
         android:layout_marginLeft="16dp"
         android:background="@color/divider_gray"/>
+
 </FrameLayout>

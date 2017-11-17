@@ -1,15 +1,19 @@
 package com.gxuc.runfast.shop.activity.usercenter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.gxuc.runfast.shop.activity.BusinessActivity;
+import com.gxuc.runfast.shop.adapter.AddressSelectAdapter;
 import com.gxuc.runfast.shop.adapter.EnshrineAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.enshrien.Enshrine;
 import com.gxuc.runfast.shop.bean.enshrien.Enshrines;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -28,7 +32,7 @@ import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate, LoadMoreAdapter.LoadMoreApi {
+public class MyEnshrineActivity extends ToolBarActivity implements BGARefreshLayout.BGARefreshLayoutDelegate, LoadMoreAdapter.LoadMoreApi {
 
     @BindView(R.id.recycler_my_enshrine)
     RecyclerView recyclerViewList;
@@ -87,7 +91,16 @@ public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickL
     private void initData() {
         mEnshrines = new ArrayList<>();
         mBusinessInfos = new ArrayList<>();
-        mEnshrineAdapter = new EnshrineAdapter(mEnshrines, this, this);
+        mEnshrineAdapter = new EnshrineAdapter(mEnshrines, this);
+        mEnshrineAdapter.setOnItemClickListener(new EnshrineAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, Enshrine enshrine) {
+                Intent intent = new Intent(MyEnshrineActivity.this, BusinessActivity.class);
+                intent.setFlags(IntentFlag.ORDER_LIST);
+                intent.putExtra("orderInfo", enshrine.shopId);
+                startActivity(intent);
+            }
+        });
         loadMoreAdapter = new LoadMoreAdapter(this, mEnshrineAdapter);
         loadMoreAdapter.setLoadMoreListener(this);
     }
@@ -106,11 +119,6 @@ public class MyEnshrineActivity extends ToolBarActivity implements View.OnClickL
         meiTuanRefreshViewHolder.setChangeToReleaseRefreshAnimResId(R.drawable.bga_refresh_mt_change_to_release_refresh);
         meiTuanRefreshViewHolder.setRefreshingAnimResId(R.drawable.bga_refresh_mt_refreshing);
         mRefreshLayout.setRefreshViewHolder(meiTuanRefreshViewHolder);
-    }
-
-    @Override
-    public void onClick(View v) {
-
     }
 
     @Override

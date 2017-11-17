@@ -1,15 +1,18 @@
 package com.gxuc.runfast.shop.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.LoginActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.message.MessageInfos;
 import com.gxuc.runfast.shop.config.UserService;
@@ -43,6 +46,7 @@ public class MessageFragment extends Fragment {
     private Integer page = 1;
     private List<MessageInfo> mInfoList;
     private MessageAdapter mAdapter;
+    private User userInfo;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -57,31 +61,53 @@ public class MessageFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         toolbarTitle.setText("消息");
         initData();
-        getNetData();
         return view;
     }
 
     private void initData() {
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRvMessageList.setLayoutManager(manager);
         mInfoList = new ArrayList<>();
-        mAdapter = new MessageAdapter(getActivity(),mInfoList);
+        mAdapter = new MessageAdapter(getActivity(), mInfoList);
         mRvMessageList.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userInfo = UserService.getUserInfo(getActivity());
+        getNetData();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (userInfo == null) {
+                mInfoList.clear();
+                mAdapter.notifyDataSetChanged();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                return;
+            }
+            getNetData();
+        }
     }
 
     /**
      * 获取消息
      */
     private void getNetData() {
-        User userInfo = UserService.getUserInfo(getActivity());
         if (userInfo == null) {
             return;
         }
+
         CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
-                dealMessageList(body);
+                if (!TextUtils.isEmpty(body)) {
+                    dealMessageList(body);
+                }
             }
 
             @Override

@@ -20,19 +20,19 @@ public class FoodBean implements Serializable{
 	private long selectCount;
 
 	private String goodsSpec;//规格
-	private Integer goodsSpecId;//规格Id
+	private String goodsSpecId;//规格Id
 	private String goodsType;//
 	private String goodsTypeTwo;//
-	private Integer goodsTypeSpecId;//子规格Id
-	private Integer goodsSellOptionId;//商品选项ID
+	private String goodsTypeSpecId;//子规格Id
+	private String goodsSellOptionId;//商品选项ID
 	private String goodsSellOptionName;//商品选项名称
 	private String optionIds;//商品选项ID
 
-	public Integer getGoodsSellOptionId() {
+	public String getGoodsSellOptionId() {
 		return goodsSellOptionId;
 	}
 
-	public void setGoodsSellOptionId(Integer goodsSellOptionId) {
+	public void setGoodsSellOptionId(String goodsSellOptionId) {
 		this.goodsSellOptionId = goodsSellOptionId;
 	}
 
@@ -76,13 +76,13 @@ public class FoodBean implements Serializable{
 	private String agentName;//代理商名称：
 	private Integer agentId;//代理商Id：
 
-	private Integer islimited;//是否限购1是 0否
+	private int islimited;//是否限购1是 0否
 	private Integer limittype;//超出后是否允许原价购买0否 1是
-	private Integer limitNum;//限购数量
+	private int limitNum;//限购数量
 	private String limiStartTime;//限购开始时间
 	private String limiEndTime;//限购结束时间
 	private BigDecimal discount;//优惠价
-	private BigDecimal disprice;//优惠金额
+	private String disprice;//优惠金额
 	private List<GoodsSellOption> optionList;//商品选项
 	private List<GoodsSellStandard> standardList;//商品规格
 	private Integer standardListPosition;
@@ -98,7 +98,7 @@ public class FoodBean implements Serializable{
 
 	private List<GoodsSellSubOption> opsubList;//商品子选项
 
-	
+
 	private String showzs;//赠送活动
 	private Integer isdz;//是否有打折商品
 	private String showlimit;//限购
@@ -357,11 +357,11 @@ public class FoodBean implements Serializable{
 		this.agentId = agentId;
 	}
 
-	public Integer getIslimited() {
+	public int getIslimited() {
 		return islimited;
 	}
 
-	public void setIslimited(Integer islimited) {
+	public void setIslimited(int islimited) {
 		this.islimited = islimited;
 	}
 
@@ -373,11 +373,11 @@ public class FoodBean implements Serializable{
 		this.limittype = limittype;
 	}
 
-	public Integer getLimitNum() {
+	public int getLimitNum() {
 		return limitNum;
 	}
 
-	public void setLimitNum(Integer limitNum) {
+	public void setLimitNum(int limitNum) {
 		this.limitNum = limitNum;
 	}
 
@@ -405,11 +405,11 @@ public class FoodBean implements Serializable{
 		this.discount = discount;
 	}
 
-	public BigDecimal getDisprice() {
+	public String getDisprice() {
 		return disprice;
 	}
 
-	public void setDisprice(BigDecimal disprice) {
+	public void setDisprice(String disprice) {
 		this.disprice = disprice;
 	}
 
@@ -501,19 +501,19 @@ public class FoodBean implements Serializable{
 		this.standardListPosition = standardListPosition;
 	}
 
-	public Integer getGoodsSpecId() {
+	public String getGoodsSpecId() {
 		return goodsSpecId;
 	}
 
-	public void setGoodsSpecId(Integer goodsSpecId) {
+	public void setGoodsSpecId(String goodsSpecId) {
 		this.goodsSpecId = goodsSpecId;
 	}
 
-	public Integer getGoodsTypeSpecId() {
+	public String getGoodsTypeSpecId() {
 		return goodsTypeSpecId;
 	}
 
-	public void setGoodsTypeSpecId(Integer goodsTypeSpecId) {
+	public void setGoodsTypeSpecId(String goodsTypeSpecId) {
 		this.goodsTypeSpecId = goodsTypeSpecId;
 	}
 

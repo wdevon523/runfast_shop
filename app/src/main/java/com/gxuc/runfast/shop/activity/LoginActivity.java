@@ -101,9 +101,12 @@ public class LoginActivity extends ToolBarActivity {
             boolean success = object.optBoolean("success");
             String msg = object.optString("msg");
             CustomToast.INSTANCE.showToast(this, msg);
+            CustomApplication.isRelogining = false;
             if (!success) {
                 return;
             }
+//            CustomApplication.isRelogining = false;
+
             JSONObject app_cuser = object.getJSONObject("app_cuser");
             User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
             user.setPassword(etUserPassword.getText().toString().trim());

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:rb="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/color_white">
+    android:background="@color/color_white"
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageView
             android:id="@+id/iv_head"
             android:layout_width="65dp"
@@ -16,7 +18,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:background="@drawable/image_background"
-            android:src="@drawable/icon_default_head"/>
+            android:src="@drawable/icon_default_head" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,79 +30,75 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="15dp">
+
                 <TextView
                     android:id="@+id/tv_user_name"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="匿名用户"
                     android:textColor="@color/color_address_black"
                     android:textSize="16sp" />
+
                 <TextView
                     android:id="@+id/tv_evaluate_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2017-01-22 23:41:58"/>
+                    android:text="2017-01-22 23:41:58" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+
+            <com.willy.ratingbar.ScaleRatingBar
+                android:id="@+id/rb_order_evaluate"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <RatingBar
-                    android:id="@+id/rb_order_evaluate"
-                    style="@style/RatingBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:isIndicator="true"
-                    android:numStars="5"
-                    android:rating="0"
-                    android:stepSize="4.1" />
-
-            </LinearLayout>
+                android:layout_marginBottom="@dimen/dimen_5_dp"
+                android:layout_marginTop="@dimen/dimen_5_dp"
+                rb:drawableEmpty="@drawable/icon_unselected"
+                rb:drawableFilled="@drawable/icon_selected"
+                rb:numStars="5"
+                rb:starPadding="1dp" />
 
             <TextView
                 android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:text="配送快，准时送达"
-                android:layout_marginTop="12dp"
                 android:textColor="@color/color_text_gray_two" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginBottom="10dp"
+                android:layout_marginTop="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/icon_label"/>
+                    android:src="@drawable/icon_label" />
+
                 <TextView
                     android:id="@+id/tv_flag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="服务不错，干净卫生"
-                    android:textSize="11sp"
-                    android:textColor="@color/color_text_gray"/>
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="11sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_business"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginBottom="15dp"
-                android:gravity="center_vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen_10_dp"
                 android:layout_marginRight="15dp"
                 android:background="@color/user_center_group_white_bg"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp">
 
 
                 <TextView
@@ -108,15 +106,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:text="商家回复:"
-                    android:textSize="11sp"
-                    android:textColor="@color/color_text_gray" />
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="11sp" />
+
                 <TextView
                     android:id="@+id/tv_business_reply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="喜欢就好，谢谢支持！"
-                    android:textSize="11sp"
-                    android:textColor="@color/color_text_gray" />
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="11sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -125,5 +124,5 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginLeft="15dp"
-        android:background="@color/color_line_back"/>
+        android:background="@color/color_line_back" />
 </LinearLayout>

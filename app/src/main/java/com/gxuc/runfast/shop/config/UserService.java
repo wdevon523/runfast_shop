@@ -102,7 +102,7 @@ public class UserService {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(BaseApplication.APP_CONTEXT, CustomConstant.sp_name);
         String userJson = (String) sharedPreferencesUtil.getData(USER_INFO);
         if (TextUtils.isEmpty(userJson)) {
-            context.startActivity(new Intent(context, LoginActivity.class));
+//            context.startActivity(new Intent(context, LoginActivity.class));
             return null;
         }
         Gson gson = new Gson();

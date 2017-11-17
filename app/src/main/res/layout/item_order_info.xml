@@ -44,7 +44,8 @@
 
                     <TextView
                         android:id="@+id/tv_order_shop_name"
-                        android:layout_width="@dimen/dimen_170_dp"
+                        android:layout_width="wrap_content"
+                        android:maxWidth="@dimen/dimen_170_dp"
                         android:layout_height="wrap_content"
                         android:text="外婆烧(笛扬路店)"
                         android:maxLines="1"
@@ -55,7 +56,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="10dp"
                         android:src="@drawable/icon_right"/>
 
                     <TextView

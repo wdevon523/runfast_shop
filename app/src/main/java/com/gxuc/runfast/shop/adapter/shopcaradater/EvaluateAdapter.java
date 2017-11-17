@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.bean.EvaluateInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.R;
+import com.willy.ratingbar.ScaleRatingBar;
 
 import org.xutils.x;
 
@@ -23,7 +24,7 @@ import java.util.List;
  * Created by 天上白玉京 on 2017/8/3.
  */
 
-public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private List<EvaluateInfo> strings;
@@ -35,11 +36,11 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerView.ViewHolder holder= null;
-        if (viewType == 0){
+        RecyclerView.ViewHolder holder = null;
+        if (viewType == 0) {
             View view = LayoutInflater.from(context).inflate(R.layout.item_evaluate_head, parent, false);
             holder = new EvaluateViewHeadHolder(view);
-        }else {
+        } else {
             View view = LayoutInflater.from(context).inflate(R.layout.item_evaluate_info, parent, false);
             holder = new EvaluateViewHolder(view);
         }
@@ -49,36 +50,39 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         EvaluateInfo evaluateInfo = strings.get(position);
-        if (holder instanceof EvaluateViewHeadHolder){
+        if (holder instanceof EvaluateViewHeadHolder) {
             EvaluateViewHeadHolder viewHolder = (EvaluateViewHeadHolder) holder;
-            viewHolder.tvScore.setText(evaluateInfo.zb+"");
-            viewHolder.tvUserScore.setText("购买此产品的用户满意度为"+evaluateInfo.zb);
-            viewHolder.tvUserNum.setText("已有"+evaluateInfo.evaluateNum+"人点评");
+            viewHolder.tvScore.setText(evaluateInfo.zb + "");
+            viewHolder.tvUserScore.setText("购买此产品的用户满意度为" + evaluateInfo.zb);
+            viewHolder.tvUserNum.setText("已有" + evaluateInfo.evaluateNum + "人点评");
         }
-        if (holder instanceof EvaluateViewHolder){
-            EvaluateViewHolder evaluateViewHolder= (EvaluateViewHolder) holder;
-            evaluateViewHolder.tvUserName.setText(TextUtils.isEmpty(evaluateInfo.userName)?"匿名用户":evaluateInfo.userName);
+        if (holder instanceof EvaluateViewHolder) {
+            EvaluateViewHolder evaluateViewHolder = (EvaluateViewHolder) holder;
+            evaluateViewHolder.tvUserName.setText(TextUtils.isEmpty(evaluateInfo.userName) ? "匿名用户" : evaluateInfo.userName);
             evaluateViewHolder.tvEvaluateTime.setText(evaluateInfo.createTime);
-            if (TextUtils.isEmpty(evaluateInfo.content)){
+            if (TextUtils.isEmpty(evaluateInfo.content)) {
                 evaluateViewHolder.tvContent.setVisibility(View.GONE);
-            }else {
+            } else {
                 evaluateViewHolder.tvContent.setVisibility(View.VISIBLE);
                 evaluateViewHolder.tvContent.setText(evaluateInfo.content);
             }
             evaluateViewHolder.tvFlag.setText(evaluateInfo.shangstr);
-            if (TextUtils.isEmpty(evaluateInfo.feedback)){
+            if (TextUtils.isEmpty(evaluateInfo.feedback)) {
                 evaluateViewHolder.layoutBusiness.setVisibility(View.GONE);
-            }else {
+            } else {
                 evaluateViewHolder.layoutBusiness.setVisibility(View.VISIBLE);
                 evaluateViewHolder.tvReply.setText(evaluateInfo.feedback);
             }
+
+            evaluateViewHolder.rb_order_evaluate.setRating((float) (evaluateInfo.score + 2));
+            evaluateViewHolder.rb_order_evaluate.setTouchable(false);
             x.image().bind(evaluateViewHolder.ivHead, UrlConstant.ImageBaseUrl + evaluateInfo.pic, NetConfig.optionsPagerCache);
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0){
+        if (position == 0) {
             return 0;
         }
         return 1;
@@ -89,10 +93,12 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return strings.size();
     }
 
-    public class EvaluateViewHolder extends RecyclerView.ViewHolder{
-        public TextView tvUserName,tvEvaluateTime,tvContent,tvFlag,tvReply;
+    public class EvaluateViewHolder extends RecyclerView.ViewHolder {
+        public TextView tvUserName, tvEvaluateTime, tvContent, tvFlag, tvReply;
         public LinearLayout layoutBusiness;
         public ImageView ivHead;
+        public ScaleRatingBar rb_order_evaluate;
+
         public EvaluateViewHolder(View itemView) {
             super(itemView);
             ivHead = (ImageView) itemView.findViewById(R.id.iv_head);
@@ -102,11 +108,14 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvFlag = (TextView) itemView.findViewById(R.id.tv_flag);
             tvReply = (TextView) itemView.findViewById(R.id.tv_business_reply);
             layoutBusiness = (LinearLayout) itemView.findViewById(R.id.layout_business);
+            rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+
         }
     }
-    public class EvaluateViewHeadHolder extends RecyclerView.ViewHolder{
 
-        public TextView tvScore,tvUserScore,tvUserNum;
+    public class EvaluateViewHeadHolder extends RecyclerView.ViewHolder {
+
+        public TextView tvScore, tvUserScore, tvUserNum;
 
         public EvaluateViewHeadHolder(View itemView) {
             super(itemView);

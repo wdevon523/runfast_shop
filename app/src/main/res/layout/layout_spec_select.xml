@@ -51,7 +51,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="10dp" />
-        
+
     </LinearLayout>
 
     <LinearLayout
@@ -104,36 +104,53 @@
             android:layout_marginTop="10dp" />
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="57dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/color_wallet_white"
-        android:gravity="center_vertical">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="19dp"
-            android:text="¥"
-            android:textColor="@color/color_price_red"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:background="@color/color_wallet_white"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tv_spec_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:text="7.5"
-            android:textColor="@color/color_price_red"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="19dp"
+                android:text="¥"
+                android:textColor="@color/color_price_red"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_spec_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="7.5"
+                android:textColor="@color/color_price_red"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_spec_old_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="7.5"
+                android:visibility="gone"
+                android:textColor="@color/text_999999"
+                android:textSize="15sp" />
+
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="125dp"
-            android:layout_height="37dp">
+            android:layout_height="37dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true">
 
             <ImageView
                 android:id="@+id/iv_add"
@@ -156,5 +173,5 @@
         </RelativeLayout>
 
 
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

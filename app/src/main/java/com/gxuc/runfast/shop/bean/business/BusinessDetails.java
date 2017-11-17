@@ -9,6 +9,8 @@ package com.gxuc.runfast.shop.bean.business;
 public class BusinessDetails {
     private BusinessDetail business;
 
+    public boolean isEnshrine;
+
     public void setBusiness(BusinessDetail business) {
         this.business = business;
     }

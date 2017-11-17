@@ -9,6 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_10_dp"
         android:layout_marginLeft="@dimen/dimen_15_dp"
         android:layout_marginTop="@dimen/dimen_20_dp"
         android:text="其他信息"
@@ -24,6 +25,7 @@
             style="@style/order_detail_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="配送方" />
 
         <TextView
@@ -47,10 +49,10 @@
         android:layout_height="@dimen/dimen_50_dp">
 
         <TextView
-
             style="@style/order_detail_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="预计送达时间" />
 
         <TextView
@@ -69,9 +71,11 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_73_dp">
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dimen_70_dp">
 
         <TextView
+            android:id="@+id/text_address"
             style="@style/order_detail_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,14 +83,17 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_marginLeft="@dimen/dimen_3_dp"
+            android:layout_toRightOf="@+id/text_address"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_order_detail_man_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="right"
                 android:layout_marginRight="@dimen/dimen_15_dp"
                 android:layout_marginTop="@dimen/dimen_20_dp"
                 android:textColor="@color/order_detail_text_right"
@@ -96,7 +103,10 @@
                 android:id="@+id/tv_order_detail_man_phone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_9_dp"
+                android:layout_gravity="right"
+                android:layout_marginBottom="@dimen/dimen_10_dp"
+                android:layout_marginRight="@dimen/dimen_15_dp"
+                android:layout_marginTop="@dimen/dimen_5_dp"
                 android:textColor="@color/order_detail_text_right"
                 android:textSize="@dimen/dimen_13_dp" />
         </LinearLayout>
@@ -113,10 +123,10 @@
         android:layout_height="@dimen/dimen_50_dp">
 
         <TextView
-
             style="@style/order_detail_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="订单号" />
 
         <TextView
@@ -124,7 +134,8 @@
             style="@style/order_detail_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <TextView
@@ -142,6 +153,7 @@
             style="@style/order_detail_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="支付方式" />
 
         <TextView
@@ -159,16 +171,16 @@
         android:layout_marginLeft="@dimen/dimen_15_dp"
         android:background="@color/color_line_back" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_50_dp"
-        android:orientation="horizontal">
+        android:layout_height="@dimen/dimen_50_dp">
 
         <TextView
+            android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dimen_15_dp"
-            android:layout_marginTop="@dimen/dimen_18_dp"
             android:text="备注"
             android:textSize="@dimen/dimen_13_dp" />
 
@@ -178,7 +190,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="@dimen/dimen_18_dp" />
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

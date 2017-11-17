@@ -1,5 +1,7 @@
 package com.gxuc.runfast.shop.bean.business;
 
+import java.util.List;
+
 /**
  * Created by huiliu on 2017/9/6.
  *
@@ -62,6 +64,7 @@ public class BusinessDetail {
     private Integer isopen;//是否营业0营业1休息
     private Integer isCharge;//是否特殊配送商家0否1是
     private double baseCharge;//基础配送费
+    private double charge;//基础配送费
     private String code;  //编码
     private Integer teamid;//分组ID
     private String teamname;//分组名称
@@ -69,7 +72,7 @@ public class BusinessDetail {
     private Integer issubsidy;//是否补贴配送费1是0否
     private double subsidy ;//补贴金额
     private String  typeName;//商家类型名称
-//    private List<SafetyRecordimg>imgs;
+    private List<SafetyRecordImg> imgs;
     private Integer sorting;//排序方式 1 推荐排序 2 月销量排序 3 距离排序 4评分排序
     private  double  distance;
     private double showpacking ;//打包费
@@ -92,6 +95,14 @@ public class BusinessDetail {
     private String endTime2;//配送结束时间
     private String keyword;//查询使用
     private String showActity;//商家活动
+
+    public List<SafetyRecordImg> getImgs() {
+        return imgs;
+    }
+
+    public void setImgs(List<SafetyRecordImg> imgs) {
+        this.imgs = imgs;
+    }
 
     public Integer getId() {
         return id;
@@ -515,6 +526,14 @@ public class BusinessDetail {
 
     public void setBaseCharge(double baseCharge) {
         this.baseCharge = baseCharge;
+    }
+
+    public double getCharge() {
+        return charge;
+    }
+
+    public void setCharge(double charge) {
+        this.charge = charge;
     }
 
     public String getCode() {

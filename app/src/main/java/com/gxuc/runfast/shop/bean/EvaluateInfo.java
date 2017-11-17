@@ -13,7 +13,7 @@ public class EvaluateInfo {
 
     public String userName;//评论人名称
 
-    public Double score;//打分
+    public double score;//打分
 
     public String shangstr;//点评
 

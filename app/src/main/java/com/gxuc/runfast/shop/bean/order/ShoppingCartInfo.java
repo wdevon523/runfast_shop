@@ -32,6 +32,7 @@ public class ShoppingCartInfo {
     public String totalprice;
     public String totaldisprice;
     public String tpacking;
+    public String price;
     public String pnum;
     public int activityId;
     public String activityname;

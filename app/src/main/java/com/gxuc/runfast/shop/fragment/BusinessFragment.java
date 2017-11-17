@@ -10,13 +10,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.adapter.shopcaradater.FoodAdapter;
 import com.gxuc.runfast.shop.adapter.shopcaradater.TypeAdapter;
 import com.gxuc.runfast.shop.bean.TypeBean;
+import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.view.SimpleDividerDecoration;
@@ -42,7 +42,7 @@ public class BusinessFragment extends LazyFragment {
     private int index;
     public FoodAdapter foodAdapter;
     private boolean sIsScrolling;
-
+    private boolean idDestroy;
 
     public BusinessFragment() {
         // Required empty public constructor
@@ -56,7 +56,7 @@ public class BusinessFragment extends LazyFragment {
         //listContainer = (ListContainer) findViewById(R.id.listcontainer);
         //listContainer.setAddClick((BusinessActivity) getActivity(),(BusinessActivity) getActivity());
         initData();
-        setAddClick((BusinessActivity) getActivity(),(BusinessActivity) getActivity());
+        setAddClick((BusinessActivity) getActivity(), (BusinessActivity) getActivity());
     }
 
     private void initData() {
@@ -114,7 +114,7 @@ public class BusinessFragment extends LazyFragment {
     }
 
     public void setAddClick(AddWidget.OnAddClick onAddClick, View.OnClickListener listener) {
-        foodAdapter = new FoodAdapter(foodBeanList, onAddClick,getContext(),listener);
+        foodAdapter = new FoodAdapter(foodBeanList, onAddClick, getContext(), listener);
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView2.setLayoutManager(linearLayoutManager);
         ((DefaultItemAnimator) recyclerView2.getItemAnimator()).setSupportsChangeAnimations(false);
@@ -129,15 +129,15 @@ public class BusinessFragment extends LazyFragment {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                    sIsScrolling = true;
-                    Glide.with(getActivity()).pauseRequests();
-                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (sIsScrolling == true) {
-                        Glide.with(getActivity()).resumeRequests();
-                    }
-                    sIsScrolling = false;
-                }
+//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
+//                    sIsScrolling = true;
+//                    Glide.with(getActivity()).pauseRequests();
+//                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                    if (sIsScrolling == true) {
+//                        Glide.with(getActivity()).resumeRequests();
+//                    }
+//                    sIsScrolling = false;
+//                }
             }
 
             @Override
@@ -181,23 +181,25 @@ public class BusinessFragment extends LazyFragment {
     }
 
 
-    public FoodAdapter getFoodAdapter(){
+    public FoodAdapter getFoodAdapter() {
         return foodAdapter;
     }
-    public TypeAdapter getTypeAdapter(){
+
+    public TypeAdapter getTypeAdapter() {
         return typeAdapter;
     }
 
-    public List<FoodBean> getFoodBeanList(){
+    public List<FoodBean> getFoodBeanList() {
         return foodBeanList;
     }
-    public List<TypeBean>  getTypeBeanList(){
+
+    public List<TypeBean> getTypeBeanList() {
         return types;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        sIsScrolling = false;
+        idDestroy = true;
     }
 }

@@ -39,6 +39,7 @@ public class CustomApplication extends BaseApplication {
 
     //public static LocationClient mLocationClient;
 
+    public static boolean isRelogining = false;
 
     @Override
     public void onCreate() {
@@ -77,12 +78,12 @@ public class CustomApplication extends BaseApplication {
     }
 
 
-    public static NetInterface getRetrofit(){
+    public static NetInterface getRetrofit() {
         return ApiServiceFactory.getApi();
     }
 
-    public static Context getContext(){
-        return  context;
+    public static Context getContext() {
+        return context;
     }
 
     /**

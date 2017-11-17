@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.bean.FoodBean;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,9 +35,9 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
     }
 
     public interface UpdateSpecCountImp {
-        void add(View view, FoodBean foodBean);
+        void add(View view, FoodBean foodBean, int position);
 
-        void sub(FoodBean fb);
+        void sub(FoodBean fb, int position);
     }
 
     @Override
@@ -47,11 +48,43 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
     }
 
     @Override
-    public void onBindViewHolder(SpecCarViewHolder holder, int position) {
+    public void onBindViewHolder(SpecCarViewHolder holder, final int position) {
         final FoodBean foodBean = carFoods.get(position);
+        BigDecimal foodPayPrice = new BigDecimal(0.0);
+        BigDecimal foodTotalPrice = new BigDecimal(0.0);
         if (foodBean != null) {
             holder.tvCarName.setText(foodBean.getName());
-            holder.tvCarPrice.setText("¥" + foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount())));
+//            if (foodBean.getDisprice() == null || TextUtils.equals("0", foodBean.getDisprice())) {
+//                holder.tvCarPrice.setText("¥" + foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount())));
+//            } else {
+//                holder.tvCarPrice.setText("¥" + new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount())));
+//            }
+
+            if (foodBean.getIslimited() == 0) {
+                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
+                    foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                } else {
+                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                    foodPayPrice = foodTotalPrice;
+                }
+            } else {
+                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
+                    if (foodBean.getSelectCount() <= foodBean.getLimitNum()) {
+                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                    } else {
+                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getLimitNum())).add(
+                                foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount() - foodBean.getLimitNum())));
+                    }
+                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                } else {
+                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                    foodPayPrice = foodTotalPrice;
+                }
+            }
+
+            holder.tvCarPrice.setText("¥" + foodPayPrice);
+
             holder.tvCount.setText(foodBean.getSelectCount() + "");
             holder.tvSpec.setText(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? "" : foodBean.getGoodsSpec());
             holder.tvSpec.setVisibility(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? View.GONE : View.VISIBLE);
@@ -66,9 +99,31 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
                 @Override
                 public void onClick(View v) {
                     long selectCount = foodBean.getSelectCount();
-                    selectCount++;
+
+                    if (selectCount >= foodBean.getNum()){
+                        ToastUtil.showToast("库存不足");
+                        return;
+                    }
+
+                    if (foodBean.getIslimited() == 1) {
+                        if (foodBean.getLimittype() == 0) {
+                            if (selectCount == foodBean.getLimitNum()) {
+                                ToastUtil.showToast("已达到限购上线");
+                                return;
+                            } else {
+                                selectCount++;
+                            }
+                        } else {
+                            if (selectCount == foodBean.getLimitNum()) {
+                                ToastUtil.showToast("已超过优惠件数，将以原价购买");
+                            }
+                            selectCount++;
+                        }
+                    } else {
+                        selectCount++;
+                    }
                     foodBean.setSelectCount(selectCount);
-                    specCountImp.add(v, foodBean);
+                    specCountImp.add(v, foodBean, position);
                 }
             });
             holder.ivSub.setOnClickListener(new View.OnClickListener() {
@@ -80,7 +135,7 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
                     }
                     selectCount--;
                     foodBean.setSelectCount(selectCount);
-                    specCountImp.sub(foodBean);
+                    specCountImp.sub(foodBean, position);
                 }
             });
         }

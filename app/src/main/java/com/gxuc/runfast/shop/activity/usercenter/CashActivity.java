@@ -163,6 +163,10 @@ public class CashActivity extends ToolBarActivity {
             String msg = jsonObject.optString("msg");
             CustomToast.INSTANCE.showToast(this, msg);
 
+            if (success) {
+                finish();
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

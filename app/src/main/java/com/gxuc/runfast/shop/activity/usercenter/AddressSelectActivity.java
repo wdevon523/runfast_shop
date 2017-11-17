@@ -44,6 +44,8 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
     private AddressSelectAdapter mSelectAdapter;
     private int mFlags;
     private int bid;
+    private int isfull;
+    private String full;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,8 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
     private void initData() {
         mFlags = getIntent().getFlags();
         bid = getIntent().getIntExtra("bid", 0);
+        isfull = getIntent().getIntExtra("isfull", 0);
+        full = getIntent().getStringExtra("full");
         mData = new ArrayList<>();
         mSelectAdapter = new AddressSelectAdapter(mData, this);
         mSelectAdapter.setOnItemClickListener(this);
@@ -118,7 +122,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
     }
 
     private void requestSelectAddr(final AddressInfo addressInfo) {
-        CustomApplication.getRetrofit().selectAddr(bid, addressInfo.getLatitude(), addressInfo.getLongitude()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().selectAddr(bid, addressInfo.getLatitude(), addressInfo.getLongitude(), isfull, full).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 try {
@@ -126,6 +130,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
                     if (jsonObject.optBoolean("success")) {
                         Intent intent = new Intent();
                         intent.putExtra("addressInfo", addressInfo);
+                        intent.putExtra("shippingPrice", jsonObject.optDouble("total"));
                         setResult(IntentConfig.ADDRESS_SELECT, intent);
                         finish();
                     } else {

@@ -43,12 +43,13 @@
 
         <activity
             android:name=".activity.MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="444f905bcb7010882717cae2a41f0653" />
-            <!--android:value="8ce45bcbc60d5e1a26515c6df303af70" />-->
+        <!--android:value="8ce45bcbc60d5e1a26515c6df303af70" />-->
         <!-- <meta-data -->
         <!-- android:name="com.amap.api.v2.apikey" -->
         <!-- android:value="5272f4f15e779adfcf76756efe57d27f"/> -->
@@ -65,6 +66,7 @@
 
         <activity
             android:name=".activity.LoginActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.RegisterActivity"
@@ -206,8 +208,8 @@
             android:label="备注" />
         <activity
             android:name=".activity.homepage.TopImageLinkActivity"
-            android:screenOrientation="portrait"
-            android:label="活动详情" />
+            android:label="活动详情"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ordercenter.OrderEvaluationActivity"
             android:label="商家评价" />
@@ -216,29 +218,37 @@
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
             android:exported="false"
             android:screenOrientation="behind"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.ordercenter.OrderComplainActivity"
             android:label="投诉"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.usercenter.ChangeNameActivity"
             android:label="修改信息"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activity.usercenter.MyEnshrineActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activity.ordercenter.PayChannelActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.usercenter.MyEnshrineActivity"
+            android:label="我的收藏"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ordercenter.PayChannelActivity"
             android:label="支付"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <activity
-            android:name="com.gxuc.runfast.shop.wxapi.WXPayEntryActivity"
+            android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name="com.gxuc.runfast.shop.activity.usercenter.UserBankActivity"
+        <activity
+            android:name=".activity.usercenter.UserBankActivity"
             android:label="提现账户"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.ordercenter.PaySuccessActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 
