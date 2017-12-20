@@ -22,9 +22,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -67,12 +69,16 @@ public class PayChannelActivity extends ToolBarActivity {
     @BindView(R.id.rl_ali_pay)
     RelativeLayout rlAliPay;
 
-    private int payType = 0;//0钱包 1微信 2支付宝
+    private int payType = 2;//0支付宝  1微信 2钱包
+    private boolean isPayBack = false;
     private User userInfo;
     private IWXAPI wxapi;
     private AlertDialog alertDialog;
     private Dialog mPayInputDialog;
+    private OrderDetail orderDetailInfo;
     private OrderInfo orderInfo;
+    private int orderId;
+    private String orderCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +95,19 @@ public class PayChannelActivity extends ToolBarActivity {
 //        mPrice = getIntent().getDoubleExtra("price", 0.0);
 //        businessName = getIntent().getStringExtra("businessName");
         orderInfo = getIntent().getParcelableExtra("orderInfo");
-        mBtnToPay.setText("确认支付 ¥ " + orderInfo.getPrice());
+        orderDetailInfo = (OrderDetail) getIntent().getSerializableExtra("orderDetail");
+
+        if (orderInfo != null) {
+            orderId = orderInfo.getId();
+            orderCode = orderInfo.getOrderCode();
+            mBtnToPay.setText("确认支付 ¥ " + orderInfo.getPrice());
+        } else {
+            orderId = orderDetailInfo.goodsSellRecord.id;
+            orderCode = orderDetailInfo.goodsSellRecord.orderCode;
+            mBtnToPay.setText("确认支付 ¥ " + orderDetailInfo.goodsSellRecord.price);
+        }
+
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,8 +139,47 @@ public class PayChannelActivity extends ToolBarActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isPayBack) {
+            requsetCheckPayStatus();
+        }
+
+    }
+
+    private void requsetCheckPayStatus() {
+
+        CustomApplication.getRetrofit().getOrderPayStatus(orderCode, payType).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        if (orderInfo != null) {
+                            startActivity(new Intent(PayChannelActivity.this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
+                        } else {
+                            startActivity(new Intent(PayChannelActivity.this, PaySuccessActivity.class).putExtra("orderDetail", orderDetailInfo));
+                        }
+                        finish();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void requestAliPay() {
-        CustomApplication.getRetrofit().aliPay(orderInfo.getId(), "1").enqueue(new MyCallback<String>() {
+
+
+        CustomApplication.getRetrofit().aliPay(orderId, "1").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -130,6 +187,7 @@ public class PayChannelActivity extends ToolBarActivity {
                     JSONObject jsonObject = new JSONObject(body);
                     String orderInfo = jsonObject.optString("orderInfo");
                     alipay(orderInfo);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -143,7 +201,7 @@ public class PayChannelActivity extends ToolBarActivity {
     }
 
     private void requestWeiXinPay() {
-        CustomApplication.getRetrofit().weiXintPay(orderInfo.getId(), "0").enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().weiXintPay(orderId, "0").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -186,7 +244,7 @@ public class PayChannelActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_wallet_pay:
-                payType = 0;
+                payType = 2;
                 mCbWalletPay.setImageResource(R.drawable.pay_type_check);
                 mCbWeixinPay.setImageResource(R.drawable.pay_type_nocheck);
                 mCbAliPay.setImageResource(R.drawable.pay_type_nocheck);
@@ -198,7 +256,7 @@ public class PayChannelActivity extends ToolBarActivity {
                 mCbAliPay.setImageResource(R.drawable.pay_type_nocheck);
                 break;
             case R.id.rl_ali_pay:
-                payType = 2;
+                payType = 0;
                 mCbAliPay.setImageResource(R.drawable.pay_type_check);
                 mCbWeixinPay.setImageResource(R.drawable.pay_type_nocheck);
                 mCbWalletPay.setImageResource(R.drawable.pay_type_nocheck);
@@ -208,7 +266,7 @@ public class PayChannelActivity extends ToolBarActivity {
                     return;
                 }
                 switch (payType) {
-                    case 0:
+                    case 2:
                         showPayInputDialog();
                         break;
                     case 1:
@@ -216,7 +274,7 @@ public class PayChannelActivity extends ToolBarActivity {
 //                        requestWeiXinSign();
 //                        wechatpay();
                         break;
-                    case 2:
+                    case 0:
                         requestAliPay();
                         break;
                 }
@@ -225,15 +283,17 @@ public class PayChannelActivity extends ToolBarActivity {
     }
 
     private void requestWalletPay(String password) {
-        CustomApplication.getRetrofit().walletPay(orderInfo.getId(), MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
+        CustomProgressDialog.startProgressDialog(this);
+        CustomApplication.getRetrofit().walletPay(orderId, password).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
                 dealWalletPay(response.body());
             }
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
             }
         });
     }
@@ -252,8 +312,8 @@ public class PayChannelActivity extends ToolBarActivity {
         TextView tvPayPrice = (TextView) root.findViewById(R.id.tv_pay_price);
         final EditText etPayPassword = (EditText) root.findViewById(R.id.et_pay_password);
         TextView tvPay = (TextView) root.findViewById(R.id.tv_pay);
-        tvBusinessName.setText(orderInfo.getBusinessName());
-        tvPayPrice.setText("¥" + orderInfo.getPrice());
+        tvBusinessName.setText(orderInfo != null ? orderInfo.getBusinessName() : orderDetailInfo.goodsSellRecord.businessName);
+        tvPayPrice.setText("¥" + (orderInfo != null ? orderInfo.getPrice() : orderDetailInfo.goodsSellRecord.price));
 
         mPayInputDialog.setContentView(root);
         Window dialogWindow = mPayInputDialog.getWindow();
@@ -262,7 +322,7 @@ public class PayChannelActivity extends ToolBarActivity {
         lp.width = (int) getResources().getDimension(R.dimen.dimen_300_dp);
         lp.height = lp.WRAP_CONTENT;
         lp.x = 0;
-        lp.y = 400;
+        lp.y = 250;
         lp.alpha = 5f;
         dialogWindow.setAttributes(lp);
         mPayInputDialog.setCanceledOnTouchOutside(false);
@@ -292,7 +352,11 @@ public class PayChannelActivity extends ToolBarActivity {
             JSONObject object = new JSONObject(body);
             CustomToast.INSTANCE.showToast(this, object.optString("msg"));
             if (object.optBoolean("success")) {
-                startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
+                if (orderInfo != null) {
+                    startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
+                } else {
+                    startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderDetail", orderDetailInfo));
+                }
                 finish();
             }
         } catch (JSONException e) {
@@ -322,6 +386,7 @@ public class PayChannelActivity extends ToolBarActivity {
         weiXinPayOutput.setPartnerid(Contants.WEI_XIN_BUSINESS_ID);
         weiXinPayOutput.setPrepayid(weiXinPayBean.prepay_id);
         weChatPayHandle.pay(weiXinPayOutput);
+        isPayBack = true;
     }
 
     // 支付宝支付
@@ -330,6 +395,7 @@ public class PayChannelActivity extends ToolBarActivity {
         AliPayHandle aliPayHandle = new AliPayHandle(this);
         try {
             aliPayHandle.alipay(orderInfo);
+            isPayBack = true;
 
         } catch (AliPayHandle.APliPaySetingInfoNullException e) {
             e.printStackTrace();

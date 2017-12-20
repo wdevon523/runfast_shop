@@ -10,11 +10,13 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
 import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,8 @@ public class LoginActivity extends ToolBarActivity {
     @BindView(R.id.et_user_password)
     EditText etUserPassword;
     private boolean isRelogin;
+    private String phone;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +48,11 @@ public class LoginActivity extends ToolBarActivity {
     }
 
     private void initView() {
-        User userInfo = UserService.getUserInfo(this);
-        if (userInfo != null) {
-            etUserName.setText(userInfo.getMobile());
-            etUserPassword.setText(userInfo.getPassword());
-        }
+//        User userInfo = UserService.getUserInfo(this);
+//        if (userInfo != null) {
+        etUserName.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.MOBILE));
+        etUserPassword.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD));
+//        }
     }
 
     @OnClick({R.id.btn_login, R.id.btn_register, R.id.tv_forgot_password})
@@ -70,8 +74,8 @@ public class LoginActivity extends ToolBarActivity {
      * 账号注册
      */
     private void login() {
-        String phone = etUserName.getText().toString().trim();
-        String password = etUserPassword.getText().toString().trim();
+        phone = etUserName.getText().toString().trim();
+        password = etUserPassword.getText().toString().trim();
 
         if (TextUtils.isEmpty(phone)) {
             CustomToast.INSTANCE.showToast(this, "请输入手机号");
@@ -82,7 +86,7 @@ public class LoginActivity extends ToolBarActivity {
             return;
         }
         LogUtil.d("password", MD5Util.MD5(password));
-        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), 0).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), CustomApplication.alias,0).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealLogin(response.body());
@@ -106,7 +110,8 @@ public class LoginActivity extends ToolBarActivity {
                 return;
             }
 //            CustomApplication.isRelogining = false;
-
+            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, phone);
+            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, password);
             JSONObject app_cuser = object.getJSONObject("app_cuser");
             User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
             user.setPassword(etUserPassword.getText().toString().trim());

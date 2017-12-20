@@ -171,7 +171,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
                 return;
             }
 
-            CustomApplication.getRetrofit().getEditPwdCode().enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofit().getEditPwdCode(userInfo.getMobile()).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealCode(response.body());

@@ -32,7 +32,6 @@ public class TypeAdapter extends BaseQuickAdapter<TypeBean, BaseViewHolder> {
 		notifyDataSetChanged();
 	}
 
-
 	@Override
 	protected void convert(BaseViewHolder helper, TypeBean item) {
 		helper.setText(R.id.tv_name, item.getName())

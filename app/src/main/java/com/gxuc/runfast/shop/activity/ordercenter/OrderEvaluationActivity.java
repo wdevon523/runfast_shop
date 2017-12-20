@@ -13,6 +13,7 @@ import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.willy.ratingbar.BaseRatingBar;
 import com.willy.ratingbar.ScaleRatingBar;
@@ -22,6 +23,7 @@ import com.zhy.view.flowlayout.TagFlowLayout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.x;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -71,6 +73,8 @@ public class OrderEvaluationActivity extends ToolBarActivity {
     private Set<Integer> driverSet;
     private int isDeliver;
     private int oid;
+    private String businessName;
+    private String logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,10 @@ public class OrderEvaluationActivity extends ToolBarActivity {
 
     private void initData() {
         oid = getIntent().getIntExtra("oid", 0);
+        logo = getIntent().getStringExtra("logo");
+        businessName = getIntent().getStringExtra("businessName");
+        x.image().bind(ivOrderEvaluationBusinessImg, logo);
+        tvOrderEvaluationBusinessName.setText(businessName);
         isDeliver = getIntent().getIntExtra("isDeliver", 0);
         flOrderEvaluationOptions.setAdapter(new TagAdapter<String>(orderOptions) {
             @Override
@@ -160,20 +168,35 @@ public class OrderEvaluationActivity extends ToolBarActivity {
 
     @OnClick(R.id.tv_publish)
     public void onViewClicked() {
+
+        if (rbOrderEvaluate.getRating() == 0.0F) {
+            ToastUtil.showToast("请先给商家打分");
+            return;
+        }
+
         int orderRate = (int) (rbOrderEvaluate.getRating() - 2);
+
+        if (rbDriverEvaluate.getRating() == 0.0F) {
+            ToastUtil.showToast("请先给骑手打分");
+            return;
+        }
         int driverRate = (int) (rbDriverEvaluate.getRating() - 2);
-        Iterator<Integer> orderIterator = orderSet.iterator();
+
         String orderStr = "";
-        while (orderIterator.hasNext()) {
-            orderStr += (orderOptions[orderIterator.next()] + ",");
+        if (orderSet != null && orderSet.size() > 0) {
+            Iterator<Integer> orderIterator = orderSet.iterator();
+            while (orderIterator.hasNext()) {
+                orderStr += (orderOptions[orderIterator.next()] + ",");
+            }
         }
 
-        Iterator<Integer> driverIterator = driverSet.iterator();
         String driverStr = "";
-        while (driverIterator.hasNext()) {
-            driverStr += (driverOptions[driverIterator.next()] + ",");
+        if (driverSet != null && driverSet.size() > 0) {
+            Iterator<Integer> driverIterator = driverSet.iterator();
+            while (driverIterator.hasNext()) {
+                driverStr += (driverOptions[driverIterator.next()] + ",");
+            }
         }
-
         String content = etEvaluation.getText().toString().trim();
         LogUtil.d("devon", "orderStr= " + orderStr + "--driverStr= " + driverStr);
 

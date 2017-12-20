@@ -16,6 +16,16 @@ public class CustomConstant {
 
     public static String keyStore = "";
 
+    public static final String MOBILE = "mobile";
+
+    public static final String PASSWORD = "password";
+
+    public static final String AGENTID = "agentId";
+
+    public static final String POINTLAT = "pointLat";
+
+    public static final String POINTLON = "pointLon";
+
     public static final String sp_name = "passenger";
 
     public static final String sp_order_no = "orderNo";
@@ -47,13 +57,11 @@ public class CustomConstant {
 
     public static final int IMAGE_HEAD = 10001;//返回更新头像
 
-    static
-    {
+    static {
         FILE_DIR = Environment.getExternalStorageDirectory().getPath() + "/huelead";
         CAMERA_DIR = FILE_DIR + "/photo";
 
-        if (!new File(CAMERA_DIR).exists())
-        {
+        if (!new File(CAMERA_DIR).exists()) {
             new File(CAMERA_DIR).mkdirs();
         }
     }

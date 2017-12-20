@@ -130,9 +130,9 @@ public class UpdateAddressActivity extends ToolBarActivity {
         }
         if (mAddressLat != null) {
             CustomApplication.getRetrofit().postEditAddress(mAddressInfo.getId(),
-                    mUserName, mUserPhone, mAddressInfo.getAddress(),
+                    mUserName, mUserPhone, mTvAddress,
                     mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
-                    mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict())
+                    mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
                     .enqueue(new MyCallback<String>() {
                         @Override
                         public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -146,9 +146,9 @@ public class UpdateAddressActivity extends ToolBarActivity {
                     });
         } else {
             CustomApplication.getRetrofit().postEditAddress(mAddressInfo.getId(),
-                    mUserName, mUserPhone, mAddress,
+                    mUserName, mUserPhone, mTvAddress,
                     mHouseNumber, String.valueOf(mAddressInfo.getLongitude()), String.valueOf(mAddressInfo.getLatitude()),
-                    mAddressInfo.getProvinceName(), mAddressInfo.getCityName(), mAddressInfo.getCountyName())
+                    mAddressInfo.getProvinceName(), mAddressInfo.getCityName(), mAddressInfo.getCountyName(), 1)
                     .enqueue(new MyCallback<String>() {
                         @Override
                         public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -219,7 +219,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
 //        Integer id = UserService.getUserInfo().getId();
         CustomApplication.getRetrofit().postAddAddress(mUserName, mUserPhone, mAddress,
                 mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
-                mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict())
+                mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
                 .enqueue(new MyCallback<String>() {
                     @Override
                     public void onSuccessResponse(Call<String> call, Response<String> response) {

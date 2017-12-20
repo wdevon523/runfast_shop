@@ -205,10 +205,10 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
                 ivAct.setImageResource(R.drawable.icon_special);
                 break;
             case 5:
-                ivAct.setImageResource(R.drawable.icon_reduce);
+                ivAct.setImageResource(R.drawable.icon_free);
                 break;
             case 6:
-                ivAct.setImageResource(R.drawable.icon_reduce);
+                ivAct.setImageResource(R.drawable.icon_coupon);
                 break;
         }
     }

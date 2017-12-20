@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_alignParentRight="true"
-              android:gravity="center"
-              android:orientation="horizontal">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:gravity="center"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/iv_sub"
@@ -13,7 +13,7 @@
         android:layout_gravity="right"
         android:alpha="0"
         android:padding="5dp"
-        android:src="@drawable/icon_delete_product"/>
+        android:src="@drawable/icon_delete_product" />
 
     <TextView
         android:id="@+id/tv_count"
@@ -24,7 +24,7 @@
         android:alpha="0"
         android:gravity="center"
         android:text="1"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/iv_add"
@@ -32,6 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:padding="5dp"
-        android:src="@drawable/icon_add_product"/>
+        android:src="@drawable/icon_add_product" />
 
 </LinearLayout>

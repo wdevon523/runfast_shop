@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.bean.order.GoodsSellRecordChildren;
 import com.gxuc.runfast.shop.R;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -57,7 +58,8 @@ public class OrderGoodsAdapter extends BaseAdapter {
 
         viewHolder.tvOrderDetailGoodName.setText(goodsSellRecordChildren.getGoodsSellName());
         viewHolder.tvOrderDetailGoodNum.setText("x" + goodsSellRecordChildren.getNum());
-        viewHolder.tvOrderDetailGoodPrice.setText("¥ " + goodsSellRecordChildren.getPrice());
+        BigDecimal prudoctTotalPrice = goodsSellRecordChildren.getPrice().multiply(new BigDecimal(String.valueOf(goodsSellRecordChildren.getNum())));
+        viewHolder.tvOrderDetailGoodPrice.setText("¥ " + prudoctTotalPrice);
         return convertView;
     }
 

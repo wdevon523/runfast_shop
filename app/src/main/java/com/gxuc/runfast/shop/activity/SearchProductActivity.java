@@ -19,7 +19,9 @@ import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.bean.BusinessExercise;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.data.IntentFlag;
@@ -66,7 +68,8 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
     private SharedPreferencesUtil mUtil;
     private String SEARCH_HISTORY = "search_history";
     private String mSearch;
-
+    private String lat;
+    private String lon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +99,10 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
     }
 
     private void initData() {
+
+        lat = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT);
+        lon = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON);
+
         mUtil = new SharedPreferencesUtil(this, SEARCH_HISTORY);
         mRefreshLayout.setVisibility(View.GONE);
         BreakfastAdapter breakfastAdapert = new BreakfastAdapter(businessInfos, this, this);
@@ -132,7 +139,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
      * 搜索商品
      */
     private void searchGoods(String name) {
-        CustomApplication.getRetrofit().searchGoods(1, 10, 110.0, 23.0, name, 1, 4).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().searchGoods(1, 10, lon, lat, name, 1, 4, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -173,7 +180,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
                 info.name = busObject.optString("name");
                 info.distance = busObject.optDouble("distance");
                 info.levelId = busObject.optInt("levelId");
-                info.salesnum = busObject.optInt("levelId");
+                info.salesnum = busObject.optInt("salenum");
                 info.startPay = busObject.optDouble("startPay");
                 info.busshowps = busObject.optDouble("busshowps");
                 info.baseCharge = busObject.optDouble("baseCharge");
@@ -261,7 +268,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
         String oldText = (String) mUtil.getData(SEARCH_HISTORY);
         if (!TextUtils.isEmpty(text) && !oldText.contains(text) && !TextUtils.isEmpty(oldText)) {
             mUtil.setData(SEARCH_HISTORY, oldText + "," + text);
-        } else if (TextUtils.isEmpty(oldText)){
+        } else if (TextUtils.isEmpty(oldText)) {
             mUtil.setData(SEARCH_HISTORY, text);
         }
     }

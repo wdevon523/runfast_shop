@@ -6,25 +6,32 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.fragment.MessageFragment;
 import com.gxuc.runfast.shop.fragment.MineFragment;
 import com.gxuc.runfast.shop.fragment.OrderFragment;
 import com.gxuc.runfast.shop.fragment.TakeOutFoodFragment;
 import com.gxuc.runfast.shop.util.ActivityManager;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.SystemUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
 
 public class MainActivity extends ToolBarActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -34,6 +41,7 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
     RadioGroup mainGroup;
 
     private boolean isExit = false;
+    public int MAIN_PAGE = 0;
 
     private List<Fragment> mFragments;
 
@@ -44,7 +52,34 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         ButterKnife.bind(this);
         ActivityManager.pushActivity(this);
         //toolbar.setNavigationIcon(null);
+        bindJpushAlias();
         initDate(savedInstanceState);
+    }
+
+    private void bindJpushAlias() {
+
+        JPushInterface.setAlias(this, CustomApplication.alias, new TagAliasCallback() {
+            @Override
+            public void gotResult(int i, String s, Set<String> set) {
+                Log.d("  绑定极光 ", "[initJPush] 设置别名: " + "i:" + i
+                        + ",s:" + s + ",set:" + set);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityManager.popActivity(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int currentPage = intent.getIntExtra("currentPage", MAIN_PAGE);
+        if (currentPage == 2) {
+            mainGroup.check(R.id.main_tab_order);
+        }
     }
 
     private void initDate(Bundle savedInstanceState) {
@@ -120,12 +155,6 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
                 break;
         }
         chekedFragment(index);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ActivityManager.popActivity(this);
     }
 
     @Override

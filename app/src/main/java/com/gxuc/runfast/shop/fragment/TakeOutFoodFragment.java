@@ -47,9 +47,12 @@ import com.gxuc.runfast.shop.bean.maintop.TopImage1;
 import com.gxuc.runfast.shop.bean.maintop.TopImages;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.CustomScrollView;
 import com.gxuc.runfast.shop.view.EasyLoadMoreView;
 import com.gxuc.runfast.shop.view.MaxHeightRecyclerView;
@@ -102,6 +105,9 @@ public class TakeOutFoodFragment extends Fragment implements
     TextView tvAddress;
     @BindView(R.id.rl_refresh)
     BGARefreshLayout mRefreshLayout;
+
+    @BindView(R.id.ll_no_business)
+    LinearLayout llNoNusiness;
 //    @BindView(R.id.rv_home_middle)
 //    RecyclerView mRvHomeMiddle;
 //    @BindView(R.id.rv_home_bottom)
@@ -285,8 +291,10 @@ public class TakeOutFoodFragment extends Fragment implements
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 //                super.onScrolled(recyclerView, dx, dy);
-                scrollY += dy;
-
+                if (mRefreshLayout.isEnabled()) {
+                    scrollY += dy;
+                }
+                Log.d("scrollY", "mRefreshLayout.isEnabled() = " + mRefreshLayout.isEnabled());
                 Log.d("scrollY", "scrollY = " + dy + ",height =" + height);
                 if (scrollY > height) {
                     layoutSearchLocation.setVisibility(View.GONE);
@@ -338,11 +346,11 @@ public class TakeOutFoodFragment extends Fragment implements
     /**
      * 上传经纬度
      */
-    private void netPostAddress(Double lon, Double lat) {
+    private void netPostAddress(final Double lon, final Double lat) {
 //        CustomApplication.getRetrofit().postAddress(lon, lat).enqueue(this);
         //TODO 经纬度
 //        CustomApplication.getRetrofit().postAddress(110.07, 23.38).enqueue(new MyCallback<String>() {
-        CustomApplication.getRetrofit().postAddress(lon, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postAddress(lon, lat, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -351,9 +359,14 @@ public class TakeOutFoodFragment extends Fragment implements
                 AGENT_ID = mAgentId;
                 MapInfo map1 = mapInfos.getMap();
                 if (map1 != null) {
-                    pointLat = map1.getLatitude();
-                    pointLon = map1.getLongitude();
+//                    pointLat = map1.getLatitude();
+//                    pointLon = map1.getLongitude();
+                    pointLat = lat;
+                    pointLon = lon;
                 }
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.AGENTID, String.valueOf(mAgentId));
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLAT, String.valueOf(pointLat));
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLON, String.valueOf(pointLon));
                 CustomProgressDialog.stopProgressDialog();
                 netHomeImage(mAgentId);
             }
@@ -469,7 +482,7 @@ public class TakeOutFoodFragment extends Fragment implements
      * 获取附近商家
      */
     private void getNearbyBusiness(Double lon, Double lat, int pager) {
-        CustomApplication.getRetrofit().getNearbyBusinesses(String.valueOf(lon), String.valueOf(lat), pager).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().getNearbyBusinesses(String.valueOf(lon), String.valueOf(lat), pager, 1).enqueue(new MyCallback<String>() {
             //        CustomApplication.getRetrofit().getNearbyBusinesses("110.07", "23.38", pager).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -477,9 +490,12 @@ public class TakeOutFoodFragment extends Fragment implements
                 try {
                     JSONObject jsonObject = new JSONObject(data);
                     JSONArray bus = jsonObject.getJSONArray("rows");
+                    llNoNusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
+                    mRefreshLayout.setEnabled(businessNewInfos.size() > 3);
                     if (bus == null || bus.length() <= 0) {
                         moreAdapter.loadAllDataCompleted();
                         mRefreshLayout.endRefreshing();
+//                        mRefreshLayout.setEnabled(true);
                         return;
                     }
                     for (int i = 0; i < bus.length(); i++) {
@@ -518,7 +534,11 @@ public class TakeOutFoodFragment extends Fragment implements
                         businessNewInfos.add(itemBean);
                     }
                     mRefreshLayout.endRefreshing();
+                    mRefreshLayout.setEnabled(true);
                     moreAdapter.loadCompleted();
+
+                    llNoNusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
+                    mRefreshLayout.setEnabled(businessNewInfos.size() > 3);
                     CustomProgressDialog.stopProgressDialog();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -527,10 +547,12 @@ public class TakeOutFoodFragment extends Fragment implements
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-                CustomToast.INSTANCE.showToast(getContext(), "网络异常");
+//                CustomToast.INSTANCE.showToast(getContext(), "网络异常");
                 CustomProgressDialog.stopProgressDialog();
+                moreAdapter.loadFailed();
                 if (mRefreshLayout != null) {
                     mRefreshLayout.endRefreshing();
+                    mRefreshLayout.setEnabled(true);
                 }
             }
         });
@@ -576,6 +598,8 @@ public class TakeOutFoodFragment extends Fragment implements
 
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        mRefreshLayout.setEnabled(false);
+        scrollY = 0;
         page = 1;
         netPostAddress(pointLon, pointLat);
     }

@@ -1,12 +1,16 @@
 package com.gxuc.runfast.shop.activity.ordercenter;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BusinessActivity;
+import com.gxuc.runfast.shop.activity.MainActivity;
 import com.gxuc.runfast.shop.adapter.OrderGoodsAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
@@ -28,6 +33,7 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.example.supportv1.utils.ImageLoaderUtil;
+import com.gxuc.runfast.shop.util.ViewUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -100,10 +106,11 @@ public class OrderDetailActivity extends ToolBarActivity {
     TextView tvOrderDetailCoupons;
 
     private List<String> mStrings;
-    private OrderInfo mOrderInfo;
     private OrderDetail orderDetailInfo;
     private User userInfo;
     private Integer orderId;
+    private boolean isFromePayFinish;
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,11 +118,27 @@ public class OrderDetailActivity extends ToolBarActivity {
         setContentView(R.layout.activity_order_detail);
         ButterKnife.bind(this);
         initData();
-        getNetData();
+        setListener();
+//        getNetData();
     }
 
     private void initData() {
-        mOrderInfo = getIntent().getParcelableExtra("orderInfo");
+        orderId = getIntent().getIntExtra("orderId", 0);
+        isFromePayFinish = getIntent().getBooleanExtra("isFromePayFinish", false);
+    }
+
+    private void setListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isFromePayFinish) {
+                    Intent data = new Intent(OrderDetailActivity.this, MainActivity.class);
+                    data.putExtra("currentPage", 2);
+                    startActivity(data);
+                }
+                finish();
+            }
+        });
     }
 
 //    private void initView() {
@@ -125,7 +148,6 @@ public class OrderDetailActivity extends ToolBarActivity {
 //    }
 
     private void getNetData() {
-        orderId = mOrderInfo.getId();
         userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
@@ -136,7 +158,7 @@ public class OrderDetailActivity extends ToolBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        getNetData();
+        getNetData();
     }
 
     private void getOrderDetail(Integer id, User userInfo) {
@@ -164,17 +186,17 @@ public class OrderDetailActivity extends ToolBarActivity {
      */
     private void fillView(String data) {
         orderDetailInfo = GsonUtil.fromJson(data, OrderDetail.class);
-        if (orderDetailInfo == null){
+        if (orderDetailInfo == null) {
             return;
         }
-        mTvOrderManState.setText(orderDetailInfo.goodsSellRecord.statStr);
+        mTvOrderManState.setText(orderDetailInfo.goodsSellRecord.statStr + " >");
 
         if (orderDetailInfo.goodsSellRecord.status == 2 ||
                 orderDetailInfo.goodsSellRecord.status == 3 ||
                 orderDetailInfo.goodsSellRecord.status == 4 ||
                 orderDetailInfo.goodsSellRecord.status == 5) {
             mLlManDeliverTime.setVisibility(View.VISIBLE);
-            mTvManDeliverTime.setText(orderDetailInfo.goodsSellRecord.readyTime);
+            mTvManDeliverTime.setText(orderDetailInfo.goodsSellRecord.disTime);
         } else {
             mLlManDeliverTime.setVisibility(View.INVISIBLE);
         }
@@ -186,7 +208,7 @@ public class OrderDetailActivity extends ToolBarActivity {
 
         OrderGoodsAdapter orderGoodsAdapter = new OrderGoodsAdapter(this, orderDetailInfo.goodsSellRecordChildren);
         llContainProduct.removeAllViews();
-        if (orderDetailInfo.goodsSellRecordChildren != null){
+        if (orderDetailInfo.goodsSellRecordChildren != null) {
             for (int i = 0; i < orderDetailInfo.goodsSellRecordChildren.size(); i++) {
                 llContainProduct.addView(orderGoodsAdapter.getView(i, null, null));
             }
@@ -198,7 +220,7 @@ public class OrderDetailActivity extends ToolBarActivity {
         mTvOrderDetailCouponPrice.setText("-¥ " + orderDetailInfo.goodsSellRecord.yhprice);
         mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.totalpay);
         mTvOrderDetailDeliverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
-        if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.readyTime)) {
+        if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.readyTime) || !TextUtils.equals(orderDetailInfo.goodsSellRecord.readyTime, "null")) {
             mTvOrderDetailDeliverTime.setText(orderDetailInfo.goodsSellRecord.disTime);
             mRlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
         } else {
@@ -280,13 +302,14 @@ public class OrderDetailActivity extends ToolBarActivity {
 //        }
         else if (status == 8) {
             mBtnBuyAgain.setVisibility(View.VISIBLE);
-            mBtnAppraise.setVisibility(View.VISIBLE);
+            mBtnAppraise.setVisibility(orderDetailInfo.goodsSellRecord.isComent == null
+                    ? View.VISIBLE : View.GONE);
 
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactBusiness.setVisibility(View.GONE);
             mBtnContactMan.setVisibility(View.GONE);
+            mBtnContactBusiness.setVisibility(View.GONE);
         } else {
             mBtnBuyAgain.setVisibility(View.VISIBLE);
 
@@ -300,9 +323,15 @@ public class OrderDetailActivity extends ToolBarActivity {
 
     }
 
-    @OnClick({R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.btn_contact_business, R.id.btn_contact_man, R.id.btn_appraise})
+    @OnClick({R.id.tv_order_man_state, R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.btn_contact_business, R.id.btn_contact_man, R.id.btn_appraise})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            //订单状态
+            case R.id.tv_order_man_state:
+                Intent orderIntent = new Intent(this, OrderStatusActivity.class);
+                orderIntent.putExtra("orderId", orderId);
+                startActivity(orderIntent);
+                break;
             //再次购买
             case R.id.btn_buy_again:
                 requestBuyAgain();
@@ -311,8 +340,9 @@ public class OrderDetailActivity extends ToolBarActivity {
             //立即支付
             case R.id.btn_pay_now:
                 Intent payChannelIntent = new Intent(this, PayChannelActivity.class);
-                payChannelIntent.putExtra("orderId", orderId);
-                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
+//                payChannelIntent.putExtra("orderId", orderId);
+//                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
+                payChannelIntent.putExtra("orderDetail", orderDetailInfo);
                 startActivity(payChannelIntent);
                 break;
             //确认完成
@@ -321,7 +351,8 @@ public class OrderDetailActivity extends ToolBarActivity {
                 break;
             //取消订单
             case R.id.btn_cancel_order:
-                requestCancelOrder();
+                showCancelDialog();
+//                requestCancelOrder();
                 break;
             //联系商家
             case R.id.btn_contact_business:
@@ -357,10 +388,31 @@ public class OrderDetailActivity extends ToolBarActivity {
             case R.id.btn_appraise:
                 Intent evaluationIntent = new Intent(this, OrderEvaluationActivity.class);
                 evaluationIntent.putExtra("oid", orderId);
+                evaluationIntent.putExtra("logo", orderDetailInfo.goodsSellRecord.logo);
+                evaluationIntent.putExtra("businessName", orderDetailInfo.goodsSellRecord.businessName);
                 evaluationIntent.putExtra("isDeliver", orderDetailInfo.goodsSellRecord.isDeliver);
                 startActivity(evaluationIntent);
                 break;
         }
+    }
+
+    private void showCancelDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        TextView tv = new TextView(this);
+        tv.setText("提前联系商家可以提高退款效率哦");
+        tv.setTextColor(Color.parseColor("#757575"));
+        tv.setTextSize(14);
+        tv.setPadding(ViewUtils.dip2px(this, 16), ViewUtils.dip2px(this, 16), 0, 0);
+        alertDialog = builder
+                .setNegativeButton("取消", null)
+                .setCustomTitle(tv)
+                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestCancelOrder();
+                    }
+                }).show();
+
     }
 
     private void requestBuyAgain() {
@@ -417,5 +469,26 @@ public class OrderDetailActivity extends ToolBarActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (alertDialog != null) {
+                if (alertDialog.isShowing()) {
+                    alertDialog.dismiss();
+                    return true;
+                }
+            }
+
+            if (isFromePayFinish) {
+                Intent data = new Intent(OrderDetailActivity.this, MainActivity.class);
+                data.putExtra("currentPage", 2);
+                startActivity(data);
+            }
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

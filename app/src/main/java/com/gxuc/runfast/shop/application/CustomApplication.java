@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.application;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.data.DataLayer;
@@ -10,11 +11,13 @@ import com.gxuc.runfast.shop.BuildConfig;
 import com.example.supportv1.app.BaseApplication;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
 import org.xutils.x;
 
+import cn.jpush.android.api.JPushInterface;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -40,6 +43,7 @@ public class CustomApplication extends BaseApplication {
     //public static LocationClient mLocationClient;
 
     public static boolean isRelogining = false;
+    public static String  alias;
 
     @Override
     public void onCreate() {
@@ -50,6 +54,9 @@ public class CustomApplication extends BaseApplication {
         //ShareSDK.initSDK(this);
         //初始化 xutils的网络请求部分
         x.Ext.init(this);
+
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
 
         context = getApplicationContext();
 //        initNet();
@@ -63,6 +70,11 @@ public class CustomApplication extends BaseApplication {
         });
         ImagePipelineConfig frescoConfig = ImagePipelineConfig.newBuilder(this).setDownsampleEnabled(true).build();
         Fresco.initialize(this, frescoConfig);
+
+        alias = SystemUtil.getIMEI(this);
+        if (TextUtils.isEmpty(alias)) {
+            alias = JPushInterface.getRegistrationID(this);
+        }
     }
 
     private void initNet() {

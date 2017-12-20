@@ -53,7 +53,7 @@ public class AddressSelectAdapter extends RecyclerView.Adapter<AddressSelectAdap
 //                holder.title.setTextColor(context.getResources().getColor(R.color.color_address_black));
 //            }
 //            holder.name.setText(address.address);
-        holder.title.setText(addressInfo.getUserAddress());
+        holder.title.setText(addressInfo.getUserAddress() + addressInfo.getAddress());
         holder.phone.setText(addressInfo.getPhone());
         holder.name.setText(addressInfo.getName());
         holder.itemView.setTag(position);

@@ -59,7 +59,7 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
 //            holder.tvSaleDistance.setText(String.valueOf(new DecimalFormat("#0.0").format(enshrine.distance)) + "km");
             holder.tvBusinessLevel.setText(String.valueOf(enshrine.levelId));
             holder.tvBusinessSaleNum.setText("月售" + String.valueOf(enshrine.salesnum) + "单");
-            holder.tvSaleStartPay.setText(enshrine.startPay.isNaN() ? "¥ 0元起送" : "¥ " + String.valueOf(enshrine.startPay) + "起送");
+            holder.tvSaleStartPay.setText(enshrine.startPay == null ? "¥ 0元起送" : "¥ " + String.valueOf(enshrine.startPay) + "起送");
 //            holder.tvSalePrice.setText(enshrine.baseCharge == NaN ? "配送费¥0" : "配送费¥" + String.valueOf(enshrine.baseCharge));
             holder.tvSalePrice.setText("配送费¥" + enshrine.startPay);
             holder.rbOrderEvaluate.setRating(enshrine.levelId);

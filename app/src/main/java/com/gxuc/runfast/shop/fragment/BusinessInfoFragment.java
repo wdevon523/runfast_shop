@@ -1,7 +1,12 @@
 package com.gxuc.runfast.shop.fragment;
 
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.ShowImageActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -67,24 +73,41 @@ public class BusinessInfoFragment extends LazyFragment {
         tvBusinessRemark = (TextView) findViewById(R.id.tv_business_remark);
         tvDistributionTime = (TextView) findViewById(R.id.tv_distribution_time);
         flImgContain = (ZFlowLayout) findViewById(R.id.ll_img_contain);
+        tvBusinessPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + businessDetail.getMobile()));
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                startActivity(intent);
+            }
+        });
     }
 
     /**
      * 获取商家评价
      */
-    private void getBusinessEvaluate(int id) {
-        CustomApplication.getRetrofit().getBusinessInfo(id).enqueue(new MyCallback<String>() {
-            @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-//                dealBusinessInfo(response.body());
-            }
-
-            @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
-
-            }
-        });
-    }
+//    private void getBusinessEvaluate(int id) {
+//        CustomApplication.getRetrofit().getBusinessInfo(id, ).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+////                dealBusinessInfo(response.body());
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
+//    }
 
     private void dealBusinessInfo() {
         tvBusinessAddress.setText(businessDetail.getAddress());
@@ -103,6 +126,15 @@ public class BusinessInfoFragment extends LazyFragment {
                 ivImage.setLayoutParams(new LinearLayout.LayoutParams(lp));
                 x.image().bind(ivImage, UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
                 flImgContain.addView(view, layoutParams);
+                view.setTag(UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getContext(), ShowImageActivity.class);
+                        intent.putExtra("image", v.getTag().toString());
+                        startActivity(intent);
+                    }
+                });
             }
         }
     }

@@ -39,12 +39,14 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.PhotoUtils;
 import com.gxuc.runfast.shop.R;
 import com.example.supportv1.utils.FileUtil;
 import com.example.supportv1.utils.PermissionUtils;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
@@ -277,6 +279,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     if (jsonObject.optBoolean("success")) {
                         UserService.setAutoLogin("0");
                         UserService.clearUserInfo();
+                        SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, "");
                         finish();
                     } else {
                         ToastUtil.showToast("退出失败");

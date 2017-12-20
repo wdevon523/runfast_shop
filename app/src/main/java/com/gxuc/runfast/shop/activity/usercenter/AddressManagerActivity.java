@@ -92,7 +92,6 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     private PoiSearch.Query query;
     private int pageNo = 1;
     private RegeocodeAddress mAddress;
-    private Address mAddressInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -331,7 +330,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
                     LatLonPoint latLonPoint = pois.get(i).getLatLonPoint();
                     double latitude = latLonPoint.getLatitude();
                     double longitude = latLonPoint.getLongitude();
-                    mAddressInfo = new Address();
+                    Address mAddressInfo = new Address();
                     mAddressInfo.title = title;
                     mAddressInfo.address = snippet;
                     mAddressInfo.latLng = new LatLng(latitude, longitude);
@@ -368,7 +367,8 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             Intent intent = new Intent();
             intent.putExtra("address", isSearch ? addressSearch.get(position).title : addresses.get(position).title);
             intent.putExtra("addressInfo", mAddress);
-            intent.putExtra("addressLat", mAddressInfo);
+//            intent.putExtra("addressLat", addresses.get(position));
+            intent.putExtra("addressLat",isSearch ? addressSearch.get(position) : addresses.get(position));
             setResult(RESULT_OK, intent);
             finish();
         }

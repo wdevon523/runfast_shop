@@ -13,8 +13,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 public final class ApiServiceFactory {
 
-    //        public static final String HOST = "http://120.77.70.27/iwapb/";
-    public static final String HOST = "http://www.gxptkc.com:9999/iwapb/";
+    //    public static final String HOST = "http://120.77.70.27/iwapb/";
+    public static final String HOST = "http://www.gxptkc.com/iwapb/";
+    //        public static final String HOST = "http://user.gxptkc.com:9999/iwapb/";
 //    public static final String HOST = "http://192.168.2.221:8080/runfast/iwapb/";
     public static final String BASE_URL = HOST + "business/";
     public static final String BASE_IMG_URL = "http://www.gxptkc.com";

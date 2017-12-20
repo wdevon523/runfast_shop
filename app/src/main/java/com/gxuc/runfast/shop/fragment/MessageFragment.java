@@ -10,17 +10,18 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.activity.LoginActivity;
-import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.bean.message.MessageInfos;
-import com.gxuc.runfast.shop.config.UserService;
-import com.gxuc.runfast.shop.adapter.MessageAdapter;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.adapter.MessageAdapter;
+import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
+import com.gxuc.runfast.shop.bean.message.MessageInfos;
 import com.gxuc.runfast.shop.bean.user.User;
-import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 
 import java.util.ArrayList;
@@ -28,8 +29,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -43,6 +46,12 @@ public class MessageFragment extends Fragment {
     TextView toolbarTitle;
     @BindView(R.id.rv_message_list)
     RecyclerView mRvMessageList;
+    @BindView(R.id.ll_empty_message)
+    LinearLayout llEmptyMessage;
+    @BindView(R.id.ll_not_login)
+    LinearLayout llNotLogin;
+    @BindView(R.id.tv_login)
+    TextView tvLogin;
     private Integer page = 1;
     private List<MessageInfo> mInfoList;
     private MessageAdapter mAdapter;
@@ -83,12 +92,12 @@ public class MessageFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            if (userInfo == null) {
-                mInfoList.clear();
-                mAdapter.notifyDataSetChanged();
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                return;
-            }
+//            if (userInfo == null) {
+//                mInfoList.clear();
+//                mAdapter.notifyDataSetChanged();
+//                startActivity(new Intent(getActivity(), LoginActivity.class));
+//                return;
+//            }
             getNetData();
         }
     }
@@ -97,30 +106,45 @@ public class MessageFragment extends Fragment {
      * 获取消息
      */
     private void getNetData() {
-        if (userInfo == null) {
-            return;
-        }
 
-        CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(new Callback<String>() {
             @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String body = response.body();
-                if (!TextUtils.isEmpty(body)) {
-                    dealMessageList(body);
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    return;
+                }
+
+                String body = response.body().toString();
+                if (!body.contains("{\"relogin\":1}")) {
+                    if (!TextUtils.isEmpty(body)) {
+                        dealMessageList(body);
+                        llNotLogin.setVisibility(View.GONE);
+                    }
+                } else {
+                    mInfoList.clear();
+                    mAdapter.notifyDataSetChanged();
+                    llNotLogin.setVisibility(View.VISIBLE);
+                    llEmptyMessage.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
 
             }
+
         });
     }
 
     private void dealMessageList(String body) {
-        MessageInfos messageInfos = GsonUtil.parseJsonWithGson(body, MessageInfos.class);
-        mInfoList.addAll(messageInfos.getMessge());
-        mAdapter.notifyDataSetChanged();
+        if (!TextUtils.isEmpty(body)) {
+            mInfoList.clear();
+            MessageInfos messageInfos = GsonUtil.parseJsonWithGson(body, MessageInfos.class);
+            mInfoList.addAll(messageInfos.getMessge());
+            mAdapter.notifyDataSetChanged();
+            llEmptyMessage.setVisibility(mInfoList.size() > 0 ? View.GONE : View.VISIBLE);
+        }
     }
 
     @Override
@@ -129,4 +153,8 @@ public class MessageFragment extends Fragment {
         unbinder.unbind();
     }
 
+    @OnClick(R.id.tv_login)
+    public void onViewClicked() {
+        startActivity(new Intent(getActivity(), LoginActivity.class));
+    }
 }

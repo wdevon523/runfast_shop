@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -41,9 +42,9 @@ public class NormalAdapter extends StaticPagerAdapter {
         draweeView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         draweeView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         DraweeController controller = Fresco.newDraweeControllerBuilder()
-                .setLowResImageRequest(ImageRequest.fromUri(ApiServiceFactory.BASE_IMG_URL + topImage.getAdImages()))
-//                .setImageRequest(ImageRequest.fromUri("http://www.gxptkc.com/upload/1488614499999.png"))
-                .setImageRequest(ImageRequest.fromUri(ApiServiceFactory.BASE_IMG_URL + topImage.getAdImages()))
+//                .setLowResImageRequest(ImageRequest.fromUri(ApiServiceFactory.BASE_IMG_URL + topImage.getAdImages()))
+                .setUri(Uri.parse(ApiServiceFactory.BASE_IMG_URL + topImage.getAdImages()))
+//                .setImageRequest(ImageRequest.fromUri(ApiServiceFactory.BASE_IMG_URL + topImage.getAdImages()))
                 .setOldController(draweeView.getController())
                 .build();
         draweeView.setController(controller);

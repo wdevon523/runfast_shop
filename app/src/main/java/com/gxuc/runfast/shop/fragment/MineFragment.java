@@ -27,6 +27,7 @@ import com.gxuc.runfast.shop.bean.user.Users;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.usercenter.JoinBusinessActivity;
 import com.gxuc.runfast.shop.bean.user.User;
@@ -44,6 +45,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -131,17 +133,28 @@ public class MineFragment extends Fragment {
     }
 
     private void requestGetUserInfo() {
-        CustomApplication.getRetrofit().getUserInfo(userInfo.getId()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().getUserInfo(userInfo.getId()).enqueue(new Callback<String>() {
             @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String body = response.body();
-                dealUserInfo(body);
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    return;
+                }
+
+                String body = response.body().toString();
+                if (!body.contains("{\"relogin\":1}")) {
+                    dealUserInfo(body);
+                } else {
+                    clearUi();
+                    UserService.clearUserInfo();
+                }
             }
 
             @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
 
             }
+
         });
     }
 
@@ -168,6 +181,8 @@ public class MineFragment extends Fragment {
 
     @OnClick({R.id.iv_head, R.id.tv_user_name, R.id.layout_help_center, R.id.layout_my_wallet, R.id.layout_coupons, R.id.layout_integral, R.id.layout_address, R.id.layout_collection, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about})
     public void onViewClicked(View view) {
+        userInfo = UserService.getUserInfo(getActivity());
+
         switch (view.getId()) {
             case R.id.iv_head://头像
                 if (userInfo == null || userInfo.getId() == null) {

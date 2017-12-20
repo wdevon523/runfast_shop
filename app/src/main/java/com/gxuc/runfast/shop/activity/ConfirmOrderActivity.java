@@ -176,10 +176,18 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     }
 
     private void updateMoney() {
-        tvOrderPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.price) + shippingPrice - couponPrice));
-        tvCouponPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totaldisprice) + couponPrice));
-        tvSubPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
-        tvTotalPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
+
+//        tvOrderPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.price) + shippingPrice - couponPrice));
+        tvOrderPrice.setText(String.valueOf((new BigDecimal(shoppingCartInfo.price)).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
+
+//        tvCouponPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totaldisprice) + couponPrice));
+        tvCouponPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totaldisprice).add(BigDecimal.valueOf(couponPrice))));
+
+//        tvSubPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
+        tvSubPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
+
+//        tvTotalPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
+        tvTotalPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
     }
 
     private void initData() {
@@ -416,7 +424,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
      */
     private void updateAddr(AddressInfo addr, boolean isShow) {
         if (isShow) {
-            tvUserAddress.setText(addr.getUserAddress());
+            tvUserAddress.setText(addr.getUserAddress() + addr.getAddress());
             tvUserName.setText(addr.getName());
             tvUserPhone.setText(addr.getPhone());
             layoutAddressUserInfo.setVisibility(View.VISIBLE);

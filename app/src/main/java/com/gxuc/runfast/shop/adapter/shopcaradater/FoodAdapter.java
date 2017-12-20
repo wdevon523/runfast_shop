@@ -49,6 +49,7 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
                 .setText(R.id.tv_summary, "月售" + item.getSale());
 
         helper.setVisible(R.id.view_no_store, item.getNum() == 0);
+        helper.setVisible(R.id.tv_no_food_store, item.getNum() == 0);
 
         if (item.getIslimited() == 1 || (!TextUtils.isEmpty(item.getShowprice()) && !TextUtils.equals("null", item.getShowprice()))) {
             helper.setVisible(R.id.ll_food_act, true);

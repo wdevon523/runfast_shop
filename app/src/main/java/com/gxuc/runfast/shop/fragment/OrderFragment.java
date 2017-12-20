@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.bean.order.OrderInfos;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderDetailActivity;
 import com.gxuc.runfast.shop.adapter.OrderListAdapter;
@@ -35,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -50,8 +53,12 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     @BindView(R.id.recycler_order)
     RecyclerView recyclerView;
 
-    @BindView(R.id.layout_not_order)
-    RelativeLayout layoutNotOrder;
+    @BindView(R.id.ll_not_order)
+    LinearLayout llNotOrder;
+    @BindView(R.id.ll_not_login)
+    LinearLayout llNotLogin;
+    @BindView(R.id.tv_login)
+    TextView tvLogin;
 
     private List<OrderInfo> mOrderInfos = new ArrayList<>();
     private LoadMoreAdapter moreAdapter;
@@ -78,9 +85,9 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     }
 
     private void initData() {
-        if (mOrderInfos.size() <= 0) {
-            layoutNotOrder.setVisibility(View.VISIBLE);
-        }
+//        if (mOrderInfos.size() <= 0) {
+//            llNotOrder.setVisibility(View.VISIBLE);
+//        }
         adapter = new OrderListAdapter(mOrderInfos, getActivity(), this);
         moreAdapter = new LoadMoreAdapter(getActivity(), adapter);
         moreAdapter.setLoadMoreListener(this);
@@ -98,6 +105,7 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     public void onResume() {
         super.onResume();
         userInfo = UserService.getUserInfo(getActivity());
+        page = 1;
         getOrderList();
     }
 
@@ -105,12 +113,12 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
-            if (userInfo == null) {
-                mOrderInfos.clear();
-                moreAdapter.loadCompleted();
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                return;
-            }
+//            if (userInfo == null) {
+//                mOrderInfos.clear();
+//                moreAdapter.loadCompleted();
+//                startActivity(new Intent(getActivity(), LoginActivity.class));
+//                return;
+//            }
             getOrderList();
         }
     }
@@ -128,30 +136,41 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
      */
     private void getOrderList() {
 
-
-        if (userInfo == null) {
-            return;
-        }
-
-
-        CustomApplication.getRetrofit().postOrderList(page, 10).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postOrderList(page, 10).enqueue(new Callback<String>() {
             @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealOrderList(response.body());
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    return;
+                }
+
+                String body = response.body().toString();
+                if (!body.contains("{\"relogin\":1}")) {
+                    dealOrderList(response.body());
+                    llNotLogin.setVisibility(View.GONE);
+                } else {
+                    mOrderInfos.clear();
+                    adapter.notifyDataSetChanged();
+                    moreAdapter.loadCompleted();
+                    llNotLogin.setVisibility(View.VISIBLE);
+                    llNotOrder.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
+                }
             }
 
             @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
 
             }
+
         });
     }
 
     private void dealOrderList(String body) {
         OrderInfos orderInfos = GsonUtil.parseJsonWithGson(body, OrderInfos.class);
-        if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
-            layoutNotOrder.setVisibility(View.GONE);
-        }
+//        if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
+//            layoutNotOrder.setVisibility(View.GONE);
+//        }
         if (page == 1) {
             mOrderInfos.clear();
             moreAdapter.resetLoadState();
@@ -160,6 +179,8 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         mOrderInfos.addAll(orderInfos.getRows());
         adapter.notifyDataSetChanged();
         moreAdapter.loadCompleted();
+        recyclerView.setVisibility(mOrderInfos.size() > 0 ? View.VISIBLE : View.GONE);
+        llNotOrder.setVisibility(mOrderInfos.size() > 0 ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -168,15 +189,10 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         unbinder.unbind();
     }
 
-    @OnClick(R.id.tv_place_order)
-    public void onViewClicked() {
-
-    }
-
     @Override
     public void onItemClick(View view, int position) {
         Intent intent = new Intent(getActivity(), OrderDetailActivity.class);
-        intent.putExtra("orderInfo", mOrderInfos.get(position));
+        intent.putExtra("orderId", mOrderInfos.get(position).getId());
         startActivity(intent);
     }
 
@@ -184,5 +200,10 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     public void loadMore() {
         page += 1;
         getOrderList();
+    }
+
+    @OnClick(R.id.tv_login)
+    public void onViewClicked() {
+        startActivity(new Intent(getActivity(), LoginActivity.class));
     }
 }

@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.bean.order;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -8,7 +9,7 @@ import java.util.List;
  * @email liu594545591@126.com
  * @introduce
  */
-public class OrderDetail {
+public class OrderDetail implements Serializable{
 
     /**
      * istel : 2
@@ -196,7 +197,7 @@ public class OrderDetail {
         public Object isRefund;
         public Object refundType;
         public Object refundTime;
-        public Object isComent;
+        public Integer isComent;
         public Object isCancel;
         public Object refund;
         public Object refundcontext;

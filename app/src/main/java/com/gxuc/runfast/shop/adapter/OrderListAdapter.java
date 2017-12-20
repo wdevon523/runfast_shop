@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderComplainActivity;
+import com.gxuc.runfast.shop.activity.ordercenter.OrderEvaluationActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.data.IntentFlag;
@@ -113,12 +114,21 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
                 requestBuyAgain(orderInfo.getId(), orderInfo.getBusinessId());
             }
         });
+
+        holder.tv_order_shop_complain.setVisibility(orderInfo.getStatus() == 8 ? View.VISIBLE : View.GONE);
         holder.tv_order_shop_complain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, OrderComplainActivity.class);
-                intent.putExtra("orderInfo", orderInfo);
-                context.startActivity(intent);
+//                Intent intent = new Intent(context, OrderComplainActivity.class);
+//                intent.putExtra("orderInfo", orderInfo);
+//                context.startActivity(intent);
+
+                Intent evaluationIntent = new Intent(context, OrderEvaluationActivity.class);
+                evaluationIntent.putExtra("oid", orderInfo.getId());
+                evaluationIntent.putExtra("logo", orderInfo.getLogo());
+                evaluationIntent.putExtra("businessName", orderInfo.getBusinessName());
+                evaluationIntent.putExtra("isDeliver", orderInfo.getIsDeliver());
+                context.startActivity(evaluationIntent);
             }
         });
 

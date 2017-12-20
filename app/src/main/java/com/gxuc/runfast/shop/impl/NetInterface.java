@@ -89,7 +89,8 @@ public interface NetInterface {
     @POST(UrlConstant.GET_BUSINESS)
     Call<String> getNearbyBusinesses(@Field("longitude") String longitude,
                                      @Field("latitude") String latitude,
-                                     @Field("page") Integer page);
+                                     @Field("page") Integer page,
+                                     @Field("version") Integer version);
 
     /**
      * 搜索商品
@@ -101,7 +102,7 @@ public interface NetInterface {
     Call<String> searchGoodsType(@Field("name") String name);
 
     /**
-     * 分类查询商家商品
+     * 分类查询商家
      *
      * @return
      */
@@ -109,11 +110,26 @@ public interface NetInterface {
     @POST(UrlConstant.SEARCH_GOODS_TYPE)
     Call<String> searchGoods(@Field("page") Integer page,
                              @Field("rows") Integer rows,
-                             @Field("longitude") Double longitude,
-                             @Field("latitude") Double latitude,
+                             @Field("longitude") String longitude,
+                             @Field("latitude") String latitude,
                              @Field("name") String name,
                              @Field("sorting") Integer sort,
-                             @Field("agentId") Integer agentId);
+                             @Field("agentId") Integer agentId,
+                             @Field("version") Integer version);
+
+    /**
+     * 分类查询商家商品
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_TYPE)
+    Call<String> getBusinessType(@Field("page") Integer page,
+                                 @Field("rows") Integer rows,
+                                 @Field("longitude") Double longitude,
+                                 @Field("latitude") Double latitude,
+                                 @Field("sorting") Integer sort,
+                                 @Field("typeId") String typeId);
 
     /**
      * 获取商品列表
@@ -179,7 +195,9 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.BUSINESS_INFO)
-    Call<String> getBusinessInfo(@Field("id") Integer id);
+    Call<String> getBusinessInfo(@Field("id") Integer id,
+                                 @Field("longitude") String longitude,
+                                 @Field("latitude") String latitude);
 
 
     /**
@@ -190,7 +208,8 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_ADDRESS)
     Call<String> postAddress(@Field("longitude") Double longitude,
-                             @Field("latitude") Double latitude);
+                             @Field("latitude") Double latitude,
+                             @Field("version") int version);
 
     /**
      * 获取首页轮播图
@@ -241,7 +260,7 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.QUERY_EDIT_PWD_CODE)
-    Call<String> getEditPwdCode();
+    Call<String> getEditPwdCode(@Field("mobile") String mobile);
 
     /**
      * 获取注册验证码
@@ -274,6 +293,7 @@ public interface NetInterface {
     @POST(UrlConstant.LOGIN)
     Call<String> postLogin(@Field("mobile") String mobile,
                            @Field("password") String password,
+                           @Field("alias") String alias,
                            @Field("bptype") Integer bptype);
 
     /**
@@ -390,7 +410,8 @@ public interface NetInterface {
                                 @Field("latitude") String latitude,
                                 @Field("provinceName") String provinceName,
                                 @Field("cityName") String cityName,
-                                @Field("countyName") String countyName);
+                                @Field("countyName") String countyName,
+                                @Field("version") int version);
 
     /**
      * 修改地址
@@ -418,7 +439,8 @@ public interface NetInterface {
                                  @Field("latitude") String latitude,
                                  @Field("provinceName") String provinceName,
                                  @Field("cityName") String cityName,
-                                 @Field("countyName") String countyName);
+                                 @Field("countyName") String countyName,
+                                 @Field("version") int version);
 
     /**
      * 地址详情
@@ -873,5 +895,47 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_USER_INFO)
     Call<String> getUserInfo(@Field("uId") int uId);
+
+    /**
+     * 获取订单状态
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_ORDER_STATUS)
+    Call<String> getOrderStatus(@Field("id") int id);
+
+    /**
+     * 获取订单支付状态
+     *
+     * @param orderNo
+     * @param payType
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_ORDER_PAY_STATUS)
+    Call<String> getOrderPayStatus(@Field("orderNo") String orderNo,
+                                   @Field("payType") int payType);
+
+    /**
+     * 清空购物车
+     *
+     * @param businessId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CLEAN_SHOPPING_CART)
+    Call<String> cleanShoppingCart(@Field("businessId") int businessId);
+
+    /**
+     * 获取客服电话二维码
+     *
+     * @param agentId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_SERVICE_INFO)
+    Call<String> getServiceInfo(@Field("agentId") String agentId);
 
 }

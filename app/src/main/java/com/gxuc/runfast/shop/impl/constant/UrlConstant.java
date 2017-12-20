@@ -170,6 +170,11 @@ public class UrlConstant {
     public static final String SEARCH_GOODS_TYPE = "search/list.do";
 
     /**
+     * 商品分类搜索
+     */
+    public static final String GET_BUSINESS_TYPE = "business/list.do";
+
+    /**
      * 忘记密码
      */
     public static final String FORGOT_PWD = "sendpwd.do";
@@ -423,4 +428,24 @@ public class UrlConstant {
      * 获取用户信息
      */
     public static final String GET_USER_INFO = "user/userinfo.do";
+
+    /**
+     * 获取订单状态
+     */
+    public static final String GET_ORDER_STATUS = "userOrder/outStatuslist.do";
+
+    /**
+     * 获取订单支付状态
+     */
+    public static final String GET_ORDER_PAY_STATUS = "pay/orderQuery.do";
+
+    /**
+     * 清空购物车
+     */
+    public static final String CLEAN_SHOPPING_CART = "pay/clearCart.do";
+
+    /**
+     * 清空购物车
+     */
+    public static final String GET_SERVICE_INFO = "custom.do";
 }

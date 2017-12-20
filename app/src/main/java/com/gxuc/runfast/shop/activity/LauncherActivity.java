@@ -5,25 +5,31 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LauncherActivity extends AppCompatActivity {
 
     private User userInfo;
+    private String mobile;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +49,13 @@ public class LauncherActivity extends AppCompatActivity {
     }
 
     private void initData() {
-//        if (UserService.isAutoLogin()) {
+        mobile = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.MOBILE);
+        password = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD);
+        if (!TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(password)) {
             handler.sendEmptyMessageDelayed(2001, 2000);
+        } else {
+            handler.sendEmptyMessageDelayed(2002, 2000);
+        }
 //        } else {
 ////            handler.sendEmptyMessageDelayed(2002, 2000);
 //            startActivity(new Intent(this, LoginActivity.class));
@@ -61,7 +72,7 @@ public class LauncherActivity extends AppCompatActivity {
                     login();
                     break;
                 case 2002:
-                    startActivity(new Intent(LauncherActivity.this, LoginActivity.class));
+                    startActivity(new Intent(LauncherActivity.this, MainActivity.class));
                     finish();
                     break;
             }
@@ -69,26 +80,25 @@ public class LauncherActivity extends AppCompatActivity {
     };
 
     private void login() {
-        userInfo = UserService.getUserInfo(this);
-        if (userInfo != null) {
-            CustomApplication.getRetrofit().postLogin(userInfo.getMobile(), MD5Util.MD5(userInfo.getPassword()), 0).enqueue(new MyCallback<String>() {
-                @Override
-                public void onSuccessResponse(Call<String> call, Response<String> response) {
-                    dealLogin(response.body());
-                }
+        CustomApplication.getRetrofit().postLogin(mobile, MD5Util.MD5(password), CustomApplication.alias, 0).enqueue(new Callback<String>() {
 
-                @Override
-                public void onFailureResponse(Call<String> call, Throwable t) {
-//                    startActivity(new Intent(LauncherActivity.this, LoginActivity.class));
-                    startActivity(new Intent(LauncherActivity.this, MainActivity.class));
-                    finish();
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    return;
                 }
-            });
-        } else {
-//            startActivity(new Intent(this, LoginActivity.class));
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
+                dealLogin(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                startActivity(new Intent(LauncherActivity.this, MainActivity.class));
+                finish();
+            }
+
+        });
+
     }
 
     private void dealLogin(String body) {
@@ -104,9 +114,12 @@ public class LauncherActivity extends AppCompatActivity {
                 finish();
             } else {
 //                CustomApplication.isRelogining = false;
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, mobile);
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, password);
+
                 JSONObject app_cuser = object.getJSONObject("app_cuser");
                 User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
-                user.setPassword(userInfo.getPassword());
+                user.setPassword(password);
                 UserService.saveUserInfo(user);
                 startActivity(new Intent(this, MainActivity.class));
                 finish();

@@ -71,7 +71,7 @@ public class FoodBean implements Serializable{
 	private Integer star;//商品星级
 	private Integer salesnum;//月销量
 	private Integer num;//数量
-	private Integer ptype;//是否收取打包费0是1否
+	private int ptype;//是否收取打包费0是1否
 
 	private String agentName;//代理商名称：
 	private Integer agentId;//代理商Id：
@@ -333,11 +333,11 @@ public class FoodBean implements Serializable{
 		this.num = num;
 	}
 
-	public Integer getPtype() {
+	public int getPtype() {
 		return ptype;
 	}
 
-	public void setPtype(Integer ptype) {
+	public void setPtype(int ptype) {
 		this.ptype = ptype;
 	}
 

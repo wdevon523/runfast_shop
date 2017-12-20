@@ -418,7 +418,7 @@
                 android:id="@+id/tv_pay"
                 android:layout_width="110dp"
                 android:layout_height="match_parent"
-                android:background="@color/color_orange_select"
+                android:background="@color/text_fb7d30"
                 android:gravity="center"
                 android:text="去支付"
                 android:textColor="@color/color_white"

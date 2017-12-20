@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.example.supportv1.widget.CircleImageView;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
+import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 
 import org.xutils.x;
@@ -32,6 +33,7 @@ public class PaySuccessActivity extends ToolBarActivity {
     @BindView(R.id.tv_pay_finish)
     TextView tvPayFinish;
     private OrderInfo orderInfo;
+    private OrderDetail orderDetailInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,15 +50,19 @@ public class PaySuccessActivity extends ToolBarActivity {
 
     private void initData() {
         orderInfo = getIntent().getParcelableExtra("orderInfo");
-        x.image().bind(ivBusinessAvater, orderInfo.getLogo());
-        tvPayBusinessName.setText(orderInfo.getBusinessName());
-        tvPayPrice.setText("¥" + orderInfo.getPrice());
+        orderDetailInfo = (OrderDetail) getIntent().getSerializableExtra("orderDetail");
+
+
+        x.image().bind(ivBusinessAvater, orderInfo != null ? orderInfo.getLogo() : orderDetailInfo.goodsSellRecord.logo);
+        tvPayBusinessName.setText(orderInfo != null ? orderInfo.getBusinessName() :orderDetailInfo.goodsSellRecord.businessName);
+        tvPayPrice.setText("¥" + (orderInfo != null ? orderInfo.getPrice() :orderDetailInfo.goodsSellRecord.price));
     }
 
     @OnClick(R.id.tv_pay_finish)
     public void onViewClicked() {
         Intent intent = new Intent(this, OrderDetailActivity.class);
-        intent.putExtra("orderInfo", orderInfo);
+        intent.putExtra("orderId", orderInfo != null ? orderInfo.getId() :orderDetailInfo.goodsSellRecord.id);
+        intent.putExtra("isFromePayFinish", true);
         startActivity(intent);
         finish();
     }

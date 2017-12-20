@@ -4,7 +4,7 @@
             "outputFile": "/Users/wuzhendi/Documents/git/runfast_shop/shareLib/build/intermediates/incremental/mergeDebugAndroidTestResources/merged.dir/values-v11/values-v11.xml",
             "map": [
                 {
-                    "source": "/Users/wuzhendi/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/0ec87b4defe21b6a16f0aebceb7cecda/res/values-v11/values-v11.xml",
+                    "source": "/Users/wuzhendi/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/ba30b386d88ac4ff84f5802db6b2b9a3/res/values-v11/values-v11.xml",
                     "from": {
                         "startLines": "2,8,14,20,26,32,38,39,40,41,46,51,56,58,60,61,62,115,169",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -20,7 +20,7 @@
             "outputFile": "/Users/wuzhendi/Documents/git/runfast_shop/shareLib/build/intermediates/res/merged/androidTest/debug/values-v11/values-v11.xml",
             "map": [
                 {
-                    "source": "/Users/wuzhendi/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/0ec87b4defe21b6a16f0aebceb7cecda/res/values-v11/values-v11.xml",
+                    "source": "/Users/wuzhendi/.gradle/caches/transforms-1/files-1.1/appcompat-v7-24.2.1.aar/ba30b386d88ac4ff84f5802db6b2b9a3/res/values-v11/values-v11.xml",
                     "from": {
                         "startLines": "2,8,14,20,26,32,38,39,40,41,46,51,56,58,60,61,62,115,169",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

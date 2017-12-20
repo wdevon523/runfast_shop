@@ -121,4 +121,21 @@
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
+    <!--<style name="ImageScale" parent="android:Theme.Black.NoTitleBar">-->
+        <!--<item name="android:windowAnimationStyle">@style/AnimHead</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+        <!--&lt;!&ndash; 无标题 &ndash;&gt;-->
+        <!--<item name="android:windowFullscreen">true</item>-->
+        <!--&lt;!&ndash; 设置全屏显示 &ndash;&gt;-->
+        <!--<item name="android:windowFrame">@null</item>-->
+        <!--&lt;!&ndash; 边框 &ndash;&gt;-->
+        <!--<item name="android:windowIsFloating">false</item>-->
+        <!--&lt;!&ndash; 是否浮现在activity之上 &ndash;&gt;-->
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+        <!--&lt;!&ndash; 半透明 &ndash;&gt;-->
+        <!--<item name="android:windowBackground">@android:color/black</item>-->
+        <!--<item name="android:backgroundDimEnabled">false</item>-->
+        <!--&lt;!&ndash; 模糊 &ndash;&gt;-->
+    <!--</style>-->
+
 </resources>

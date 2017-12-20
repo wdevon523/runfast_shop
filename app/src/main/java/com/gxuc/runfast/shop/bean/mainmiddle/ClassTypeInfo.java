@@ -7,7 +7,7 @@ package com.gxuc.runfast.shop.bean.mainmiddle;
 
 public class ClassTypeInfo {
 
-    public int id;
+    public String id;
 
     public String name;
 
@@ -19,11 +19,11 @@ public class ClassTypeInfo {
 
     private String createTime;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -5,52 +5,77 @@
     android:orientation="vertical"
     tools:context=".fragment.OrderFragment">
 
-    <include layout="@layout/layout_title"/>
+    <include layout="@layout/layout_title" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_order"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_food_gray"/>
-        <RelativeLayout
-            android:id="@+id/layout_not_order"
-            android:visibility="gone"
+            android:background="@color/color_food_gray" />
+
+        <LinearLayout
+            android:id="@+id/ll_not_login"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/color_food_gray"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_not_order"/>
-            <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="300dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="您还没有订单记录～"
-                    android:textSize="14sp"
-                    android:textColor="@color/color_text_gray_two"
-                    />
-                <TextView
-                    android:id="@+id/tv_place_order"
-                    android:layout_width="106dp"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="23dp"
-                    android:background="@drawable/shape_not_order_background"
-                    android:text="立即下订单"
-                    android:gravity="center"
-                    android:textColor="@color/color_white"
-                    android:textSize="14sp"
-                    />
-            </LinearLayout>
-        </RelativeLayout>
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dimen_100_dp"
+                android:src="@drawable/icon_not_shop_car" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_40_dp"
+                android:text="您还没有登陆，请登录后查看消息" />
+
+            <TextView
+                android:id="@+id/tv_login"
+                android:layout_width="@dimen/dimen_100_dp"
+                android:layout_height="@dimen/dimen_30_dp"
+                android:layout_marginTop="@dimen/dimen_15_dp"
+                android:background="@drawable/bg_fb7d30"
+                android:gravity="center"
+                android:text="登陆/注册"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dimen_15_dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_not_order"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_food_gray"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dimen_100_dp"
+                android:src="@drawable/icon_not_order" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_40_dp"
+                android:text="暂无历史订单" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
 </LinearLayout>

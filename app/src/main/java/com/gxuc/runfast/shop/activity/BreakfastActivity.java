@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,7 +25,9 @@ import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.mainmiddle.MiddleSort;
 import com.gxuc.runfast.shop.data.IntentFlag;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -96,6 +99,8 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     private Integer mPositionSort = 1;
     private String mName = "";
     private int mTotalpage;
+    private String typeId;
+    private int sortId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +136,11 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         mSort = getIntent().getParcelableExtra("middleData");
         mName = mSort.getTypename();
 
+        lat = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT));
+        lon = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON));
+        if (!TextUtils.isEmpty(mName)) {
+            tvClassName.setText(mName);
+        }
         getSortInfo();
 
         adapterType = new BreakfastClassAdapter(typeInfos, this, this);
@@ -174,31 +184,34 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         ClassTypeInfos classTypeInfo = GsonUtil.parseJsonWithGson(data, ClassTypeInfos.class);
         List<ClassTypeInfo> listTypeInfos = classTypeInfo.getBustype();
         ClassTypeInfo info = new ClassTypeInfo();
-        info.id = 0;
+        info.id = "";
         info.name = "全部分类";
-        info.isSelect = true;
+        info.isSelect = TextUtils.isEmpty(mName);
         info.imgId = R.drawable.icon_class_all;
         this.typeInfos.add(info);
         for (int i = 0; i < listTypeInfos.size(); i++) {
             info = new ClassTypeInfo();
             info.id = listTypeInfos.get(i).getId();
             info.name = listTypeInfos.get(i).getName();
+            if (!TextUtils.isEmpty(mName) && TextUtils.equals(info.name, mName)) {
+                info.isSelect = true;
+                typeId = info.id;
+            }
             info.imgId = R.drawable.icon_class_all;
             this.typeInfos.add(info);
         }
         page = 1;
-        searchGoodsType(page, 10, mPositionSort, mName);
+        getBusinessType(page, 10, sortId, typeId);
         adapterType.notifyDataSetChanged();
     }
 
     /**
      * 分类选择
      */
-    private void searchGoodsType(int page, int raw, int sorting, String name) {
+    private void getBusinessType(int page, int raw, int sortId, String typeId) {
         //TODO 经纬度
-        lat = 110.3;
-        lon = 23.3;
-        CustomApplication.getRetrofit().searchGoods(page, raw, lon, lat, name, sorting, mSort.getAgentId()).enqueue(new MyCallback<String>() {
+
+        CustomApplication.getRetrofit().getBusinessType(page, raw, lon, lat, sortId, typeId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -238,7 +251,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                 info.name = busObject.optString("name");
                 info.distance = busObject.optDouble("distance");
                 info.levelId = busObject.optInt("levelId");
-                info.salesnum = busObject.optInt("levelId");
+                info.salesnum = busObject.optInt("salesnum");
                 info.startPay = busObject.optDouble("startPay");
                 info.busshowps = busObject.optDouble("busshowps");
                 info.baseCharge = busObject.optDouble("baseCharge");
@@ -334,14 +347,14 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                     }
                     typeInfos.get(mPosition).isSelect = true;
                     adapterType.notifyDataSetChanged();
-                    if (mPosition == 0) {
-                        mName = mSort.getTypename();
-                    } else {
-                        mName = typeInfos.get(mPosition).name;
-                    }
+//                    if (mPosition == 0) {
+//                        mName = mSort.getTypename();
+//                    } else {
+                    typeId = typeInfos.get(mPosition).id;
+//                    }
                     tvClassName.setText(typeInfos.get(mPosition).name);
                     page = 1;
-                    searchGoodsType(page, 10, mPositionSort, mName);
+                    getBusinessType(page, 10, sortId, typeId);
                     uiHide();
                     break;
                 case R.id.layout_sort_select:
@@ -351,7 +364,9 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                     }
                     sortInfos.get(mPositionSort).isSelect = true;
                     adapterSort.notifyDataSetChanged();
+                    sortId = sortInfos.get(mPosition).id;
                     tvSortName.setText(sortInfos.get(mPositionSort).name);
+                    getBusinessType(page, 10, sortId, typeId);
                     uiHide();
                     break;
                 case R.id.layout_breakfast_item:
@@ -431,7 +446,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     public void loadMore() {
         if (page < mTotalpage) {
             page += 1;
-            searchGoodsType(page, 10, mPositionSort, mName);
+            getBusinessType(page, 10, sortId, typeId);
         } else {
             Handler handler = new Handler();
             final Runnable r = new Runnable() {
@@ -447,7 +462,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         page = 1;
-        searchGoodsType(page, 10, mPositionSort, mName);
+        getBusinessType(page, 10, sortId, typeId);
     }
 
     @Override

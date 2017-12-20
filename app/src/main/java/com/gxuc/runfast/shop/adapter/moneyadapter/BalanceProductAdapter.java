@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartGoodsInfo;
 import com.gxuc.runfast.shop.R;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -53,7 +54,12 @@ public class BalanceProductAdapter extends RecyclerView.Adapter<BalanceProductAd
                     holder.tvProductPrice.setTextColor(context.getResources().getColor(R.color.color_balance_price));
                     holder.tvProductPrice.setText(" - ¥ " + shoppingCartGoodsInfo.price);
                 } else {
-                    holder.tvProductPrice.setText("¥ " + shoppingCartGoodsInfo.price);
+                    if (!TextUtils.isEmpty(shoppingCartGoodsInfo.num)) {
+                        BigDecimal prudoctTotalPrice = new BigDecimal(shoppingCartGoodsInfo.price).multiply(new BigDecimal(String.valueOf(shoppingCartGoodsInfo.num)));
+                        holder.tvProductPrice.setText("¥ " + prudoctTotalPrice);
+                    } else {
+                        holder.tvProductPrice.setText("¥ " + shoppingCartGoodsInfo.price);
+                    }
                 }
             } else {
                 holder.tvProductPrice.setText("¥ 0");

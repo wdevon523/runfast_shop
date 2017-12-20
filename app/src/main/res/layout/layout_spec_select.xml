@@ -104,6 +104,41 @@
             android:layout_marginTop="10dp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="@dimen/dimen_10_dp"
+        android:gravity="center"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_sub_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:padding="5dp"
+            android:src="@drawable/icon_delete_product"/>
+
+        <TextView
+            android:id="@+id/tv_spec_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/iv_add_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:padding="5dp"
+            android:src="@drawable/icon_add_product"/>
+
+    </LinearLayout>
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -140,9 +175,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:text="7.5"
-                android:visibility="gone"
                 android:textColor="@color/text_999999"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
