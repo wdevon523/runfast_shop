@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,18 +9,21 @@
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/main_tab_bar"
         android:layout_weight="1" />
 
     <RadioGroup
         android:id="@+id/main_tab_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="#f9f9f9"
         android:orientation="horizontal"
         android:paddingBottom="5dp"
         android:paddingTop="5dp">
+
         <RadioButton
             android:id="@+id/main_tab_food"
             style="@style/MainTabItem"
@@ -42,6 +43,7 @@
             android:drawableTop="@drawable/selector_tab_order_icon"
             android:text="订单" />
 
+
         <RadioButton
             android:id="@+id/main_tab_user"
             style="@style/MainTabItem"
@@ -49,4 +51,15 @@
             android:text="我的" />
     </RadioGroup>
 
-</LinearLayout>
+    <View
+        android:id="@+id/view_new_version"
+        android:layout_width="@dimen/dimen_6_dp"
+        android:layout_height="@dimen/dimen_6_dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/main_tab_bar"
+        android:layout_marginRight="@dimen/dimen_20_dp"
+        android:layout_marginTop="@dimen/dimen_5_dp"
+        android:background="@drawable/circle_red"
+        android:visibility="gone" />
+
+</RelativeLayout>

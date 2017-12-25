@@ -75,10 +75,12 @@ public class PayChannelActivity extends ToolBarActivity {
     private IWXAPI wxapi;
     private AlertDialog alertDialog;
     private Dialog mPayInputDialog;
-    private OrderDetail orderDetailInfo;
     private OrderInfo orderInfo;
     private int orderId;
     private String orderCode;
+    private double price;
+    private String businessName;
+    private String logo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,15 @@ public class PayChannelActivity extends ToolBarActivity {
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isPayBack) {
+            requsetCheckPayStatus();
+        }
+
+    }
+
     private void initView() {
         wxapi = WeChatPayHandle.createWXAPI(this, Contants.WEI_XIN_ID);
         userInfo = UserService.getUserInfo(this);
@@ -95,18 +106,20 @@ public class PayChannelActivity extends ToolBarActivity {
 //        mPrice = getIntent().getDoubleExtra("price", 0.0);
 //        businessName = getIntent().getStringExtra("businessName");
         orderInfo = getIntent().getParcelableExtra("orderInfo");
-        orderDetailInfo = (OrderDetail) getIntent().getSerializableExtra("orderDetail");
-
+//        orderDetailInfo = (OrderDetail) getIntent().getSerializableExtra("orderDetail");
+        orderId = getIntent().getIntExtra("orderId", 0);
+        orderCode = getIntent().getStringExtra("orderCode");
+        price = getIntent().getDoubleExtra("price", 0);
+        businessName = getIntent().getStringExtra("businessName");
+        logo = getIntent().getStringExtra("logo");
         if (orderInfo != null) {
             orderId = orderInfo.getId();
             orderCode = orderInfo.getOrderCode();
-            mBtnToPay.setText("确认支付 ¥ " + orderInfo.getPrice());
-        } else {
-            orderId = orderDetailInfo.goodsSellRecord.id;
-            orderCode = orderDetailInfo.goodsSellRecord.orderCode;
-            mBtnToPay.setText("确认支付 ¥ " + orderDetailInfo.goodsSellRecord.price);
+            price = orderInfo.getPrice();
+            businessName = orderInfo.getBusinessName();
+            logo = orderInfo.getLogo();
         }
-
+        mBtnToPay.setText("确认支付 ¥ " + price);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,15 +152,6 @@ public class PayChannelActivity extends ToolBarActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (isPayBack) {
-            requsetCheckPayStatus();
-        }
-
-    }
-
     private void requsetCheckPayStatus() {
 
         CustomApplication.getRetrofit().getOrderPayStatus(orderCode, payType).enqueue(new MyCallback<String>() {
@@ -157,11 +161,13 @@ public class PayChannelActivity extends ToolBarActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
-                        if (orderInfo != null) {
-                            startActivity(new Intent(PayChannelActivity.this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
-                        } else {
-                            startActivity(new Intent(PayChannelActivity.this, PaySuccessActivity.class).putExtra("orderDetail", orderDetailInfo));
-                        }
+                        Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+                        intent.putExtra("orderId", orderId);
+                        intent.putExtra("logo", logo);
+                        intent.putExtra("price", price);
+                        intent.putExtra("businessName", businessName);
+
+                        startActivity(intent);
                         finish();
                     }
                 } catch (JSONException e) {
@@ -287,6 +293,7 @@ public class PayChannelActivity extends ToolBarActivity {
         CustomApplication.getRetrofit().walletPay(orderId, password).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                mPayInputDialog.dismiss();
                 CustomProgressDialog.stopProgressDialog();
                 dealWalletPay(response.body());
             }
@@ -312,8 +319,8 @@ public class PayChannelActivity extends ToolBarActivity {
         TextView tvPayPrice = (TextView) root.findViewById(R.id.tv_pay_price);
         final EditText etPayPassword = (EditText) root.findViewById(R.id.et_pay_password);
         TextView tvPay = (TextView) root.findViewById(R.id.tv_pay);
-        tvBusinessName.setText(orderInfo != null ? orderInfo.getBusinessName() : orderDetailInfo.goodsSellRecord.businessName);
-        tvPayPrice.setText("¥" + (orderInfo != null ? orderInfo.getPrice() : orderDetailInfo.goodsSellRecord.price));
+        tvBusinessName.setText(businessName);
+        tvPayPrice.setText("¥" + price);
 
         mPayInputDialog.setContentView(root);
         Window dialogWindow = mPayInputDialog.getWindow();
@@ -352,11 +359,12 @@ public class PayChannelActivity extends ToolBarActivity {
             JSONObject object = new JSONObject(body);
             CustomToast.INSTANCE.showToast(this, object.optString("msg"));
             if (object.optBoolean("success")) {
-                if (orderInfo != null) {
-                    startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderInfo", orderInfo));
-                } else {
-                    startActivity(new Intent(this, PaySuccessActivity.class).putExtra("orderDetail", orderDetailInfo));
-                }
+                Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+                intent.putExtra("orderId", orderId);
+                intent.putExtra("logo", logo);
+                intent.putExtra("price", price);
+                intent.putExtra("businessName", businessName);
+                startActivity(intent);
                 finish();
             }
         } catch (JSONException e) {

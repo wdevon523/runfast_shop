@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.activity;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -18,9 +20,14 @@ import com.gxuc.runfast.shop.fragment.MessageFragment;
 import com.gxuc.runfast.shop.fragment.MineFragment;
 import com.gxuc.runfast.shop.fragment.OrderFragment;
 import com.gxuc.runfast.shop.fragment.TakeOutFoodFragment;
+import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.ActivityManager;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.SystemUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +39,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class MainActivity extends ToolBarActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -39,6 +48,8 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
     FrameLayout frameContainer;
     @BindView(R.id.main_tab_bar)
     RadioGroup mainGroup;
+    @BindView(R.id.view_new_version)
+    View viewNewVersion;
 
     private boolean isExit = false;
     public int MAIN_PAGE = 0;
@@ -53,7 +64,36 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         ActivityManager.pushActivity(this);
         //toolbar.setNavigationIcon(null);
         bindJpushAlias();
+        requestCheckNewVersion();
         initDate(savedInstanceState);
+    }
+
+    private void requestCheckNewVersion() {
+        int versionCode = 0;
+        try {
+            versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            CustomApplication.getRetrofit().checkNewVersion(versionCode).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        viewNewVersion.setVisibility(jsonObject.optBoolean("update") ? View.VISIBLE : View.GONE);
+                        ToastUtil.showToast(jsonObject.optString("msg"));
+                        CustomApplication.isNeedUpdate = jsonObject.optBoolean("update");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void bindJpushAlias() {
@@ -181,11 +221,11 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         } else {
             // 获取自己的PID来结�?
             // android.os.Process.killProcess(android.os.Process.myPid());
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);// 注意
-            intent.addCategory(Intent.CATEGORY_HOME);
-            startActivity(intent);
-//            finish();
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);// 注意
+//            intent.addCategory(Intent.CATEGORY_HOME);
+//            startActivity(intent);
+            finish();
         }
     }
 }

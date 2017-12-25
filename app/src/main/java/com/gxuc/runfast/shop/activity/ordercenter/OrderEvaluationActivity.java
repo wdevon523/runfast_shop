@@ -13,6 +13,7 @@ import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.willy.ratingbar.BaseRatingBar;
@@ -94,7 +95,7 @@ public class OrderEvaluationActivity extends ToolBarActivity {
         oid = getIntent().getIntExtra("oid", 0);
         logo = getIntent().getStringExtra("logo");
         businessName = getIntent().getStringExtra("businessName");
-        x.image().bind(ivOrderEvaluationBusinessImg, logo);
+        x.image().bind(ivOrderEvaluationBusinessImg, UrlConstant.ImageBaseUrl +logo);
         tvOrderEvaluationBusinessName.setText(businessName);
         isDeliver = getIntent().getIntExtra("isDeliver", 0);
         flOrderEvaluationOptions.setAdapter(new TagAdapter<String>(orderOptions) {

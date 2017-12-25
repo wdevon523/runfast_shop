@@ -1,5 +1,8 @@
 package com.gxuc.runfast.shop.bean;
 
+
+import org.json.JSONArray;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -48,6 +51,7 @@ public class BusinessInfo implements Serializable{
 
     public List<BusinessExercise> alist;
 
-
+//    public ArrayList<SearchProduct> searchProductList;
+    public JSONArray searchProductArray;
 
 }

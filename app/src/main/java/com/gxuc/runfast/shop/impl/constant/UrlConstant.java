@@ -448,4 +448,9 @@ public class UrlConstant {
      * 清空购物车
      */
     public static final String GET_SERVICE_INFO = "custom.do";
+
+    /**
+     * 检查版本
+     */
+    public static final String CHECK_NEW_VERSION = "checkAndroidVersion.do";
 }

@@ -64,6 +64,9 @@ public class BalanceProductAdapter extends RecyclerView.Adapter<BalanceProductAd
             } else {
                 holder.tvProductPrice.setText("¥ 0");
             }
+            if (shoppingCartGoodsInfo.goodsSellOptionName != null) {
+                holder.tvProductSpec.setText(shoppingCartGoodsInfo.goodsSellOptionName);
+            }
         }
     }
 
@@ -74,11 +77,12 @@ public class BalanceProductAdapter extends RecyclerView.Adapter<BalanceProductAd
 
     public class HistorySearchViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tvProductName, tvProductNum, tvProductPrice;
+        public TextView tvProductName, tvProductNum, tvProductPrice, tvProductSpec;
 
         public HistorySearchViewHolder(View itemView) {
             super(itemView);
             tvProductName = (TextView) itemView.findViewById(R.id.tv_product_name);
+            tvProductSpec = (TextView) itemView.findViewById(R.id.tv_product_spec);
             tvProductNum = (TextView) itemView.findViewById(R.id.tv_product_num);
             tvProductPrice = (TextView) itemView.findViewById(R.id.tv_product_price);
         }

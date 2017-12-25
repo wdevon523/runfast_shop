@@ -138,4 +138,9 @@
         <!--&lt;!&ndash; 模糊 &ndash;&gt;-->
     <!--</style>-->
 
+    <style name="Theme_dialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@drawable/dialog_bg_corner_radius</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>

@@ -26,16 +26,17 @@
                 android:layout_width="85dp"
                 android:layout_height="85dp"
                 android:scaleType="centerInside" />
-            
+
             <TextView
                 android:id="@+id/tv_no_food_store"
                 android:layout_width="@dimen/dimen_85_dp"
                 android:layout_height="@dimen/dimen_20_dp"
                 android:layout_alignBottom="@+id/iv_food"
+                android:background="@color/bg_7f000000"
+                android:gravity="center"
                 android:text="缺货"
                 android:textColor="@color/white"
-                android:gravity="center"
-                android:background="@color/bg_7f000000"/>
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_name"
@@ -106,8 +107,8 @@
                 android:id="@+id/tv_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_food"
                 android:layout_alignLeft="@id/tv_name"
+                android:layout_below="@+id/ll_food_act"
                 android:layout_marginBottom="@dimen/dimen_5_dp"
                 android:text="123"
                 android:textColor="@color/color_price_red"
@@ -118,7 +119,7 @@
                 android:id="@+id/tv_old_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@id/tv_price"
+                android:layout_below="@+id/ll_food_act"
                 android:layout_marginLeft="@dimen/dimen_3_dp"
                 android:layout_marginTop="@dimen/dimen_3_dp"
                 android:layout_toRightOf="@id/tv_price"
@@ -129,7 +130,7 @@
                 android:id="@+id/addwidget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/iv_food"
+                android:layout_below="@+id/ll_food_act"
                 android:layout_alignParentRight="true"
                 android:visibility="gone" />
 
@@ -174,7 +175,8 @@
                 android:layout_width="52dp"
                 android:layout_height="26dp"
                 android:layout_alignBottom="@+id/tv_price"
-                android:layout_alignParentRight="true">
+                android:layout_alignParentRight="true"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/tv_spec"
@@ -208,7 +210,8 @@
                 android:layout_alignLeft="@id/tv_name"
                 android:layout_below="@+id/iv_food"
                 android:layout_marginTop="@dimen/dimen_3_dp"
-                android:textColor="@color/text_666666" />
+                android:textColor="@color/text_666666"
+                android:visibility="gone" />
 
         </RelativeLayout>
 

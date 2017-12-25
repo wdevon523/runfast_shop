@@ -43,6 +43,7 @@ public class CustomApplication extends BaseApplication {
     //public static LocationClient mLocationClient;
 
     public static boolean isRelogining = false;
+    public static boolean isNeedUpdate = false;
     public static String  alias;
 
     @Override

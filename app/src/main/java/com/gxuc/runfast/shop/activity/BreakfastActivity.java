@@ -364,7 +364,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                     }
                     sortInfos.get(mPositionSort).isSelect = true;
                     adapterSort.notifyDataSetChanged();
-                    sortId = sortInfos.get(mPosition).id;
+                    sortId = sortInfos.get(mPositionSort).id;
                     tvSortName.setText(sortInfos.get(mPositionSort).name);
                     getBusinessType(page, 10, sortId, typeId);
                     uiHide();

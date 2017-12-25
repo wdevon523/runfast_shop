@@ -5,208 +5,217 @@
     android:background="@drawable/spec_select_background"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp">
-
-        <TextView
-            android:id="@+id/tv_spec_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:singleLine="true"
-            android:text="葡式蛋挞(经典)1只装"
-            android:textColor="@color/color_address_black"
-            android:textSize="16sp" />
-
-        <ImageView
-            android:id="@+id/iv_close_spec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/icon_delete_spec" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_product"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:text="规格："
-            android:textColor="@color/color_text_gray"
-            android:textSize="12sp" />
-
-        <com.gxuc.runfast.shop.view.ZFlowLayout
-            android:id="@+id/flow_layout_spec"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="10dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_product_one"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_spec_property"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="12dp"
-            android:text="甜度："
-            android:textColor="@color/color_text_gray"
-            android:textSize="12sp" />
-
-        <com.gxuc.runfast.shop.view.ZFlowLayout
-            android:id="@+id/flow_product_property"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="10dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_product_two"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tv_spec_property_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="12dp"
-            android:text="甜度："
-            android:textColor="@color/color_text_gray"
-            android:textSize="12sp" />
-
-        <com.gxuc.runfast.shop.view.ZFlowLayout
-            android:id="@+id/flow_product_property_two"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="10dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_gravity="right"
-        android:layout_margin="@dimen/dimen_10_dp"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/iv_sub_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:padding="5dp"
-            android:src="@drawable/icon_delete_product"/>
-
-        <TextView
-            android:id="@+id/tv_spec_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:gravity="center"
-            android:text="1"
-            android:textSize="16sp"/>
-
-        <ImageView
-            android:id="@+id/iv_add_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:padding="5dp"
-            android:src="@drawable/icon_add_product"/>
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="57dp"
-            android:background="@color/color_wallet_white"
-            android:gravity="center_vertical">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:id="@+id/tv_spec_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:singleLine="true"
+                    android:text="葡式蛋挞(经典)1只装"
+                    android:textColor="@color/color_address_black"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/iv_close_spec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/icon_delete_spec" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_product"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="20dp"
+                    android:text="规格："
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="12sp" />
+
+                <com.gxuc.runfast.shop.view.ZFlowLayout
+                    android:id="@+id/flow_layout_spec"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_product_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_spec_property"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="12dp"
+                    android:text="甜度："
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="12sp" />
+
+                <com.gxuc.runfast.shop.view.ZFlowLayout
+                    android:id="@+id/flow_product_property"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_product_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_spec_property_two"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="12dp"
+                    android:text="甜度："
+                    android:textColor="@color/color_text_gray"
+                    android:textSize="12sp" />
+
+                <com.gxuc.runfast.shop.view.ZFlowLayout
+                    android:id="@+id/flow_product_property_two"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="19dp"
-                android:text="¥"
-                android:textColor="@color/color_price_red"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_gravity="right"
+                android:layout_margin="@dimen/dimen_10_dp"
+                android:gravity="center">
 
-            <TextView
-                android:id="@+id/tv_spec_price"
+                <ImageView
+                    android:id="@+id/iv_sub_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:padding="5dp"
+                    android:src="@drawable/icon_delete_product" />
+
+                <TextView
+                    android:id="@+id/tv_spec_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/iv_add_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:padding="5dp"
+                    android:src="@drawable/icon_add_product" />
+
+            </LinearLayout>
+
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="7.5"
-                android:textColor="@color/color_price_red"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="10dp">
 
-            <TextView
-                android:id="@+id/tv_spec_old_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp"
-                android:text="7.5"
-                android:textColor="@color/text_999999"
-                android:textSize="15sp"
-                android:visibility="gone" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="57dp"
+                    android:background="@color/color_wallet_white"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="19dp"
+                        android:text="¥"
+                        android:textColor="@color/color_price_red"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_spec_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="7.5"
+                        android:textColor="@color/color_price_red"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_spec_old_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:text="7.5"
+                        android:textColor="@color/text_999999"
+                        android:textSize="15sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="125dp"
+                    android:layout_height="37dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:id="@+id/iv_add"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:padding="2dp"
+                        android:src="@drawable/icon_add_product" />
+
+                    <TextView
+                        android:id="@+id/tv_select_spec"
+                        android:layout_width="125dp"
+                        android:layout_height="37dp"
+                        android:layout_marginRight="15dp"
+                        android:background="@drawable/shape_button_orange"
+                        android:gravity="center"
+                        android:text="选好了"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+
+            </RelativeLayout>
 
         </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="125dp"
-            android:layout_height="37dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true">
-
-            <ImageView
-                android:id="@+id/iv_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:padding="2dp"
-                android:src="@drawable/icon_add_product" />
-
-            <TextView
-                android:id="@+id/tv_select_spec"
-                android:layout_width="125dp"
-                android:layout_height="37dp"
-                android:layout_marginRight="15dp"
-                android:background="@drawable/shape_button_orange"
-                android:gravity="center"
-                android:text="选好了"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
-        </RelativeLayout>
-
-
-    </RelativeLayout>
+    </ScrollView>
 </LinearLayout>

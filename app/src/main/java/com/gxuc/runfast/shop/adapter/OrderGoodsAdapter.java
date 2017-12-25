@@ -58,6 +58,15 @@ public class OrderGoodsAdapter extends BaseAdapter {
 
         viewHolder.tvOrderDetailGoodName.setText(goodsSellRecordChildren.getGoodsSellName());
         viewHolder.tvOrderDetailGoodNum.setText("x" + goodsSellRecordChildren.getNum());
+        String spec = "";
+        if (goodsSellRecordChildren.getGoodsSellStandardName() != null) {
+            spec = goodsSellRecordChildren.getGoodsSellStandardName();
+        }
+        if (goodsSellRecordChildren.getGoodsSellOptionName() != null) {
+            spec = spec + goodsSellRecordChildren.getGoodsSellOptionName();
+        }
+//        viewHolder.tvOrderDetailGoodSpec.setText(goodsSellRecordChildren.getGoodsSellStandardName() + " " + goodsSellRecordChildren.getGoodsSellOptionName());
+        viewHolder.tvOrderDetailGoodSpec.setText(spec);
         BigDecimal prudoctTotalPrice = goodsSellRecordChildren.getPrice().multiply(new BigDecimal(String.valueOf(goodsSellRecordChildren.getNum())));
         viewHolder.tvOrderDetailGoodPrice.setText("¥ " + prudoctTotalPrice);
         return convertView;
@@ -66,6 +75,8 @@ public class OrderGoodsAdapter extends BaseAdapter {
     static class ViewHolder {
         @BindView(R.id.tv_order_detail_good_name)
         TextView tvOrderDetailGoodName;
+        @BindView(R.id.tv_order_detail_good_spec)
+        TextView tvOrderDetailGoodSpec;
         @BindView(R.id.tv_order_detail_good_num)
         TextView tvOrderDetailGoodNum;
         @BindView(R.id.tv_order_detail_good_price)

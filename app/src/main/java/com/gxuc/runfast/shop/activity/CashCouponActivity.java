@@ -11,11 +11,13 @@ import com.gxuc.runfast.shop.bean.coupon.CouponInfo;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.IntentConfig;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.adapter.moneyadapter.CashCouponAdapter;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,7 +77,9 @@ public class CashCouponActivity extends ToolBarActivity implements View.OnClickL
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().receiveCoupan(IntentConfig.AGENT_ID, 0).enqueue(new MyCallback<String>() {
+        String agantId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
+
+        CustomApplication.getRetrofit().receiveCoupan(agantId, 0).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();

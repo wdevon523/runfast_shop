@@ -13,14 +13,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.adapter.BreakfastAdapter;
 import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.bean.BusinessExercise;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
+import com.gxuc.runfast.shop.bean.SearchProduct;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
 import com.gxuc.runfast.shop.R;
@@ -139,7 +142,8 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
      * 搜索商品
      */
     private void searchGoods(String name) {
-        CustomApplication.getRetrofit().searchGoods(1, 10, lon, lat, name, 1, 4, 1).enqueue(new MyCallback<String>() {
+        String agantId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
+        CustomApplication.getRetrofit().searchGoods(1, 10, lon, lat, name, 1, agantId, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -201,6 +205,18 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
                         info.alist.add(exercise);
                     }
                 }
+                info.searchProductArray = busObject.optJSONArray("goodsList");
+
+//                String goodsList = busObject.optString("goodsList");
+//                info.searchProductList = new ArrayList<SearchProduct>();
+//                if (!TextUtils.isEmpty(goodsList) && !TextUtils.equals("null", goodsList)) {
+//                    ArrayList<SearchProduct> searchProductList = GsonUtil.fromJson(goodsList, new TypeToken<ArrayList<SearchProduct>>() {
+//                    }.getType());
+//                    info.searchProductList.addAll(searchProductList);
+//                } else {
+//                    info.searchProductList = null;
+//                }
+
                 businessInfos.add(info);
             }
             loadMoreAdapter.loadAllDataCompleted();
@@ -218,15 +234,15 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.layout_breakfast_item:
+//        switch (v.getId()) {
+//            case R.id.layout_breakfast_item:
                 Integer positionBusiness = (Integer) v.getTag();
                 Intent intent = new Intent(this, BusinessActivity.class);
                 intent.setFlags(IntentFlag.SEARCH_VIEW);
                 intent.putExtra("search", businessInfos.get(positionBusiness).id);
                 startActivity(intent);
-                break;
-        }
+//                break;
+//        }
     }
 
     @Override

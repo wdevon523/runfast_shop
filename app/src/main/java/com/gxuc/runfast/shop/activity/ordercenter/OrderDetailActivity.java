@@ -342,7 +342,11 @@ public class OrderDetailActivity extends ToolBarActivity {
                 Intent payChannelIntent = new Intent(this, PayChannelActivity.class);
 //                payChannelIntent.putExtra("orderId", orderId);
 //                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
-                payChannelIntent.putExtra("orderDetail", orderDetailInfo);
+                payChannelIntent.putExtra("orderId", orderDetailInfo.goodsSellRecord.id);
+                payChannelIntent.putExtra("orderCode", orderDetailInfo.goodsSellRecord.orderCode);
+                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
+                payChannelIntent.putExtra("businessName", orderDetailInfo.goodsSellRecord.businessName);
+                payChannelIntent.putExtra("logo", orderDetailInfo.goodsSellRecord.logo);
                 startActivity(payChannelIntent);
                 break;
             //确认完成

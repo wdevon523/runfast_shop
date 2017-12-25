@@ -11,7 +11,7 @@
         android:orientation="vertical">
 
 
-        <com.example.supportv1.widget.CircleImageView
+        <ImageView
             android:id="@+id/iv_business_avater"
             android:layout_width="@dimen/dimen_65_dp"
             android:layout_height="@dimen/dimen_65_dp"

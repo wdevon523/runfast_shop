@@ -64,6 +64,8 @@ public class MineFragment extends Fragment {
     TextView tvCouponsNum;
     @BindView(R.id.tv_integral_num)
     TextView tvIntegralNum;
+    @BindView(R.id.view_new_version)
+    View viewNewVersion;
     private User userInfo;
 
     public MineFragment() {
@@ -127,6 +129,7 @@ public class MineFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+        viewNewVersion.setVisibility(CustomApplication.isNeedUpdate ? View.VISIBLE : View.GONE);
         if (!hidden && userInfo != null) {
             requestGetUserInfo();
         }

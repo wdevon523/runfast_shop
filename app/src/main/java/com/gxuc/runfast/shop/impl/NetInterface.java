@@ -114,7 +114,7 @@ public interface NetInterface {
                              @Field("latitude") String latitude,
                              @Field("name") String name,
                              @Field("sorting") Integer sort,
-                             @Field("agentId") Integer agentId,
+                             @Field("agentId") String agentId,
                              @Field("version") Integer version);
 
     /**
@@ -564,7 +564,7 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.RECEIVE_CONPON)
-    Call<String> receiveCoupan(@Field("agentId") Integer agentId,
+    Call<String> receiveCoupan(@Field("agentId") String agentId,
                                @Field("type") Integer type);
 
     /**
@@ -937,5 +937,15 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_SERVICE_INFO)
     Call<String> getServiceInfo(@Field("agentId") String agentId);
+
+    /**
+     * 检查版本
+     *
+     * @param version
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CHECK_NEW_VERSION)
+    Call<String> checkNewVersion(@Field("vercode") int vercode);
 
 }

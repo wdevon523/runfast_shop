@@ -399,26 +399,36 @@
                 android:layout_marginLeft="55dp"
                 android:background="@color/color_line_back" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/layout_about"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="14dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_marginTop="14dp">
 
                 <ImageView
+                    android:id="@+id/iv_about"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/icon_about" />
 
+                <View
+                    android:id="@+id/view_new_version"
+                    android:layout_width="@dimen/dimen_6_dp"
+                    android:layout_height="@dimen/dimen_6_dp"
+                    android:layout_alignTop="@+id/iv_about"
+                    android:layout_toRightOf="@+id/iv_about"
+                    android:background="@drawable/circle_red"
+                    android:visibility="gone"/>
+
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
+                    android:layout_toRightOf="@+id/iv_about"
                     android:text="关于跑腿快车"
                     android:textColor="@color/color_address_black"
                     android:textSize="16sp" />
@@ -426,9 +436,11 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginRight="20dp"
                     android:src="@drawable/icon_right" />
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

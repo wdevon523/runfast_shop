@@ -907,10 +907,21 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         foodSpecBean.setShowprice(foodBeens.get(i).getShowprice());
                         foodSpecBean.setGoodsSpecId(shoppingCartInfo.shoppings.get(j).goodsSellStandardId);
                         foodSpecBean.setGoodsSpec(shoppingCartInfo.shoppings.get(j).goodsSellStandardName);
-                        foodSpecBean.setGoodsSellOptionId(shoppingCartInfo.shoppings.get(j).goodsSellOptionId);
                         foodSpecBean.setGoodsSellOptionName(shoppingCartInfo.shoppings.get(j).goodsSellOptionName);
 //                        foodSpecBean.setGoodsTypeTwo(shoppingCartInfo.shoppings.get(j).);
-                        foodSpecBean.setOptionIds(shoppingCartInfo.shoppings.get(j).optionIds);
+                        if (!TextUtils.isEmpty(shoppingCartInfo.shoppings.get(j).optionIds) && shoppingCartInfo.shoppings.get(j).optionIds != null) {
+                            if (shoppingCartInfo.shoppings.get(j).optionIds.contains(",")) {
+                                String[] split = shoppingCartInfo.shoppings.get(j).optionIds.split(",");
+                                foodSpecBean.setGoodsSellOptionId(split[0]);
+                                foodSpecBean.setOptionIds(split[1]);
+                            } else {
+                                foodSpecBean.setGoodsSellOptionId(shoppingCartInfo.shoppings.get(j).optionIds);
+                                foodSpecBean.setOptionIds("");
+                            }
+                        } else {
+                            foodSpecBean.setGoodsSellOptionId(shoppingCartInfo.shoppings.get(j).goodsSellOptionId);
+                            foodSpecBean.setOptionIds(shoppingCartInfo.shoppings.get(j).optionIds);
+                        }
                         carFoods.add(foodSpecBean);
                     } else {
                         foodBeens.get(i).setSelectCount(Long.valueOf(shoppingCartInfo.shoppings.get(j).num));
@@ -1121,11 +1132,19 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             ShoppingTrolley trolley = new ShoppingTrolley();
             trolley.setGoodsSellId(mFoodBean.getId());
             trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
-            trolley.setGoodsSellOptionId(mFoodBean.getGoodsSellOptionId());
-            trolley.setOptionIds(mFoodBean.getOptionIds());
+//            trolley.setGoodsSellOptionId(mFoodBean.getGoodsSellOptionId());
+//            trolley.setOptionIds(mFoodBean.getOptionIds());
 //            if (carFoods.get(i).getStandardList() != null && carFoods.get(i).getStandardList().size() > 0) {
 //                trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
 //            }
+            String optionId = "";
+            if (!TextUtils.isEmpty(mFoodBean.getGoodsSellOptionId()) && mFoodBean.getGoodsSellOptionId() != null) {
+                optionId = mFoodBean.getGoodsSellOptionId();
+            }
+            if (!TextUtils.isEmpty(mFoodBean.getOptionIds()) && mFoodBean.getOptionIds() != null) {
+                optionId = optionId + "," + mFoodBean.getOptionIds();
+            }
+            trolley.setOptionIds(optionId);
             //TODO 子选项
 //            trolley.setOptionIds(carFoods.get(i).get);
             trolley.setNum((int) mFoodBean.getSelectCount());
@@ -1807,6 +1826,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     private void dealGoodsSpec(String data) {
         try {
             JSONObject jsonObject = new JSONObject(data);
+            optionBeenList.clear();
             specBeanList.clear();
             JSONObject goodsSell = jsonObject.getJSONObject("goods");
             JSONArray standardList = goodsSell.getJSONArray("standardList");
@@ -1828,6 +1848,8 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                     tvSpecPrice.setText(specBeanList.get(0).getPrice() + "");
                     tvSpecOldPrice.setVisibility(View.GONE);
                 }
+            } else {
+                layoutSpec.removeAllViews();
             }
             if (optionLength > 0) {
                 for (int i = 0; i < optionLength; i++) {
@@ -1879,7 +1901,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     public void addItem(final List<SpecBean> data, final ZFlowLayout flowLayout) {
         flowLayout.removeAllViews();
         final ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 30, 20);// 设置边距
+        layoutParams.setMargins(0, 0, 15, 10);// 设置边距
 
         point = 0;
 
@@ -1938,7 +1960,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     public void addItemOption(final List<SubOptionBean> data, final ZFlowLayout flowLayout) {
         flowLayout.removeAllViews();
         final ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 30, 20);// 设置边距
+        layoutParams.setMargins(0, 0, 15, 10);// 设置边距
         point = 0;
         for (int i = 0; i < data.size(); i++) {
 
@@ -1987,7 +2009,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     public void addItemOptionTwo(final List<SubOptionBean> data, final ZFlowLayout flowLayout) {
         flowLayout.removeAllViews();
         final ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 30, 20);// 设置边距
+        layoutParams.setMargins(0, 0, 15, 10);// 设置边距
 
         for (int i = 0; i < data.size(); i++) {
 

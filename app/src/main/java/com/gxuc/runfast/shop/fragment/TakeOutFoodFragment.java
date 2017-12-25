@@ -564,10 +564,16 @@ public class TakeOutFoodFragment extends Fragment implements
         unbinder.unbind();
     }
 
-    @OnClick({R.id.tv_search_name_two, R.id.layout_select_address, R.id.layout_search_product})
+    @OnClick({R.id.tv_search_name_two, R.id.layout_select_address, R.id.layout_search_product, R.id.layout_search_input})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_search_product:
+                mIntent = new Intent(getActivity(), SearchProductActivity.class);
+                mIntent.putExtra("pointLat", pointLat);
+                mIntent.putExtra("pointLon", pointLon);
+                startActivity(mIntent);
+                break;
+            case R.id.layout_search_input:
                 mIntent = new Intent(getActivity(), SearchProductActivity.class);
                 mIntent.putExtra("pointLat", pointLat);
                 mIntent.putExtra("pointLon", pointLon);
