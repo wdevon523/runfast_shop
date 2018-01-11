@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.MyAutoUpdate;
 
 import org.json.JSONException;
@@ -70,7 +71,10 @@ public class AboutActivity extends ToolBarActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(body);
                         if (jsonObject.optBoolean("update")) {
-                            showNoticeDialog(jsonObject.optString("msg"), jsonObject.optString("downloadUrl"));
+                            MyAutoUpdate myAutoUpdate = new MyAutoUpdate(AboutActivity.this);
+                            myAutoUpdate.showNoticeDialog(jsonObject.optString("msg"), jsonObject.optString("downloadUrl"));
+                        } else {
+                            ToastUtil.showToast(jsonObject.optString("msg"));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -87,44 +91,4 @@ public class AboutActivity extends ToolBarActivity {
         }
     }
 
-    /**
-     * 显示更新对话框
-     *
-     * @param version_info
-     */
-    private void showNoticeDialog(String version_info, final String downloadUrl) {
-        // 构造对话框
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("更新提示");
-        builder.setMessage(version_info);
-        // 更新
-        builder.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // 启动后台服务下载apk
-                dialog.dismiss();
-                MyAutoUpdate autoUpdate = new MyAutoUpdate(AboutActivity.this);
-                autoUpdate.showDownloadDialog(downloadUrl);
-            }
-        });
-
-
-        // 稍后更新
-        builder.setNegativeButton("以后更新", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-        AlertDialog noticeDialog = builder.create();
-        noticeDialog.show();
-
-        Button nButton = noticeDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-        nButton.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
-        nButton.setTypeface(Typeface.DEFAULT_BOLD);
-        Button pButton = noticeDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        pButton.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
-        pButton.setTypeface(Typeface.DEFAULT_BOLD);
-    }
 }

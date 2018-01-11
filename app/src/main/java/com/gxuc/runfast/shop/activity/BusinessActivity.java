@@ -54,6 +54,7 @@ import com.gxuc.runfast.shop.bean.maintop.TopImage;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.fragment.BusinessInfoFragment;
 import com.gxuc.runfast.shop.fragment.EvaluateFragment;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -246,6 +247,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     private boolean isResume = false;
     private String lat;
     private String lon;
+    private int goodId;
 
     //-----------------
 
@@ -380,6 +382,14 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     }
 
     private void initView() {
+
+        BusinessFragment businessFragment = new BusinessFragment();
+        CustomUtils.fragment = businessFragment;
+        mFragments.add(businessFragment);
+        mFragments.add(new EvaluateFragment());
+        mFragments.add(new BusinessInfoFragment());
+
+
         layoutShopCar = (FrameLayout) findViewById(R.id.layout_shop_car);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
         iv_shop_car = (ImageView) findViewById(R.id.iv_shop_car);
@@ -486,7 +496,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         lat = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT);
         lon = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON);
 
-        int flags = getIntent().getFlags();
+        int flags = getIntent().getIntExtra(IntentFlag.KEY, -1);
         if (flags == 0) {
             TopImage business = (TopImage) getIntent().getSerializableExtra("business");
             if (business != null) {
@@ -514,18 +524,16 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 businessId = Integer.parseInt(split[1]);
 //                getBusinessDetailFromBanner(businessId);
             }
+        } else if (flags == 5) {
+            businessId = getIntent().getIntExtra("businessId", 0);
+            goodId = getIntent().getIntExtra("goodId", 0);
         }
+
         if (businessId != 0) {
             getBusinessDetailFromBanner(businessId);
-            getBusiness(businessId);
             getBusinessActivity(businessId);
         }
         setTitle();
-        BusinessFragment businessFragment = new BusinessFragment();
-        CustomUtils.fragment = businessFragment;
-        mFragments.add(businessFragment);
-        mFragments.add(new EvaluateFragment());
-        mFragments.add(new BusinessInfoFragment());
 
         mAdapter = new BusinessAdapter(getSupportFragmentManager(), mFragments, mStringList);
     }
@@ -611,9 +619,10 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * @param id
      */
     private void getBusinessDetailFromBanner(int id) {
-        CustomApplication.getRetrofit().getBusinessInfo(id, lon, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().getBusinessInfo(id, lon, lat, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                getBusiness(businessId);
                 String data = response.body();
                 dealBusinessDetailFromBanner(data);
             }
@@ -801,6 +810,9 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         JSONObject jsonObject = glistArray.getJSONObject(j);
                         FoodBean foodBean = new FoodBean();
                         foodBean.setSelectCount(0);
+                        if (goodId != 0 && goodId == jsonObject.optInt("id")) {
+                            positionSpec = j;
+                        }
                         foodBean.setId(jsonObject.optInt("id"));
                         foodBean.setName(jsonObject.optString("name"));
                         foodBean.setIcon(jsonObject.optString("imgPath"));
@@ -827,6 +839,9 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             }
             if (fragment.getFoodAdapter() != null) {
                 fragment.getFoodAdapter().setNewData(foodBeens);
+                if (goodId != 0 && positionSpec != null) {
+                    showGoodDetail();
+                }
             }
             if (fragment.getTypeAdapter() != null) {
                 fragment.getTypeAdapter().setNewData(types);
@@ -866,6 +881,10 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         carAdapter.notifyDataSetChanged();
                         car_badge.setVisibility(View.INVISIBLE);
                     }
+
+                }
+                if (goodId != 0 && positionSpec != null) {
+                    showGoodDetail();
                 }
             }
 
@@ -1117,7 +1136,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         userInfo = UserService.getUserInfo(this);
         if (businessId != 0 && isResume) {
             getBusinessDetailFromBanner(businessId);
-            getBusiness(businessId);
+//            getBusiness(businessId);
             getBusinessActivity(businessId);
         }
     }
@@ -1600,36 +1619,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 case R.id.food_main://商品item
                     positionSpec = (Integer) v.getTag();
                     Log.d("position", "position =" + positionSpec);
-                    foodBeanDetail = foodBeens.get(positionSpec);
-                    //positionDetail = position;
-                    isShowDetail = true;
-                    if (foodBeanDetail.getIsonly() == 1) {
-                        layoutSpec1.setVisibility(View.VISIBLE);
-                        addWidgetDetail.setVisibility(View.GONE);
-                        tvSpecNum.setText(foodBeanDetail.getSelectCount() + "");
-                        tvSpecNum.setVisibility(foodBeanDetail.getSelectCount() > 0 ? View.VISIBLE : View.GONE);
-                    } else {
-                        layoutSpec1.setVisibility(View.GONE);
-                        addWidgetDetail.setVisibility(View.VISIBLE);
-                    }
-                    addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
-                    layoutProductDetail.setVisibility(View.VISIBLE);
-                    rotateyAnimShow(layoutProductDetail);
-                    appBarLayout.setVisibility(View.GONE);
-
-                    if (business.getIsopen() != 0) {
-                        layoutSpec1.setVisibility(View.GONE);
-                        addWidgetDetail.setVisibility(View.GONE);
-                    }
-
-                    if (foodBeanDetail != null) {
-                        fillProductDetail(foodBeanDetail);
-                        if (foodBeanDetail.getSelectCount() > 0) {
-                            //ivSub.setVisibility(View.VISIBLE);
-                            //tvProductCount.setText(foodBean.getSelectCount() + "");
-                        }
-                        getGoodsDetail(foodBeanDetail.getId());
-                    }
+                    showGoodDetail();
 
                     break;
                 case R.id.layout_spec://商品item
@@ -1752,6 +1742,41 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                     tvSpecCount.setText(specNum + "");
                     break;
             }
+        }
+    }
+
+    private void showGoodDetail() {
+        foodBeanDetail = foodBeens.get(positionSpec);
+        //positionDetail = position;
+        isShowDetail = true;
+        if (foodBeanDetail.getIsonly() == 1) {
+            layoutSpec1.setVisibility(View.VISIBLE);
+            addWidgetDetail.setVisibility(View.GONE);
+            tvSpecNum.setText(foodBeanDetail.getSelectCount() + "");
+            tvSpecNum.setVisibility(foodBeanDetail.getSelectCount() > 0 ? View.VISIBLE : View.GONE);
+        } else {
+            layoutSpec1.setVisibility(View.GONE);
+            addWidgetDetail.setVisibility(View.VISIBLE);
+        }
+//        if (((BusinessFragment) mFragments.get(0)).getFoodAdapter() != null) {
+        addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
+//        }
+        layoutProductDetail.setVisibility(View.VISIBLE);
+        rotateyAnimShow(layoutProductDetail);
+        appBarLayout.setVisibility(View.GONE);
+
+        if (business.getIsopen() != 0) {
+            layoutSpec1.setVisibility(View.GONE);
+            addWidgetDetail.setVisibility(View.GONE);
+        }
+
+        if (foodBeanDetail != null) {
+            fillProductDetail(foodBeanDetail);
+            if (foodBeanDetail.getSelectCount() > 0) {
+                //ivSub.setVisibility(View.VISIBLE);
+                //tvProductCount.setText(foodBean.getSelectCount() + "");
+            }
+            getGoodsDetail(foodBeanDetail.getId());
         }
     }
 

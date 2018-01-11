@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.activity.usercenter;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
@@ -18,17 +19,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
@@ -45,6 +49,8 @@ import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.AddressSearchAdapter;
+import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.data.IntentFlag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +98,8 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     private PoiSearch.Query query;
     private int pageNo = 1;
     private RegeocodeAddress mAddress;
+    private int mFlags;
+    private AddressInfo mAddressInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +108,12 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
         ButterKnife.bind(this);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
+
+        mFlags = getIntent().getIntExtra(IntentFlag.KEY, -1);
+        if (mFlags == 1) {
+            mAddressInfo = getIntent().getParcelableExtra("addressInfo");
+        }
+
         if (aMap == null) {
             aMap = mMapView.getMap();
         }
@@ -139,26 +153,47 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     }
 
     private void initMap() {
-        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
-        myLocationStyle.interval(5000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-        myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
-        myLocationStyle.showMyLocation(true);//设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
-        myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_mylocation)));//
-        myLocationStyle.anchor(0.5f, 0.5f);
-        myLocationStyle.strokeColor(Color.argb(180, 63, 157, 226));
-        myLocationStyle.radiusFillColor(Color.argb(100, 148, 200, 239));
+        if (mFlags == 1) {
 
-        aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-        aMap.getUiSettings().setMyLocationButtonEnabled(true);//设置默认定位按钮是否显示，非必需设置。
-        aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-        aMap.getUiSettings().setZoomControlsEnabled(false);
+            LatLng addressLatLng = new LatLng(Double.valueOf(mAddressInfo.getLatitude()), Double.valueOf(mAddressInfo.getLongitude()));
+
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(addressLatLng, 15);
+            MarkerOptions markerOptionsUser = new MarkerOptions();
+            // 设置Marker的坐标，为我们点击地图的经纬度坐标
+            markerOptionsUser.position(addressLatLng);
+            // 设置Marker点击之后显示的标题
+            // 设置Marker的图标样式
+//        markerOptionsBusiness.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_shop_car));
+            markerOptionsUser.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_mylocation));
+            // 设置Marker是否可以被拖拽，
+            markerOptionsUser.draggable(false);
+            // 设置Marker的可见性
+            markerOptionsUser.visible(true);
+            //将Marker添加到地图上去
+            aMap.addMarker(markerOptionsUser).showInfoWindow();
+            aMap.moveCamera(cameraUpdate);
+        } else {
+            myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+            myLocationStyle.interval(5000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
+            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
+            myLocationStyle.showMyLocation(true);//设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
+            myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_mylocation)));//
+            myLocationStyle.anchor(0.5f, 0.5f);
+            myLocationStyle.strokeColor(Color.argb(180, 63, 157, 226));
+            myLocationStyle.radiusFillColor(Color.argb(100, 148, 200, 239));
+
+            aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
+            aMap.getUiSettings().setMyLocationButtonEnabled(true);//设置默认定位按钮是否显示，非必需设置。
+            aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+            aMap.getUiSettings().setZoomControlsEnabled(false);
+            aMap.setOnMyLocationChangeListener(this);
+        }
         //反编译地址查询
         geocodeSearch = new GeocodeSearch(this);
         geocodeSearch.setOnGeocodeSearchListener(this);
     }
 
     private void setListener() {
-        aMap.setOnMyLocationChangeListener(this);
         aMap.setOnCameraChangeListener(this);
         etSearchName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -368,7 +403,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             intent.putExtra("address", isSearch ? addressSearch.get(position).title : addresses.get(position).title);
             intent.putExtra("addressInfo", mAddress);
 //            intent.putExtra("addressLat", addresses.get(position));
-            intent.putExtra("addressLat",isSearch ? addressSearch.get(position) : addresses.get(position));
+            intent.putExtra("addressLat", isSearch ? addressSearch.get(position) : addresses.get(position));
             setResult(RESULT_OK, intent);
             finish();
         }
@@ -378,17 +413,24 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
+                hideInput(this, etSearchName);
                 isSearch = false;
                 layoutAddressTitle.setVisibility(View.VISIBLE);
                 break;
             case R.id.iv_refresh:
                 break;
             case R.id.layout_address_name:
-                if (myLocation != null) {
-                    isSearch = true;
-                    layoutAddressTitle.setVisibility(View.GONE);
-                    regeocodeSearch(myLocation.getLatitude(), myLocation.getLongitude(), 3000);
+//                if (myLocation != null) {
+                isSearch = true;
+                layoutAddressTitle.setVisibility(View.GONE);
+                if (mFlags == 1) {
+                    regeocodeSearch(Double.valueOf(mAddressInfo.getLatitude()), Double.valueOf(mAddressInfo.getLongitude()), 3000);
+                } else {
+                    if (myLocation != null) {
+                        regeocodeSearch(myLocation.getLatitude(), myLocation.getLongitude(), 3000);
+                    }
                 }
+//                }
                 break;
             case R.id.tv_current_address:
 //                Intent intent = new Intent();
@@ -399,5 +441,14 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
 //                finish();
                 break;
         }
+    }
+
+    /**
+     * 强制隐藏输入法键盘
+     */
+    private void hideInput(Context context, View view) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

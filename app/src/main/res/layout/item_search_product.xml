@@ -20,8 +20,8 @@
 
             <ImageView
                 android:id="@+id/iv_food"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:cropToPadding="true" />
 
             <TextView
@@ -42,6 +42,7 @@
                 android:layout_alignTop="@+id/iv_food"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/iv_food"
+                android:ellipsize="end"
                 android:maxLines="2"
                 android:text="劲辣鸡腿堡"
                 android:textColor="@color/color_address_black"
@@ -53,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/tv_name"
-                android:layout_below="@id/tv_name"
+                android:layout_centerVertical="true"
                 android:maxLines="1"
                 android:text="销量4"
                 android:textColor="@color/color_text_gray"

@@ -15,7 +15,9 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.UpdateMessageActivity;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.example.supportv1.utils.ValidateUtil;
 
@@ -39,6 +41,7 @@ public class ForgotPasswordActivity extends ToolBarActivity {
     @BindView(R.id.btn_ok)
     Button mBtnOk;
     private Intent mIntent;
+    private int UPDATE_PASSWORD = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,9 +141,19 @@ public class ForgotPasswordActivity extends ToolBarActivity {
 //            return;
 //        }
         mIntent = new Intent(this, UpdateMessageActivity.class);
-        mIntent.setFlags(IntentFlag.FORGOT_PWD);
+        mIntent.putExtra(IntentFlag.KEY, IntentFlag.FORGOT_PWD);
         mIntent.putExtra("phone", phone);
-        startActivity(mIntent);
+        startActivityForResult(mIntent, UPDATE_PASSWORD);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode!= RESULT_OK){
+            return;
+        }
+        SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, "");
+        setResult(RESULT_OK);
+        finish();
+    }
 }

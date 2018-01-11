@@ -55,7 +55,7 @@ public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.Bo
             public void onClick(View v) {
                 if (topImage1.getAdType() == 4) {
                     Intent intent = new Intent(mContext, BusinessActivity.class);
-                    intent.setFlags(IntentFlag.MAIN_BOTTOM_AD);
+                    intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_AD);
                     intent.putExtra("business", topImage1);
                     mContext.startActivity(intent);
                 }else {

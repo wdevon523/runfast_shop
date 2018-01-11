@@ -6,7 +6,6 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-
     <TextView
         android:id="@+id/tv_order_man_state"
         android:layout_width="match_parent"
@@ -55,7 +54,7 @@
 
         <Button
             android:id="@+id/btn_buy_again"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_pay_white"
@@ -65,7 +64,7 @@
 
         <Button
             android:id="@+id/btn_pay_now"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_pay_white"
@@ -75,7 +74,7 @@
 
         <Button
             android:id="@+id/btn_confirm_completed"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_pay_white"
@@ -85,7 +84,7 @@
 
         <Button
             android:id="@+id/btn_cancel_order"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_pay_white"
@@ -95,7 +94,7 @@
 
         <Button
             android:id="@+id/btn_contact_business"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_pay"
@@ -105,7 +104,7 @@
 
         <Button
             android:id="@+id/btn_contact_man"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_orange"
@@ -115,7 +114,7 @@
 
         <Button
             android:id="@+id/btn_appraise"
-            android:layout_width="94dp"
+            android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
             android:layout_margin="@dimen/dimen_3_dp"
             android:background="@drawable/shape_button_orange"
@@ -123,6 +122,5 @@
             android:textColor="@color/white"
             android:visibility="gone" />
     </LinearLayout>
-
 
 </LinearLayout>

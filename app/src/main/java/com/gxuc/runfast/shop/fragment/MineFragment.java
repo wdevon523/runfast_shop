@@ -35,6 +35,7 @@ import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.ComplaintActivity;
+import com.gxuc.runfast.shop.view.CircleImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,7 +55,7 @@ import retrofit2.Response;
 public class MineFragment extends Fragment {
 
     @BindView(R.id.iv_head)
-    ImageView ivHead;
+    CircleImageView ivHead;
     Unbinder unbinder;
     @BindView(R.id.tv_user_name)
     TextView tvUserName;
@@ -219,7 +220,7 @@ public class MineFragment extends Fragment {
                 break;
             case R.id.layout_address://地址管理
                 Intent intent = new Intent(getActivity(), AddressSelectActivity.class);
-                intent.setFlags(IntentFlag.MANAGER_ADDRESS);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.MANAGER_ADDRESS);
                 startActivity(intent);
                 break;
             case R.id.layout_collection://收藏

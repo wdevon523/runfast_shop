@@ -96,7 +96,7 @@ public class MyEnshrineActivity extends ToolBarActivity implements BGARefreshLay
             @Override
             public void onItemClick(View view, Enshrine enshrine) {
                 Intent intent = new Intent(MyEnshrineActivity.this, BusinessActivity.class);
-                intent.setFlags(IntentFlag.ORDER_LIST);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
                 intent.putExtra("orderInfo", enshrine.shopId);
                 startActivity(intent);
             }

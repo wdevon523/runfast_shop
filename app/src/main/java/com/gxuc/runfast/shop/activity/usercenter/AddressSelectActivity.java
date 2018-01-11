@@ -62,7 +62,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
     }
 
     private void initData() {
-        mFlags = getIntent().getFlags();
+        mFlags = getIntent().getIntExtra(IntentFlag.KEY, -1);
         bid = getIntent().getIntExtra("bid", 0);
         isfull = getIntent().getIntExtra("isfull", 0);
         full = getIntent().getStringExtra("full");
@@ -76,7 +76,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
     @OnClick(R.id.layout_add_address)
     public void onViewClicked() {
         Intent intent = new Intent(this, UpdateAddressActivity.class);
-        intent.setFlags(IntentFlag.ADD_ADDRESS);
+        intent.putExtra(IntentFlag.KEY, IntentFlag.ADD_ADDRESS);
         startActivity(intent);
     }
 
@@ -85,7 +85,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postListAddress(userInfo.getId()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postListAddress(userInfo.getId(), 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealAddressList(response.body());
@@ -115,7 +115,7 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
             requestSelectAddr(addressInfo);
         } else if (mFlags == IntentFlag.MANAGER_ADDRESS) {
             Intent intent = new Intent(this, UpdateAddressActivity.class);
-            intent.setFlags(IntentFlag.EDIT_ADDRESS);
+            intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_ADDRESS);
             intent.putExtra("addressInfo", addressInfo);
             startActivity(intent);
         }

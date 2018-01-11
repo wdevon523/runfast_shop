@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,23 +7,62 @@
     android:orientation="vertical"
     tools:context=".activity.ordercenter.OrderDetailActivity">
 
-    <include layout="@layout/layout_title"/>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.amap.api.maps.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/iv_close_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/dimen_20_dp"
+            android:src="@drawable/icon_close_map"
+            android:visibility="gone" />
+
+        <ScrollView
+            android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:scrollbars="none">
 
-            <include layout="@layout/item_order_detail_header"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dimen_10_dp"
+                android:layout_marginRight="@dimen/dimen_10_dp"
+                android:orientation="vertical">
 
-            <include layout="@layout/item_order_detail_middle"/>
+                <View
+                    android:id="@+id/view_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen_250_dp" />
 
-            <include layout="@layout/item_order_detail_bottom"/>
-        </LinearLayout>
-    </ScrollView>
+                <include layout="@layout/item_order_detail_header" />
+
+                <include layout="@layout/item_order_detail_middle" />
+
+                <include layout="@layout/item_order_detail_bottom" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <ImageView
+            android:id="@+id/iv_back_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen_10_dp"
+            android:src="@drawable/icon_back_map"/>
+
+    </RelativeLayout>
+
 
 </LinearLayout>

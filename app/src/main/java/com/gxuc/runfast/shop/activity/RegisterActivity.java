@@ -56,6 +56,10 @@ public class RegisterActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_code:
+                Message message = handler.obtainMessage();
+                message.what = 1002;
+                message.arg1 = 59;
+                message.sendToTarget();
                 getAuthCode();
                 break;
             case R.id.btn_register:
@@ -99,10 +103,6 @@ public class RegisterActivity extends ToolBarActivity {
                 CustomToast.INSTANCE.showToast(this, msg);
                 return;
             }
-            Message message = handler.obtainMessage();
-            message.what = 1002;
-            message.arg1 = 59;
-            message.sendToTarget();
 
         } catch (JSONException e) {
             e.printStackTrace();

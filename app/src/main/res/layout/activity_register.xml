@@ -136,7 +136,7 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/shape_button_pay_gary"
+        android:background="@drawable/shape_button_orange"
         android:text="注册"
         android:textSize="18sp"
         android:textColor="@android:color/white"/>

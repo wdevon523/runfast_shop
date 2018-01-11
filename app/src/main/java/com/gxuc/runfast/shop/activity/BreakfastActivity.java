@@ -115,7 +115,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     @Override
     protected void onTitleChanged(CharSequence title, int color) {
         super.onTitleChanged(title, color);
-        tvToolbarTitle.setText(mSort.getTypename());
+        tvToolbarTitle.setText(mName);
     }
 
     private void setData() {
@@ -133,8 +133,11 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
      */
     private void initData() {
 
-        mSort = getIntent().getParcelableExtra("middleData");
-        mName = mSort.getTypename();
+        mName = getIntent().getStringExtra("typeName");
+        if (TextUtils.isEmpty(mName)) {
+            mSort = getIntent().getParcelableExtra("middleData");
+            mName = mSort.getTypename();
+        }
 
         lat = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT));
         lon = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON));
@@ -211,7 +214,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     private void getBusinessType(int page, int raw, int sortId, String typeId) {
         //TODO 经纬度
 
-        CustomApplication.getRetrofit().getBusinessType(page, raw, lon, lat, sortId, typeId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().getBusinessType(page, raw, lon, lat, sortId, typeId, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -249,6 +252,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                 info.mini_imgPath = busObject.optString("mini_imgPath");
                 info.imgPath = busObject.optString("imgPath");
                 info.name = busObject.optString("name");
+                info.isopen = busObject.optInt("isopen");
                 info.distance = busObject.optDouble("distance");
                 info.levelId = busObject.optInt("levelId");
                 info.salesnum = busObject.optInt("salesnum");
@@ -372,7 +376,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                 case R.id.layout_breakfast_item:
                     Integer positionBusiness = (Integer) v.getTag();
                     Intent intent = new Intent(this, BusinessActivity.class);
-                    intent.setFlags(IntentFlag.MAIN_BOTTOM_PAGE);
+                    intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_PAGE);
                     intent.putExtra("business", businessInfos.get(positionBusiness));
                     startActivity(intent);
                     break;

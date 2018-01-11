@@ -200,7 +200,9 @@
             android:name=".activity.usercenter.ComplaintActivity"
             android:label="投诉"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.SearchProductActivity" />
+        <activity
+            android:name=".activity.SearchProductActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.usercenter.CollectionActivity"
             android:label="我的收藏"
@@ -219,23 +221,28 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ordercenter.OrderDetailActivity"
-            android:label="订单详情" />
+            android:label="订单详情"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.BusinessInfoActivity"
-            android:label="" />
+            android:label=""
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ordercenter.OrderRemarkActivity"
-            android:label="备注" />
+            android:label="备注"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.homepage.TopImageLinkActivity"
             android:label="活动详情"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ordercenter.OrderEvaluationActivity"
-            android:label="商家评价" />
+            android:label="商家评价"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.ordercenter.OrderStatusActivity"
-            android:label="订单状态" />
+            android:label="订单状态"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.alipay.sdk.app.H5PayActivity"
             android:configChanges="orientation|keyboardHidden|navigation|screenSize"
@@ -277,25 +284,29 @@
             android:name=".activity.ShowImageActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name=".activity.WebActivity"
+            android:screenOrientation="portrait" />
+
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
         <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->
         <service
             android:name="cn.jpush.android.service.DaemonService"
             android:enabled="true"
             android:exported="true">
-            <intent-filter >
+            <intent-filter>
                 <action android:name="cn.jpush.android.intent.DaemonService" />
-                <category android:name="com.gxuc.runfast.shop"/>
+                <category android:name="com.gxuc.runfast.shop" />
             </intent-filter>
         </service>
 
         <!-- Required SDK核心功能-->
         <receiver
             android:name="cn.jpush.android.service.PushReceiver"
-            android:enabled="true" >
+            android:enabled="true">
             <intent-filter android:priority="1000">
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />
-                <category android:name="com.gxuc.runfast.shop"/>
+                <category android:name="com.gxuc.runfast.shop" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />
@@ -305,6 +316,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
@@ -313,10 +325,11 @@
         <activity
             android:name="cn.jpush.android.ui.PushActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.NoTitleBar"
-            android:exported="false" >
+            android:exported="false"
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="cn.jpush.android.ui.PushActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="com.gxuc.runfast.shop" />
             </intent-filter>
@@ -337,8 +350,7 @@
         <service
             android:name="cn.jpush.android.service.DownloadService"
             android:enabled="true"
-            android:exported="false" >
-        </service>
+            android:exported="false"></service>
 
         <!-- Required SDK核心功能-->
         <receiver android:name="cn.jpush.android.service.AlarmReceiver" />

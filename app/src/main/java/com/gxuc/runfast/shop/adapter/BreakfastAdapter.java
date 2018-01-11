@@ -52,6 +52,10 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
     public void onBindViewHolder(final BreakfastViewHolder holder, int position) {
         final BusinessInfo businessInfo = data.get(position);
         if (businessInfo != null) {
+            holder.view_close.setVisibility(businessInfo.isopen == 0 ? View.GONE : View.VISIBLE);
+            holder.ll_business_open.setVisibility(businessInfo.isopen == 0 ? View.VISIBLE : View.GONE);
+            holder.ll_business_close.setVisibility(businessInfo.isopen == 0 ? View.GONE : View.VISIBLE);
+
             holder.tv_business_name.setText(businessInfo.name);
             holder.tv_business_levelId.setText(String.valueOf(businessInfo.levelId));
             holder.rb_order_evaluate.setRating(businessInfo.levelId);
@@ -59,7 +63,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             holder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfo.distance)) + "km");
             holder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfo.salesnum) + "单");
             holder.tv_sale_startPay.setText(businessInfo.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfo.startPay));
-            holder.tv_sale_time.setText(businessInfo.speed);
+            holder.tv_sale_time.setText(businessInfo.speed + "分钟");
 
             if (businessInfo.isDeliver == 0) {
                 holder.tv_sale_price.setText(businessInfo.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.charge));
@@ -212,10 +216,11 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
 
         ImageView iv_is_charge, iv_business_logo;
 
-        LinearLayout ll_contain_act, layout_breakfast_item, ll_contain_product;
+        LinearLayout ll_contain_act, layout_breakfast_item, ll_contain_product, ll_business_open, ll_business_close;
 
         ScaleRatingBar rb_order_evaluate;
         RelativeLayout rl_show_product;
+        View view_close;
 
         BreakfastViewHolder(View itemView) {
             super(itemView);
@@ -234,8 +239,11 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             ll_contain_act = (LinearLayout) itemView.findViewById(R.id.ll_contain_act);
             ll_contain_product = (LinearLayout) itemView.findViewById(R.id.ll_contain_product);
             layout_breakfast_item = (LinearLayout) itemView.findViewById(R.id.layout_breakfast_item);
+            ll_business_open = (LinearLayout) itemView.findViewById(R.id.ll_business_open);
+            ll_business_close = (LinearLayout) itemView.findViewById(R.id.ll_business_close);
             rl_show_product = (RelativeLayout) itemView.findViewById(R.id.rl_show_product);
             tv_show_product = (TextView) itemView.findViewById(R.id.tv_show_product);
+            view_close = itemView.findViewById(R.id.view_close);
         }
     }
 }

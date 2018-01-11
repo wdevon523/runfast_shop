@@ -25,6 +25,7 @@ import com.gxuc.runfast.shop.util.ActivityManager;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.view.MyAutoUpdate;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,7 +80,10 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
                     try {
                         JSONObject jsonObject = new JSONObject(body);
                         viewNewVersion.setVisibility(jsonObject.optBoolean("update") ? View.VISIBLE : View.GONE);
-                        ToastUtil.showToast(jsonObject.optString("msg"));
+                        if (jsonObject.optBoolean("update")) {
+                            MyAutoUpdate myAutoUpdate = new MyAutoUpdate(MainActivity.this);
+                            myAutoUpdate.showNoticeDialog(jsonObject.optString("msg"), jsonObject.optString("downloadUrl"));
+                        }
                         CustomApplication.isNeedUpdate = jsonObject.optBoolean("update");
                     } catch (JSONException e) {
                         e.printStackTrace();

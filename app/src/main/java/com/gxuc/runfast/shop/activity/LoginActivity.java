@@ -65,7 +65,7 @@ public class LoginActivity extends ToolBarActivity {
                 startActivityForResult(new Intent(this, RegisterActivity.class), 1001);
                 break;
             case R.id.tv_forgot_password:
-                startActivity(new Intent(this, ForgotPasswordActivity.class));
+                startActivityForResult(new Intent(this, ForgotPasswordActivity.class), 1002);
                 break;
         }
     }
@@ -86,7 +86,7 @@ public class LoginActivity extends ToolBarActivity {
             return;
         }
         LogUtil.d("password", MD5Util.MD5(password));
-        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), CustomApplication.alias,0).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postLogin(phone, MD5Util.MD5(password), CustomApplication.alias, 0).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealLogin(response.body());
@@ -132,10 +132,15 @@ public class LoginActivity extends ToolBarActivity {
         if (resultCode != RESULT_OK) {
             return;
         }
-        String mobile = data.getStringExtra("mobile");
-        String password = data.getStringExtra("password");
-        etUserName.setText(mobile);
-        etUserPassword.setText(password);
+        if (requestCode == 1001) {
+            String mobile = data.getStringExtra("mobile");
+            String password = data.getStringExtra("password");
+            etUserName.setText(mobile);
+            etUserPassword.setText(password);
+        }else if (requestCode == 1002){
+            etUserPassword.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD));
+
+        }
     }
 
 

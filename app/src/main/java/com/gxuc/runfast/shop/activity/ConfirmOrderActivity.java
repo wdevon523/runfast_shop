@@ -110,6 +110,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     private String couponId;
     private double shippingPrice;
     private double couponPrice;
+    private String orderRemark = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,7 +269,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postListAddress(userInfo.getId()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postListAddress(userInfo.getId(), 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealAddressList(response.body());
@@ -327,7 +328,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
                 intent.putExtra("bid", businessId);
                 intent.putExtra("isfull", shoppingCartInfo.isfull);
                 intent.putExtra("full", shoppingCartInfo.totalprice);
-                intent.setFlags(IntentFlag.ORDER_ADDRESS);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_ADDRESS);
                 startActivityForResult(intent, IntentConfig.REQUEST_CODE);
                 break;
             case R.id.layout_pay_mode:
@@ -376,9 +377,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
             String goodsJson = gson.toJson(mGoodsSellRecordChildrens);
             mSubtract = shoppingCartInfo.totalprice;
             //TODO  参数含义
-            CustomApplication.getRetrofit().createOrder(businessId,
-                    mAddressId,
-                    couponId)
+            CustomApplication.getRetrofit().createOrder(businessId, mAddressId,
+                    couponId, orderRemark)
 //                    "0",
 //                    "0",
 //                    mSubtract,
@@ -441,8 +441,10 @@ public class ConfirmOrderActivity extends ToolBarActivity {
             return;
         }
         if (resultCode == IntentConfig.REMARK_RESULT_CODE) {
-            if (data != null)
-                mTvOrderRemark.setText(data.getStringExtra("order_remark"));
+            if (data != null) {
+                orderRemark = data.getStringExtra("order_remark");
+                mTvOrderRemark.setText(orderRemark);
+            }
         } else if (resultCode == IntentConfig.ADDRESS_SELECT) {
             AddressInfo addressInfo = data.getParcelableExtra("addressInfo");
             shippingPrice = data.getDoubleExtra("shippingPrice", 0);

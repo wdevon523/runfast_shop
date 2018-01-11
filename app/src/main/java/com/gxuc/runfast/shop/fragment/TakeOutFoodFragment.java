@@ -259,7 +259,7 @@ public class TakeOutFoodFragment extends Fragment implements
             @Override
             public void onItemClickListener(BusinessInfo businessInfo, View view) {
                 Intent intent = new Intent(getContext(), BusinessActivity.class);
-                intent.setFlags(IntentFlag.MAIN_BOTTOM_PAGE);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_PAGE);
                 intent.putExtra("business", businessInfo);
                 startActivity(intent);
             }
@@ -383,15 +383,18 @@ public class TakeOutFoodFragment extends Fragment implements
      * 获取首页轮播图
      */
     private void netHomeImage(int agentId) {
+
+        if (page == 1) {
+            businessInfos.clear();
+            businessNewInfos.clear();
+            moreAdapter.resetLoadState();
+            moreAdapter.notifyDataSetChanged();
+        }
+
         CustomApplication.getRetrofit().getAdvert(agentId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
-                if (page == 1) {
-                    businessInfos.clear();
-                    businessNewInfos.clear();
-                    moreAdapter.resetLoadState();
-                }
                 TopImages topImages = GsonUtil.parseJsonWithGson(data, TopImages.class);
 
                 HomeDataItemBean itemBean = new HomeDataItemBean();
@@ -515,6 +518,7 @@ public class TakeOutFoodFragment extends Fragment implements
                         info.charge = busObject.optDouble("charge");
                         info.isDeliver = busObject.optInt("isDeliver");
                         info.speed = busObject.optString("speed");
+                        info.news = busObject.optInt("news");
                         info.alist = new ArrayList<>();
                         JSONArray alist = busObject.optJSONArray("alist");
                         if (alist != null) {
@@ -622,7 +626,7 @@ public class TakeOutFoodFragment extends Fragment implements
             return;
         }
         Intent intent = new Intent(getContext(), BusinessActivity.class);
-        intent.setFlags(IntentFlag.MAIN_BOTTOM_PAGE);
+        intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_PAGE);
         intent.putExtra("business", businessInfos.get(positionBusiness).businessInfos);
         startActivity(intent);
     }

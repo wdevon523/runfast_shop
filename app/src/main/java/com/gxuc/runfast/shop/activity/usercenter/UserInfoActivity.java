@@ -180,7 +180,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 break;
             case R.id.tv_address_button://地址管理
                 Intent intent = new Intent(this, AddressSelectActivity.class);
-                intent.setFlags(IntentFlag.MANAGER_ADDRESS);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.MANAGER_ADDRESS);
                 startActivity(intent);
                 break;
             case R.id.tv_update_password://密码管理
@@ -191,13 +191,13 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 break;
             case R.id.ll_nickname://昵称
                 intent = new Intent(this, ChangeNameActivity.class);
-                intent.setFlags(IntentFlag.EDIT_NICKNAME);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_NICKNAME);
                 intent.putExtra("userInfo", userInfo);
                 startActivityForResult(intent, 1002);
                 break;
             case R.id.tv_user_email://邮箱
                 intent = new Intent(this, ChangeNameActivity.class);
-                intent.setFlags(IntentFlag.EDIT_EMAIL);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_EMAIL);
                 intent.putExtra("userInfo", userInfo);
                 startActivityForResult(intent, 1003);
                 break;

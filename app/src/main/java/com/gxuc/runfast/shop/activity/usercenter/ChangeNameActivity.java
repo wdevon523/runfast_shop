@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
@@ -57,7 +58,7 @@ public class ChangeNameActivity extends ToolBarActivity {
 
     private void initData() {
         Intent intent = getIntent();
-        mFlags = intent.getFlags();
+        mFlags = intent.getIntExtra(IntentFlag.KEY,-1);
         mUserInfo = intent.getParcelableExtra("userInfo");
         LogUtil.d("用户信息", mUserInfo.toString());
         switch (mFlags) {

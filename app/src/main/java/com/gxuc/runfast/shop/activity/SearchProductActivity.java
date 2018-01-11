@@ -22,6 +22,7 @@ import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.bean.SearchProduct;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
+import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
@@ -143,15 +144,18 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
      */
     private void searchGoods(String name) {
         String agantId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
+        CustomProgressDialog.startProgressDialog(this);
         CustomApplication.getRetrofit().searchGoods(1, 10, lon, lat, name, 1, agantId, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
                 String body = response.body();
                 dealSearchGoods(body);
             }
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
+                CustomProgressDialog.stopProgressDialog();
                 mRefreshLayout.endRefreshing();
             }
         });
@@ -184,7 +188,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
                 info.name = busObject.optString("name");
                 info.distance = busObject.optDouble("distance");
                 info.levelId = busObject.optInt("levelId");
-                info.salesnum = busObject.optInt("salenum");
+                info.salesnum = busObject.optInt("salesnum");
                 info.startPay = busObject.optDouble("startPay");
                 info.busshowps = busObject.optDouble("busshowps");
                 info.baseCharge = busObject.optDouble("baseCharge");
@@ -238,7 +242,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
 //            case R.id.layout_breakfast_item:
                 Integer positionBusiness = (Integer) v.getTag();
                 Intent intent = new Intent(this, BusinessActivity.class);
-                intent.setFlags(IntentFlag.SEARCH_VIEW);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.SEARCH_VIEW);
                 intent.putExtra("search", businessInfos.get(positionBusiness).id);
                 startActivity(intent);
 //                break;

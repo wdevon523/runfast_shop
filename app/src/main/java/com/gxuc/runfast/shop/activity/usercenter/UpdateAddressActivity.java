@@ -13,6 +13,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.Address;
 import com.gxuc.runfast.shop.bean.address.AddressInfo;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
@@ -58,7 +59,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_address);
         ButterKnife.bind(this);
-        mFlags = getIntent().getFlags();
+        mFlags = getIntent().getIntExtra(IntentFlag.KEY, -1);
         if (mFlags == 1) {
             mAddressInfo = getIntent().getParcelableExtra("addressInfo");
             etUserName.setText(mAddressInfo.getName());
@@ -82,7 +83,12 @@ public class UpdateAddressActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_select_address:
-                startActivityForResult(new Intent(this, AddressManagerActivity.class), 1001);
+                Intent intent = new Intent(this, AddressManagerActivity.class);
+                if (mFlags == 1) {
+                    intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_ADDRESS);
+                    intent.putExtra("addressInfo", mAddressInfo);
+                }
+                startActivityForResult(intent, 1001);
                 break;
             case R.id.btn_save_address:
                 if (!checkAvailable()) {

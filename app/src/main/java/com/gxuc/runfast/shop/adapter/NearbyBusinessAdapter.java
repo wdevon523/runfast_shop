@@ -119,10 +119,11 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
             businessHolder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfos.salesnum) + "单");
             businessHolder.tv_sale_startPay.setText(businessInfos.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfos.startPay));
             businessHolder.tv_sale_time.setText(businessInfos.speed);
+            businessHolder.tv_new_business.setVisibility((businessInfos.news != null && businessInfos.news == 1) ? View.VISIBLE : View.GONE);
 
-            businessHolder.ll_business_open.setVisibility(businessInfos.isopen == 0 ? View.VISIBLE :View.GONE);
-            businessHolder.ll_business_close.setVisibility(businessInfos.isopen == 0 ? View.GONE :View.VISIBLE);
-            businessHolder.view_close.setVisibility(businessInfos.isopen == 0 ? View.GONE :View.VISIBLE);
+            businessHolder.ll_business_open.setVisibility(businessInfos.isopen == 0 ? View.VISIBLE : View.GONE);
+            businessHolder.ll_business_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
+            businessHolder.view_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
 
 
             if (businessInfos.isDeliver == 0) {
@@ -263,12 +264,12 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
 
     class BusinessViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_business_name, tv_business_levelId, tv_sale_distance,
+        TextView tv_business_name, tv_new_business, tv_business_levelId, tv_sale_distance,
                 tv_business_sales_num, tv_sale_startPay, tv_sale_time, tv_sale_price;
 
         ImageView iv_is_charge, iv_business_logo;
 
-        LinearLayout ll_contain_act, layout_breakfast_item,ll_business_open,ll_business_close;
+        LinearLayout ll_contain_act, layout_breakfast_item, ll_business_open, ll_business_close;
 
         ScaleRatingBar rb_order_evaluate;
 
@@ -277,6 +278,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
         BusinessViewHolder(View itemView) {
             super(itemView);
             tv_business_name = (TextView) itemView.findViewById(R.id.tv_business_name);
+            tv_new_business = (TextView) itemView.findViewById(R.id.tv_new_business);
             tv_business_levelId = (TextView) itemView.findViewById(R.id.tv_business_levelId);
             tv_sale_distance = (TextView) itemView.findViewById(R.id.tv_sale_distance);
             tv_business_sales_num = (TextView) itemView.findViewById(R.id.tv_business_sales_num);

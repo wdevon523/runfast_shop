@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -64,7 +65,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
     private void initData() {
         Intent intent = getIntent();
         if (intent != null) {
-            mFlags = intent.getFlags();
+            mFlags = intent.getIntExtra(IntentFlag.KEY, -1);
             if (mFlags != 0) {
                 mPhone = intent.getStringExtra("phone");
             }
@@ -253,7 +254,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
             if (userInfo == null) {
                 return;
             }
-            CustomApplication.getRetrofit().updatePassword(code, newPwd, 1, newPwdAgain).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofit().updatePassword("", newPwd, 1, code).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealPwd(response.body());
@@ -274,6 +275,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
             String msg = object.optString("msg");
             CustomToast.INSTANCE.showToast(this, msg);
             if (success) {
+                setResult(RESULT_OK);
                 finish();
             }
         } catch (JSONException e) {

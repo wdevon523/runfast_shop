@@ -12,13 +12,20 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  * Created by Berial on 16/8/18.
  */
 public final class ApiServiceFactory {
-
-    //    public static final String HOST = "http://120.77.70.27/iwapb/";
-    public static final String HOST = "http://www.gxptkc.com/iwapb/";
     //        public static final String HOST = "http://user.gxptkc.com:9999/iwapb/";
-//    public static final String HOST = "http://192.168.2.221:8080/runfast/iwapb/";
+    //    public static final String HOST = "http://120.77.70.27/iwapb/";
+
+
+//    public static final String HOST = "http://www.gxptkc.com/iwapb/";
+//    public static final String WEB_HOST = "http://www.gxptkc.com/web/";
+
+
+    public static final String HOST = "http://192.168.2.221:8080/runfast/iwapb/";
+    public static final String WEB_HOST = "http://192.168.2.221:8080/runfast/web/";
+
     public static final String BASE_URL = HOST + "business/";
-    public static final String BASE_IMG_URL = "http://www.gxptkc.com";
+    public static final String BASE_IMG_URL = "http://image.gxptkc.com";
+
 
     private final NetInterface mApiService;
 

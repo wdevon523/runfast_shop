@@ -39,6 +39,7 @@ public class NetConfig {
                     //设置是否使用内存缓存
                     .setUseMemCache(true)
                     .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+                    .setPlaceholderScaleType(ImageView.ScaleType.CENTER_CROP)
                     //设置加载过程中的图片
                     .setLoadingDrawableId(R.drawable.icon_default_head)
                     //设置网络加载出错的图片

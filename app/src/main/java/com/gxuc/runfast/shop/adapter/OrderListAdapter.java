@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BusinessActivity;
@@ -13,14 +14,18 @@ import com.gxuc.runfast.shop.activity.ordercenter.OrderComplainActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderEvaluationActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.R;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.x;
 
 import java.util.List;
 
@@ -102,7 +107,8 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             holder.tv_order_shop_content.setText(orderInfo.getGoodsSellName());
         }
         holder.tv_order_shop_price.setText("¥ " + String.valueOf(orderInfo.getPrice()));
-        holder.iv_order_shop.setImageURI(ApiServiceFactory.BASE_IMG_URL + orderInfo.getLogo());
+//        holder.iv_order_shop.setImageURI(ApiServiceFactory.BASE_IMG_URL + orderInfo.getLogo());
+        x.image().bind(holder.iv_order_shop, UrlConstant.ImageBaseUrl + orderInfo.getLogo(), NetConfig.optionsHeadImage);
         holder.tv_order_shop_again.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,7 +121,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             }
         });
 
-        holder.tv_order_shop_complain.setVisibility(orderInfo.getStatus() == 8 ? View.VISIBLE : View.GONE);
+        holder.tv_order_shop_complain.setVisibility((orderInfo.getStatus() == 8 && orderInfo.getIsComent() == null) ? View.VISIBLE : View.GONE);
         holder.tv_order_shop_complain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,9 +149,11 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
                         Intent intent = new Intent(context, BusinessActivity.class);
-                        intent.setFlags(IntentFlag.ORDER_LIST);
+                        intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
                         intent.putExtra("orderInfo", businessId);
                         context.startActivity(intent);
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("msg"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -180,7 +188,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         TextView tv_order_shop_complain;
         TextView tv_order_shop_again;
         TextView tv_order_shop_price;
-        SimpleDraweeView iv_order_shop;
+        ImageView iv_order_shop;
 
         public OrderListViewHolder(View itemView) {
             super(itemView);
@@ -191,7 +199,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             tv_order_shop_price = (TextView) itemView.findViewById(R.id.tv_order_shop_price);
             tv_order_shop_complain = (TextView) itemView.findViewById(R.id.tv_order_shop_complain);
             tv_order_shop_again = (TextView) itemView.findViewById(R.id.tv_order_shop_again);
-            iv_order_shop = (SimpleDraweeView) itemView.findViewById(R.id.iv_order_shop);
+            iv_order_shop = (ImageView) itemView.findViewById(R.id.iv_order_shop);
         }
     }
 

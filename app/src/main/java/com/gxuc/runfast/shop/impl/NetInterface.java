@@ -129,7 +129,8 @@ public interface NetInterface {
                                  @Field("longitude") Double longitude,
                                  @Field("latitude") Double latitude,
                                  @Field("sorting") Integer sort,
-                                 @Field("typeId") String typeId);
+                                 @Field("typeId") String typeId,
+                                 @Field("version") Integer version);
 
     /**
      * 获取商品列表
@@ -197,7 +198,8 @@ public interface NetInterface {
     @POST(UrlConstant.BUSINESS_INFO)
     Call<String> getBusinessInfo(@Field("id") Integer id,
                                  @Field("longitude") String longitude,
-                                 @Field("latitude") String latitude);
+                                 @Field("latitude") String latitude,
+                                 @Field("version") int version);
 
 
     /**
@@ -272,7 +274,7 @@ public interface NetInterface {
     Call<String> getCode(@Field("mobile") String mobile);
 
     /**
-     * 获取注册验证码
+     * 获取忘记密码验证码
      *
      * @return
      */
@@ -469,7 +471,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.USER_ADDRESS_LIST)
-    Call<String> postListAddress(@Field("id") int id);
+    Call<String> postListAddress(@Field("id") int id,
+                                 @Field("version") int version);
 
     /**
      * 消息列表
@@ -715,7 +718,8 @@ public interface NetInterface {
     @POST(UrlConstant.CREATE_ORDER)
     Call<String> createOrder(@Field("businessId") int businessId,
                              @Field("userAddressId") int userAddressId,
-                             @Field("couponId") String couponId);
+                             @Field("couponId") String couponId,
+                             @Field("content") String content);
 //                             @Field("rid") String rid,
 //                             @Field("yhprice") String yhprice,
 //                             @Field("businesspay") String businesspay,
@@ -941,11 +945,31 @@ public interface NetInterface {
     /**
      * 检查版本
      *
-     * @param version
+     * @param vercode
      * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.CHECK_NEW_VERSION)
     Call<String> checkNewVersion(@Field("vercode") int vercode);
+
+    /**
+     * 获取骑手经纬度
+     *
+     * @param driverId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_DRIVER_LATLNG)
+    Call<String> getDriverLatLng(@Field("driverId") String driverId);
+
+    /**
+     * 获取骑手经纬度
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_ID)
+    Call<String> getBusinessId(@Field("id") int id);
 
 }

@@ -14,10 +14,10 @@ public class UrlConstant {
     public static final String HOST = ApiServiceFactory.HOST;
     public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
-    public static final String ImageBaseUrl = "http://www.gxptkc.com";
+    public static final String ImageBaseUrl = "http://image.gxptkc.com";
 //    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
 
-    public static final String ImageHeadBaseUrl = "http://120.77.70.27/";
+    public static final String ImageHeadBaseUrl = "http://image.gxptkc.com/";
 
 //    public static final String BaseUrl = "http://115.28.39.61:28080/wanglu/";
 
@@ -453,4 +453,14 @@ public class UrlConstant {
      * 检查版本
      */
     public static final String CHECK_NEW_VERSION = "checkAndroidVersion.do";
+
+    /**
+     * 检查版本
+     */
+    public static final String GET_DRIVER_LATLNG = "user/getDriverLocation.do";
+
+    /**
+     * 根据商品id获取店家id
+     */
+    public static final String GET_BUSINESS_ID = "business/getguige.do";
 }
