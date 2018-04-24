@@ -347,6 +347,14 @@ public class TakeOutFoodFragment extends Fragment implements
      * 上传经纬度
      */
     private void netPostAddress(final Double lon, final Double lat) {
+
+        if (page == 1) {
+            businessInfos.clear();
+            businessNewInfos.clear();
+            moreAdapter.resetLoadState();
+//            moreAdapter.notifyDataSetChanged();
+        }
+
 //        CustomApplication.getRetrofit().postAddress(lon, lat).enqueue(this);
         //TODO 经纬度
 //        CustomApplication.getRetrofit().postAddress(110.07, 23.38).enqueue(new MyCallback<String>() {
@@ -373,7 +381,12 @@ public class TakeOutFoodFragment extends Fragment implements
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
+                moreAdapter.loadFailed();
+                if (mRefreshLayout != null) {
+                    mRefreshLayout.endRefreshing();
+                    mRefreshLayout.setEnabled(true);
+                }
             }
         });
     }
@@ -383,13 +396,6 @@ public class TakeOutFoodFragment extends Fragment implements
      * 获取首页轮播图
      */
     private void netHomeImage(int agentId) {
-
-        if (page == 1) {
-            businessInfos.clear();
-            businessNewInfos.clear();
-            moreAdapter.resetLoadState();
-            moreAdapter.notifyDataSetChanged();
-        }
 
         CustomApplication.getRetrofit().getAdvert(agentId).enqueue(new MyCallback<String>() {
             @Override
@@ -518,6 +524,7 @@ public class TakeOutFoodFragment extends Fragment implements
                         info.charge = busObject.optDouble("charge");
                         info.isDeliver = busObject.optInt("isDeliver");
                         info.speed = busObject.optString("speed");
+                        info.goldBusiness = busObject.optBoolean("goldBusiness");
                         info.news = busObject.optInt("news");
                         info.alist = new ArrayList<>();
                         JSONArray alist = busObject.optJSONArray("alist");

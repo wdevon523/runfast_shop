@@ -17,6 +17,8 @@ public class BusinessInfo implements Serializable{
 
     public Integer news;// 1: 新店
 
+    public boolean goldBusiness;// 1: 金牌商家
+
     public String mini_imgPath;//商家图片logo缩略图
 
     public String name;//商家名称

@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
+import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AboutActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.activity.usercenter.ConsultationActivity;
@@ -72,7 +73,6 @@ public class MineFragment extends Fragment {
     public MineFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -167,7 +167,7 @@ public class MineFragment extends Fragment {
             JSONObject jsonObject = new JSONObject(body);
             String cuser = jsonObject.optString("cuser");
             User user = GsonUtil.fromJson(cuser, User.class);
-            user.setPassword(userInfo.getPassword());
+//            user.setPassword(userInfo.getPassword());
             user.setUnusedCoupon(jsonObject.optString("unusedCoupon"));
             UserService.saveUserInfo(user);
 
@@ -190,14 +190,14 @@ public class MineFragment extends Fragment {
         switch (view.getId()) {
             case R.id.iv_head://头像
                 if (userInfo == null || userInfo.getId() == null) {
-                    startActivity(new Intent(getContext(), LoginActivity.class));
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
                     return;
                 }
                 startActivity(new Intent(getContext(), UserInfoActivity.class));
                 break;
             case R.id.tv_user_name://登陆注册
                 if (userInfo == null || userInfo.getId() == null) {
-                    startActivity(new Intent(getContext(), LoginActivity.class));
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
                 }
                 break;
             case R.id.layout_help_center://帮助中心
@@ -239,6 +239,7 @@ public class MineFragment extends Fragment {
                 break;
             case R.id.layout_about://关于
                 startActivity(new Intent(getContext(), AboutActivity.class));
+//                startActivity(new Intent(getContext(), PurchasesActivity.class));
                 break;
         }
     }

@@ -1,12 +1,14 @@
 package com.gxuc.runfast.shop.activity.usercenter;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,10 +19,14 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.UserCaptchaTask;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
+import com.netease.nis.captcha.Captcha;
+import com.netease.nis.captcha.CaptchaListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +58,9 @@ public class UpdateMessageActivity extends ToolBarActivity {
     private boolean newAgainIsEmpty;
     private int mFlags;
     private String mPhone;
+    private Captcha mCaptcha;
+    /*验证码SDK,该Demo采用异步获取方式*/
+    private UserCaptchaTask mUserCaptchaTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +68,70 @@ public class UpdateMessageActivity extends ToolBarActivity {
         setContentView(R.layout.activity_update_message);
         ButterKnife.bind(this);
         initData();
+        initCaptcha();
         setListener();
     }
+
+    private void initCaptcha() {
+        //初始化验证码SDK相关参数，设置CaptchaId、Listener最后调用start初始化。
+        if (mCaptcha == null) {
+            mCaptcha = new Captcha(this);
+        }
+        mCaptcha.setCaptchaId("2a05ddcc43e648fd9ad48a08de7dcb11");
+        mCaptcha.setCaListener(myCaptchaListener);
+        //可选：开启debug
+        mCaptcha.setDebug(false);
+        //可选：设置超时时间
+        mCaptcha.setTimeout(10000);
+    }
+
+    CaptchaListener myCaptchaListener = new CaptchaListener() {
+
+        @Override
+        public void onValidate(String result, String validate, String message) {
+            //验证结果，valiadte，可以根据返回的三个值进行用户自定义二次验证
+            if (validate.length() > 0) {
+//                ToastUtil.showToast("验证成功，validate = " + validate);
+                getAuthCode(validate);
+            } else {
+//                ToastUtil.showToast("验证失败：result = " + result + ", validate = " + validate + ", message = " + message);
+                ToastUtil.showToast("验证失败");
+            }
+        }
+
+        @Override
+        public void closeWindow() {
+            //请求关闭页面
+//            ToastUtil.showToast("关闭页面");
+        }
+
+        @Override
+        public void onError(String errormsg) {
+            //出错
+            ToastUtil.showToast("错误信息：" + errormsg);
+        }
+
+        @Override
+        public void onCancel() {
+//            ToastUtil.showToast("取消线程");
+            //用户取消加载或者用户取消验证，关闭异步任务，也可根据情况在其他地方添加关闭异步任务接口
+            if (mUserCaptchaTask != null) {
+                if (mUserCaptchaTask.getStatus() == AsyncTask.Status.RUNNING) {
+                    Log.i(TAG, "stop mUserCaptchaTask");
+                    mUserCaptchaTask.cancel(true);
+                }
+            }
+        }
+
+        @Override
+        public void onReady(boolean ret) {
+            //该为调试接口，ret为true表示加载Sdk完成
+            if (ret) {
+//                ToastUtil.showToast("验证码sdk加载成功");
+            }
+        }
+
+    };
 
     private void initData() {
         Intent intent = getIntent();
@@ -154,7 +225,13 @@ public class UpdateMessageActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_get_code:
-                getAuthCode();
+//                getAuthCode();
+                mCaptcha.start();
+                mUserCaptchaTask = new UserCaptchaTask(mCaptcha);
+                //关闭mLoginTask任务可以放在myCaptchaListener的onCancel接口中处理
+                mUserCaptchaTask.execute();
+                //可直接调用验证函数Validate()，本demo采取在异步任务中调用（见UserLoginTask类中）
+                //mCaptcha.Validate();
                 break;
             case R.id.btn_save_password:
                 editPassword();
@@ -164,15 +241,16 @@ public class UpdateMessageActivity extends ToolBarActivity {
 
     /***
      * 获取验证码
+     * @param validate
      */
-    private void getAuthCode() {
+    private void getAuthCode(String validate) {
         if (mFlags != 1) {
             User userInfo = UserService.getUserInfo(this);
             if (userInfo == null) {
                 return;
             }
 
-            CustomApplication.getRetrofit().getEditPwdCode(userInfo.getMobile()).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofit().getEditPwdCode(userInfo.getMobile(), validate).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealCode(response.body());
@@ -180,16 +258,18 @@ public class UpdateMessageActivity extends ToolBarActivity {
 
                 @Override
                 public void onFailureResponse(Call<String> call, Throwable t) {
-
+                    tvGetCode.setEnabled(true);
                 }
             });
         } else {
             //|| !VaUtils.isMobileNo(accountName) 手机号正则验证
-            if (TextUtils.isEmpty(mPhone) || !VaUtils.isMobileNo(mPhone)) {
+            if (TextUtils.isEmpty(mPhone) ||
+                    mPhone.length() != 11) {
+//                !VaUtils.isMobileNo(mPhone)){
                 CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
                 return;
             }
-            CustomApplication.getRetrofit().getForgetCode(mPhone).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofit().getForgetCode(mPhone, validate).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealCode(response.body());
@@ -208,6 +288,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
             JSONObject jsonObject = new JSONObject(body);
             boolean success = jsonObject.optBoolean("success");
             String msg = jsonObject.optString("msg");
+            ToastUtil.showToast(msg);
             Message message = handler.obtainMessage();
             message.what = 1002;
             message.arg1 = 59;
@@ -291,7 +372,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
             switch (msg.what) {
                 case 1002:
                     int second = msg.arg1;
-                    tvGetCode.setText(second + "秒后可发送");
+                    tvGetCode.setText("重新获取" + second);
                     second -= 1;
                     if (second < 1) {
                         tvGetCode.setText("获取验证码");

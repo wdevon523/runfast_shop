@@ -18,7 +18,7 @@
         android:singleLine="true"
         android:text="123"
         android:textColor="#FF333333"
-        android:textSize="20sp" />
+        android:textSize="@dimen/dimen_20_dp" />
 
     <RelativeLayout
         android:id="@+id/layout_right_image"

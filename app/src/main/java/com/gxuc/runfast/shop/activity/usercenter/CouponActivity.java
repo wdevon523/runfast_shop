@@ -116,7 +116,7 @@ public class CouponActivity extends ToolBarActivity {
             public void onItemClick(View view, CouponBean couponBean) {
                 if (isChoose) {
 //                    requestSelectCoupon(couponBean);
-                    if (Double.valueOf(totalPrice) > couponBean.getFull()) {
+                    if (Double.valueOf(totalPrice) >= couponBean.getFull()) {
                         Intent intent = new Intent();
                         intent.putExtra("coupon", couponBean);
                         setResult(IntentConfig.COUPON_SELECT, intent);

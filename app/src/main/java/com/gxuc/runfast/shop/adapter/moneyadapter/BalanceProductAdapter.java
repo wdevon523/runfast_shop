@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.adapter.moneyadapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -47,16 +48,22 @@ public class BalanceProductAdapter extends RecyclerView.Adapter<BalanceProductAd
         ShoppingCartGoodsInfo shoppingCartGoodsInfo = data.get(position);
         if (shoppingCartGoodsInfo != null) {
             holder.tvProductName.setText(shoppingCartGoodsInfo.goodsSellName);
-            holder.tvProductNum.setText(TextUtils.isEmpty(shoppingCartGoodsInfo.num) ? "" : "x" + shoppingCartGoodsInfo.num);
+            if (TextUtils.equals(shoppingCartGoodsInfo.goodsSellName, "配送费")) {
+                holder.tvProductNum.setText((TextUtils.isEmpty(shoppingCartGoodsInfo.num) || TextUtils.equals(shoppingCartGoodsInfo.num, shoppingCartGoodsInfo.price)) ? "" : "¥ " + shoppingCartGoodsInfo.num);
+                holder.tvProductNum.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+            } else {
+                holder.tvProductNum.setText(TextUtils.isEmpty(shoppingCartGoodsInfo.num) ? "" : "x" + shoppingCartGoodsInfo.num);
+                holder.tvProductNum.getPaint().setFlags(0);
+            }
 
             if (!TextUtils.isEmpty(shoppingCartGoodsInfo.price)) {
                 if (TextUtils.equals(shoppingCartGoodsInfo.goodsSellName, "优惠券")) {
                     holder.tvProductPrice.setTextColor(context.getResources().getColor(R.color.color_balance_price));
                     holder.tvProductPrice.setText(" - ¥ " + shoppingCartGoodsInfo.price);
                 } else {
-                    if (!TextUtils.isEmpty(shoppingCartGoodsInfo.num)) {
-                        BigDecimal prudoctTotalPrice = new BigDecimal(shoppingCartGoodsInfo.price).multiply(new BigDecimal(String.valueOf(shoppingCartGoodsInfo.num)));
-                        holder.tvProductPrice.setText("¥ " + prudoctTotalPrice);
+                    if (!TextUtils.isEmpty(shoppingCartGoodsInfo.num) && !TextUtils.equals(shoppingCartGoodsInfo.goodsSellName, "配送费")) {
+//                        BigDecimal prudoctTotalPrice = new BigDecimal(shoppingCartGoodsInfo.price).multiply(new BigDecimal(String.valueOf(shoppingCartGoodsInfo.num)));
+                        holder.tvProductPrice.setText("¥ " + shoppingCartGoodsInfo.showprice);
                     } else {
                         holder.tvProductPrice.setText("¥ " + shoppingCartGoodsInfo.price);
                     }

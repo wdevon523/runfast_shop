@@ -310,7 +310,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             Log.d("location", "lat = " + location.getLatitude() + "，lng = " + location.getLongitude());
             if (isFirstLocation) {
                 isFirstLocation = false;
-                aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12));
+                aMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15));
             }
             myLocation = location;
         }

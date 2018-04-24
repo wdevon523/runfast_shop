@@ -181,8 +181,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="3dp"
-                    android:src="@drawable/icon_bottom_arrow"
                     android:visibility="invisible" />
+                <!--android:src="@drawable/icon_bottom_arrow"-->
 
                 <LinearLayout
                     android:id="@+id/layout_address_name"

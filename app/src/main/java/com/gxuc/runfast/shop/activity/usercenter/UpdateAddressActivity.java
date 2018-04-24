@@ -116,6 +116,9 @@ public class UpdateAddressActivity extends ToolBarActivity {
         } else if (TextUtils.isEmpty(mUserPhone)) {
             CustomToast.INSTANCE.showToast(this, "请填入手机号");
             return true;
+        } else if (mUserPhone.length() != 11) {
+            CustomToast.INSTANCE.showToast(this, "请填入正确的手机号");
+            return true;
         } else if (TextUtils.isEmpty(mHouseNumber)) {
             CustomToast.INSTANCE.showToast(this, "请填入门牌号");
             return true;

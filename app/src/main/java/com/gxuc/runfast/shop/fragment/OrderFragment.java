@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
@@ -28,6 +28,7 @@ import com.gxuc.runfast.shop.activity.ordercenter.OrderDetailActivity;
 import com.gxuc.runfast.shop.adapter.OrderListAdapter;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,9 +117,11 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
 //            if (userInfo == null) {
 //                mOrderInfos.clear();
 //                moreAdapter.loadCompleted();
-//                startActivity(new Intent(getActivity(), LoginActivity.class));
+//                startActivity(new Intent(getActivity(), LoginQucikActivity.class));
 //                return;
 //            }
+            userInfo = UserService.getUserInfo(getActivity());
+            page = 1;
             getOrderList();
         }
     }
@@ -136,11 +139,16 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
      */
     private void getOrderList() {
 
+        if (page == 1) {
+            mOrderInfos.clear();
+            moreAdapter.resetLoadState();
+        }
+
         CustomApplication.getRetrofit().postOrderList(page, 10).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 
@@ -160,7 +168,7 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                ToastUtil.showToast("网络数据异常");
             }
 
         });
@@ -171,9 +179,10 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
 //        if (orderInfos.getRows() != null && orderInfos.getRows().size() > 0) {
 //            layoutNotOrder.setVisibility(View.GONE);
 //        }
-        if (page == 1) {
-            mOrderInfos.clear();
-            moreAdapter.resetLoadState();
+
+        if (orderInfos.getRows().size()  == 0){
+            moreAdapter.loadAllDataCompleted();
+            return;
         }
 
         mOrderInfos.addAll(orderInfos.getRows());
@@ -204,6 +213,6 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
 
     @OnClick(R.id.tv_login)
     public void onViewClicked() {
-        startActivity(new Intent(getActivity(), LoginActivity.class));
+        startActivity(new Intent(getActivity(), LoginQucikActivity.class));
     }
 }

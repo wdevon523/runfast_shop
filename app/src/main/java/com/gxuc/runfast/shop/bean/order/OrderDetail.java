@@ -13,11 +13,13 @@ public class OrderDetail implements Serializable{
 
     /**
      * istel : 2
+     * total : 2
      * cusmob : 0775-2995588
      * goodsSellRecord : {"id":527432,"businessName":"阿蒙羊庄","businessId":180,"businessAddr":"桂平大乐购二楼","businessAddressLat":"23.388727","businessAddressLng":"110.075504","goodsSellName":"瓦煲羊骨汤58元/煲","goodsSellId":5298,"businessMobile":"3375009","shopperSign":null,"ismute":null,"userId":471551,"userName":"你好","userMobile":"13277777777","userPhone":"15871720785","userAddress":"湖北省武汉市洪山区梨园街道武铁佳苑(才林东路)","address":"13","userAddressId":145322,"userAddressLat":"30.589062","userAddressLng":"114.353473","distance":906699,"oldShopper":null,"oldShopperId":null,"oldShopperMobile":null,"shopper":null,"shopperId":null,"shopperMobile":null,"goodsTotal":1,"isDeliver":0,"shopperMoney":3,"orderCode":"w201709260001","createTime":"2017-09-26 11:30:56","commisson":null,"status":-1,"statStr":"订单已取消","content":null,"price":63,"yhprice":0,"disprice":null,"packing":0,"showps":5,"rid":0,"range1":null,"startDate":null,"endDate":null,"totalpay":63,"iswithdraw":0,"businesspay":58,"businessget":8.7,"agentget":1.74,"agentBusget":6.96,"agentBusget2":0,"isfirst":0,"userDel":null,"businessDel":null,"isReceive":null,"isPay":null,"isRefund":null,"refundType":null,"refundTime":null,"isComent":null,"isCancel":null,"refund":null,"refundcontext":null,"cityId":"gg","cityName":"贵港","countyId":"","countyName":"贵港","townId":"","townName":null,"noCharge":null,"activityprice":0,"activityId":null,"activityname":null,"agentName":"桂平代理","agentId":4,"distributionTime":null,"disTime":null,"payTime":null,"aceptTime":null,"isClearing":null,"coefficient":15,"acoefficient":3,"acoefficient2":0,"zjzd":null,"ptype":null,"stype":null,"couponname":null,"payType":null,"orderNumber":1,"isaccpt":null,"pushType":null,"accptTime":null,"appOrwx":1,"readyTime":null,"errend":null,"teamid":0,"teamname":null,"isTimeRefund":null,"issubsidy":null,"subsidy":null,"lessps":null,"qrcode":"/runfast/toQRcode/w201709260001","us":null,"startTime":null,"endTime":null,"goodsSellRecordChildren":null,"showacctdate":null,"logo":"/upload/_mini1490066146561.png","goodsSellOutStatus":null,"showcode":"1"}
      */
 
     public int istel;
+    public double total;
     public String cusmob;
     public GoodsSellRecordBean goodsSellRecord;
     public List<GoodsSellRecordChildren> goodsSellRecordChildren;
@@ -198,7 +200,7 @@ public class OrderDetail implements Serializable{
         public Object refundType;
         public Object refundTime;
         public Integer isComent;
-        public Object isCancel;
+        public Integer isCancel;
         public Object refund;
         public Object refundcontext;
         public String cityId;

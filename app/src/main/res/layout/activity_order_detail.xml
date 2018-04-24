@@ -15,7 +15,8 @@
         <com.amap.api.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/iv_close_map"
@@ -27,40 +28,48 @@
             android:src="@drawable/icon_close_map"
             android:visibility="gone" />
 
-        <ScrollView
-            android:id="@+id/scroll_view"
+        <cn.bingoogolapple.refreshlayout.BGARefreshLayout
+            android:id="@+id/rl_refresh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <ScrollView
+                android:id="@+id/scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dimen_10_dp"
-                android:layout_marginRight="@dimen/dimen_10_dp"
-                android:orientation="vertical">
+                android:scrollbars="none">
 
-                <View
-                    android:id="@+id/view_top"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_250_dp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/dimen_10_dp"
+                    android:layout_marginRight="@dimen/dimen_10_dp"
+                    android:orientation="vertical">
 
-                <include layout="@layout/item_order_detail_header" />
+                    <View
+                        android:id="@+id/view_top"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_250_dp"
+                        android:visibility="gone" />
 
-                <include layout="@layout/item_order_detail_middle" />
+                    <include layout="@layout/item_order_detail_header" />
 
-                <include layout="@layout/item_order_detail_bottom" />
+                    <include layout="@layout/item_order_detail_middle" />
 
-            </LinearLayout>
+                    <include layout="@layout/item_order_detail_bottom" />
 
-        </ScrollView>
+                </LinearLayout>
+
+            </ScrollView>
+        </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
+
 
         <ImageView
             android:id="@+id/iv_back_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/dimen_10_dp"
-            android:src="@drawable/icon_back_map"/>
+            android:src="@drawable/icon_back_map" />
 
     </RelativeLayout>
 

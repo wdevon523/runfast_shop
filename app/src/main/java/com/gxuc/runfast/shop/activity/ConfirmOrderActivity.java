@@ -25,6 +25,7 @@ import com.gxuc.runfast.shop.bean.redpackage.RedPackages;
 import com.gxuc.runfast.shop.config.IntentConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderRemarkActivity;
 import com.gxuc.runfast.shop.bean.BalanceInfo;
@@ -109,6 +110,8 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
     private String couponId;
     private double shippingPrice;
+    private double oldShippingPrice;
+    private double ftotal;
     private double couponPrice;
     private String orderRemark = "";
 
@@ -131,10 +134,11 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     }
 
     private void requestShoppingCart() {
+        CustomProgressDialog.startProgressDialog(this);
         CustomApplication.getRetrofit().getShoppingCar(businessId).enqueue(new MyCallback<String>() {
-
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
                 shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
                 if (shoppingCartInfo.shoppings != null && shoppingCartInfo.shoppings.size() > 0) {
                     shoppingCartGoodsList = shoppingCartInfo.shoppings;
@@ -146,7 +150,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
             }
         });
     }
@@ -182,13 +186,13 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         tvOrderPrice.setText(String.valueOf((new BigDecimal(shoppingCartInfo.price)).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
 
 //        tvCouponPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totaldisprice) + couponPrice));
-        tvCouponPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totaldisprice).add(BigDecimal.valueOf(couponPrice))));
+        tvCouponPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totaldisprice).add(BigDecimal.valueOf(ftotal)).add((BigDecimal.valueOf(oldShippingPrice).subtract(BigDecimal.valueOf(shippingPrice))))));
 
 //        tvSubPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
-        tvSubPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
+        tvSubPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice)).subtract(BigDecimal.valueOf(ftotal))));
 
 //        tvTotalPrice.setText(String.valueOf(Double.valueOf(shoppingCartInfo.totalprice) + shippingPrice - couponPrice));
-        tvTotalPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice))));
+        tvTotalPrice.setText(String.valueOf(new BigDecimal(shoppingCartInfo.totalprice).add(BigDecimal.valueOf(shippingPrice)).subtract(BigDecimal.valueOf(couponPrice)).subtract(BigDecimal.valueOf(ftotal))));
     }
 
     private void initData() {
@@ -448,7 +452,10 @@ public class ConfirmOrderActivity extends ToolBarActivity {
         } else if (resultCode == IntentConfig.ADDRESS_SELECT) {
             AddressInfo addressInfo = data.getParcelableExtra("addressInfo");
             shippingPrice = data.getDoubleExtra("shippingPrice", 0);
+            oldShippingPrice = data.getDoubleExtra("oldShippingPrice", 0);
+            ftotal = data.getDoubleExtra("ftotal", 0);
             shoppingCartGoodsInfo1.price = String.valueOf(shippingPrice);
+            shoppingCartGoodsInfo1.num = String.valueOf(oldShippingPrice);
             adapter.notifyDataSetChanged();
             updateMoney();
             mAddressId = addressInfo.getId();

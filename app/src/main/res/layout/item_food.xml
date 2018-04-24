@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/tv_name"
                 android:layout_below="@id/tv_name"
-                android:layout_marginTop="@dimen/dimen_3_dp"
+                android:layout_marginTop="@dimen/dimen_5_dp"
                 android:maxLines="1"
                 android:text="销量4"
                 android:textColor="@color/color_text_gray"
@@ -68,11 +68,11 @@
                 android:id="@+id/ll_food_act"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="@dimen/dimen_18_dp"
                 android:layout_alignLeft="@id/tv_name"
                 android:layout_below="@id/tv_summary"
                 android:layout_marginTop="@dimen/dimen_3_dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tv_food_discount"
@@ -84,7 +84,6 @@
                     android:paddingLeft="@dimen/dimen_5_dp"
                     android:paddingRight="@dimen/dimen_5_dp"
                     android:paddingTop="@dimen/dimen_2_dp"
-                    android:text="9.5折"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dimen_10_dp"
                     android:visibility="gone" />
@@ -98,7 +97,6 @@
                     android:paddingLeft="@dimen/dimen_5_dp"
                     android:paddingRight="@dimen/dimen_5_dp"
                     android:paddingTop="@dimen/dimen_2_dp"
-                    android:text="限购2件"
                     android:textColor="@color/text_fb7d30"
                     android:textSize="@dimen/dimen_10_dp"
                     android:visibility="gone" />
@@ -110,9 +108,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@id/tv_name"
-                android:gravity="bottom"
-                android:layout_alignBottom="@+id/iv_food"
                 android:layout_below="@+id/ll_food_act"
+                android:layout_marginTop="@dimen/dimen_3_dp"
                 android:text="123"
                 android:includeFontPadding="false"
                 android:textColor="@color/color_price_red"

@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -48,6 +49,7 @@ import com.example.supportv1.utils.FileUtil;
 import com.example.supportv1.utils.PermissionUtils;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.view.CircleImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,10 +85,18 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
     TextView tvUserEmail;
     @BindView(R.id.tv_update_password)
     TextView tvUpdatePassword;
-    @BindView(R.id.ll_nickname)
-    LinearLayout mLlNickname;
+    @BindView(R.id.rl_update_head)
+    RelativeLayout mRlUpdateHead;
+    @BindView(R.id.rl_nickname)
+    RelativeLayout mRlNickname;
+    @BindView(R.id.rl_user_email)
+    RelativeLayout mRlUserEmail;
+    @BindView(R.id.rl_address)
+    RelativeLayout mRlAddress;
+    @BindView(R.id.rl_update_password)
+    RelativeLayout mRlUpdatePassword;
     @BindView(R.id.iv_head)
-    ImageView ivHead;
+    CircleImageView ivHead;
     private User userInfo;
     //更新头像所用
     private AlertDialog dialogImage;
@@ -166,11 +176,11 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
         dialogImage = new AlertDialog.Builder(this).setView(view).create();
     }
 
-    @OnClick({R.id.tv_address_button, R.id.tv_user_email, R.id.tv_update_password,
-            R.id.layout_exit, R.id.ll_nickname, R.id.layout_update_head})
+    @OnClick({R.id.rl_address, R.id.rl_user_email, R.id.rl_update_password,
+            R.id.layout_exit, R.id.rl_nickname, R.id.rl_update_head})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.layout_update_head:
+            case R.id.rl_update_head:
                 Window window = dialogImage.getWindow();
                 if (window != null) {
                     window.setGravity(Gravity.BOTTOM);  //此处可以设置dialog显示的位置
@@ -178,24 +188,24 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     dialogImage.show();
                 }
                 break;
-            case R.id.tv_address_button://地址管理
+            case R.id.rl_address://地址管理
                 Intent intent = new Intent(this, AddressSelectActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.MANAGER_ADDRESS);
                 startActivity(intent);
                 break;
-            case R.id.tv_update_password://密码管理
+            case R.id.rl_update_password://密码管理
                 startActivity(new Intent(this, UpdatePasswordActivity.class));
                 break;
             case R.id.layout_exit://
                 exitLogin();
                 break;
-            case R.id.ll_nickname://昵称
+            case R.id.rl_nickname://昵称
                 intent = new Intent(this, ChangeNameActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_NICKNAME);
                 intent.putExtra("userInfo", userInfo);
                 startActivityForResult(intent, 1002);
                 break;
-            case R.id.tv_user_email://邮箱
+            case R.id.rl_user_email://邮箱
                 intent = new Intent(this, ChangeNameActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_EMAIL);
                 intent.putExtra("userInfo", userInfo);
@@ -250,7 +260,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
         if (PhotoUtils.hasSdcard()) {
             imageUri = Uri.fromFile(fileUri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                imageUri = FileProvider.getUriForFile(this, "com.example.runfastshop.FileProvider", fileUri);//通过FileProvider创建一个content类型的Uri
+                imageUri = FileProvider.getUriForFile(this, "com.gxuc.runfast.shop.fileProvider", fileUri);//通过FileProvider创建一个content类型的Uri
             }
             PhotoUtils.takePicture(this, imageUri, CAMERA);
         } else {
@@ -280,6 +290,8 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                         UserService.setAutoLogin("0");
                         UserService.clearUserInfo();
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, "");
+                        SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_ID, "");
+                        SharePreferenceUtil.getInstance().putIntValue(CustomConstant.THIRD_LOGIN_TYPR, -1);
                         finish();
                     } else {
                         ToastUtil.showToast("退出失败");
@@ -325,7 +337,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 //Uri uri = Uri.fromFile(file);
                 Uri uri = Uri.fromFile(fileUri);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    uri = FileProvider.getUriForFile(this, "com.example.runfastshop.FileProvider", fileUri);//通过FileProvider创建一个content类型的Uri
+                    uri = FileProvider.getUriForFile(this, "com.gxuc.runfast.shop.fileProvider", fileUri);//通过FileProvider创建一个content类型的Uri
                 }
                 startImageAction(uri, 200, 200, 3, true);
                 //uploadImage(mImagePath);

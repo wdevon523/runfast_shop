@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.BusinessLicenceActivity;
 import com.gxuc.runfast.shop.activity.ShowImageActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
@@ -46,7 +48,9 @@ public class BusinessInfoFragment extends LazyFragment {
 
     TextView tvDistributionTime;
 
-    ZFlowLayout flImgContain;
+    RelativeLayout rlBusinessLicence;
+
+//    ZFlowLayout flImgContain;
 
     Unbinder unbinder;
     private BusinessDetail businessDetail;
@@ -72,7 +76,18 @@ public class BusinessInfoFragment extends LazyFragment {
         tvBusinessPhone = (TextView) findViewById(R.id.tv_business_phone);
         tvBusinessRemark = (TextView) findViewById(R.id.tv_business_remark);
         tvDistributionTime = (TextView) findViewById(R.id.tv_distribution_time);
-        flImgContain = (ZFlowLayout) findViewById(R.id.ll_img_contain);
+        rlBusinessLicence = (RelativeLayout) findViewById(R.id.rl_business_licence);
+
+//        flImgContain = (ZFlowLayout) findViewById(R.id.ll_img_contain);
+        rlBusinessLicence.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), BusinessLicenceActivity.class);
+                intent.putExtra("licence", businessDetail.getImgs());
+                startActivity(intent);
+            }
+        });
+
         tvBusinessPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,35 +123,34 @@ public class BusinessInfoFragment extends LazyFragment {
 //            }
 //        });
 //    }
-
     private void dealBusinessInfo() {
         tvBusinessAddress.setText(businessDetail.getAddress());
         tvBusinessPhone.setText(businessDetail.getMobile());
         tvBusinessRemark.setText(businessDetail.getContent());
         tvDistributionTime.setText(businessDetail.getWordTime());
 
-        flImgContain.removeAllViews();
-        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(15, 0, 15, 20);// 设置边距
-        if (businessDetail.getImgs() != null && businessDetail.getImgs().size() > 0) {
-            for (int i = 0; i < businessDetail.getImgs().size(); i++) {
-                View view = getActivity().getLayoutInflater().inflate(R.layout.item_image, null, false);
-                ImageView ivImage = (ImageView) view.findViewById(R.id.iv_image);
-                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(500, 300);
-                ivImage.setLayoutParams(new LinearLayout.LayoutParams(lp));
-                x.image().bind(ivImage, UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
-                flImgContain.addView(view, layoutParams);
-                view.setTag(UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getContext(), ShowImageActivity.class);
-                        intent.putExtra("image", v.getTag().toString());
-                        startActivity(intent);
-                    }
-                });
-            }
-        }
+//        flImgContain.removeAllViews();
+//        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        layoutParams.setMargins(15, 0, 15, 20);// 设置边距
+//        if (businessDetail.getImgs() != null && businessDetail.getImgs().size() > 0) {
+//            for (int i = 0; i < businessDetail.getImgs().size(); i++) {
+//                View view = getActivity().getLayoutInflater().inflate(R.layout.item_image, null, false);
+//                ImageView ivImage = (ImageView) view.findViewById(R.id.iv_image);
+////                ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(300, 150);
+////                ivImage.setLayoutParams(new LinearLayout.LayoutParams(lp));
+//                x.image().bind(ivImage, UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
+//                flImgContain.addView(view, layoutParams);
+//                view.setTag(UrlConstant.ImageBaseUrl + businessDetail.getImgs().get(i).imgUrl);
+//                view.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Intent intent = new Intent(getContext(), ShowImageActivity.class);
+//                        intent.putExtra("image", v.getTag().toString());
+//                        startActivity(intent);
+//                    }
+//                });
+//            }
+//        }
     }
 
 }

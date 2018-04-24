@@ -44,7 +44,7 @@ public class PageScrollAdapter extends RecyclerView.Adapter<PageScrollAdapter.My
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final MiddleSort middleSort = data.get(position);
-        holder.tv_home_middle_name.setText(middleSort.getTypename());
+        holder.tv_home_middle_name.setText(middleSort.getName());
 //        holder.iv_home_middle_img.setImageURI(ApiServiceFactory.BASE_IMG_URL+ middleSort.getIcon());
         x.image().bind(holder.iv_home_middle_img, ApiServiceFactory.BASE_IMG_URL + middleSort.getIcon());
         holder.itemView.setOnClickListener(new View.OnClickListener() {

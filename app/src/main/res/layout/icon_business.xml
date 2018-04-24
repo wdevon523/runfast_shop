@@ -34,8 +34,7 @@
             android:layout_height="@dimen/dimen_30_dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dimen_2_dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/icon_default_head" />
+            android:scaleType="centerCrop" />
 
     </RelativeLayout>
 

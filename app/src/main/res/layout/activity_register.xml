@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:inputType="phone"
+            android:maxLength="11"
             android:textSize="15sp"
             android:hint="手机号"
             android:singleLine="true"

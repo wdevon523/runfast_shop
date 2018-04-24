@@ -261,6 +261,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                 info.baseCharge = busObject.optDouble("baseCharge");
                 info.charge = busObject.optDouble("charge");
                 info.isDeliver = busObject.optInt("isDeliver");
+                info.goldBusiness = busObject.optBoolean("goldBusiness");
                 info.speed = busObject.optString("speed");
                 info.alist = new ArrayList<>();
                 JSONArray alist = busObject.optJSONArray("alist");

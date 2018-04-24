@@ -92,6 +92,7 @@ import org.xutils.x;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -439,18 +440,18 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 if (state == State.EXPANDED) {
                     business_title.setText("");
                     //展开状态
-                    ivBack.setImageResource(R.drawable.icon_back_white);
+                    ivBack.setImageResource(R.drawable.icon_back_map);
                     ivBack.setAlpha(1f);
                 } else if (state == State.COLLAPSED) {
                     business_title.setText(tvBusinessName.getText().toString());
-                    ivBack.setImageResource(R.drawable.icon_back_black);
+                    ivBack.setImageResource(R.drawable.icon_back_map);
                     //折叠状态
                     ivBack.setAlpha(1f);
                 } else {
                     business_title.setText("");
                     //中间状态
                     Log.d("STATE", "verticalOffset =" + verticalOffset);
-                    ivBack.setImageResource(R.drawable.icon_back_black);
+                    ivBack.setImageResource(R.drawable.icon_back_map);
                     ivBack.setAlpha(0.5f);
                 }
             }
@@ -785,6 +786,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         try {
             foodBeens.clear();
             types.clear();
+           int adPosition = 0;
             JSONObject object = new JSONObject(data);
             packing = object.optString("packing");
             if (TextUtils.isEmpty(packing) || TextUtils.equals("null", packing)) {
@@ -811,16 +813,19 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         FoodBean foodBean = new FoodBean();
                         foodBean.setSelectCount(0);
                         if (goodId != 0 && goodId == jsonObject.optInt("id")) {
-                            positionSpec = j;
+                            positionSpec = adPosition;
+                        } else {
+                            adPosition++;
                         }
                         foodBean.setId(jsonObject.optInt("id"));
                         foodBean.setName(jsonObject.optString("name"));
                         foodBean.setIcon(jsonObject.optString("imgPath"));
-                        foodBean.setType(jsonObject.optString("sellTypeName"));
+//                        foodBean.setType(jsonObject.optString("sellTypeName"));
+                        foodBean.setType(listObject.optString("name"));
                         foodBean.setPtype(jsonObject.optInt("ptype"));
                         foodBean.setShowprice(jsonObject.optString("showprice"));
                         foodBean.setIsonly(jsonObject.optInt("isonly"));
-                        foodBean.setPrice(new BigDecimal(jsonObject.optString("price")));
+                        foodBean.setPrice(new BigDecimal(TextUtils.equals("null", jsonObject.optString("price")) ? "0" : jsonObject.optString("price")));
                         foodBean.setDisprice(jsonObject.optString("disprice"));
                         foodBean.setSale(String.valueOf(jsonObject.optInt("salesnum")));
                         foodBean.setBusinessId(jsonObject.optInt("businessId"));
@@ -853,7 +858,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     }
 
     private void requestShoppingCart(int businessId) {
-        CustomApplication.getRetrofit().getShoppingCar(businessId).enqueue(new Callback<String>() {
+        CustomApplication.getRetrofit().getShoppings(businessId).enqueue(new Callback<String>() {
 
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
@@ -863,6 +868,17 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 }
 
                 String body = response.body().toString();
+
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (!jsonObject.optBoolean("sucess")) {
+                        CustomToast.INSTANCE.showToast(CustomApplication.getContext(), jsonObject.optString("message"));
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 if (!body.contains("{\"relogin\":1}")) {
                     carFoods.clear();
                     ShoppingCartInfo shoppingCartInfo = GsonUtil.fromJson(response.body(), ShoppingCartInfo.class);
@@ -890,7 +906,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                ToastUtil.showToast("网络数据异常");
             }
         });
     }
@@ -1083,7 +1099,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 break;
             case R.id.car_limit:
                 if (userInfo == null) {
-                    Intent intent = new Intent(this, LoginActivity.class);
+                    Intent intent = new Intent(this, LoginQucikActivity.class);
                     intent.putExtra("isRelogin", true);
                     startActivity(intent);
                     return;
@@ -1346,6 +1362,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         totalPrice = totalPrice.add(totalPacking);
 
         amount = payPrice;
+//        amount = totalPrice;
 
         if (amount.compareTo(new BigDecimal(0.0)) == 0) {
             car_limit.setText(startPay.isNaN() ? "¥ 0元起送" : "¥ " + String.valueOf(startPay) + "起送");
@@ -1373,10 +1390,10 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             iv_shop_car.setImageResource(R.drawable.icon_shop_car);
             car_limit.setEnabled(true);
         }
-        tv_amount.setText("¥" + amount);
+        tv_amount.setText("¥" + payPrice);
         tv_old_amount.setText("¥" + totalPrice);
-        tv_old_amount.setVisibility(amount.compareTo(totalPrice) == 0 ? View.GONE : View.VISIBLE);
-        decimal = amount;
+        tv_old_amount.setVisibility(payPrice.compareTo(totalPrice) == 0 ? View.GONE : View.VISIBLE);
+        decimal = payPrice;
     }
 
     public void clearCar(View view) {
@@ -1759,6 +1776,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             addWidgetDetail.setVisibility(View.VISIBLE);
         }
 //        if (((BusinessFragment) mFragments.get(0)).getFoodAdapter() != null) {
+//        addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
         addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
 //        }
         layoutProductDetail.setVisibility(View.VISIBLE);

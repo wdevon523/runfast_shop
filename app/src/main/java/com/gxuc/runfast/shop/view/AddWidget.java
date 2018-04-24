@@ -71,11 +71,9 @@ public class AddWidget extends FrameLayout {
                             .duration(300)
                             .start()
                     ;
-                    sub.setAlpha(1f);
-                    tv_count.setAlpha(1f);
+//                    sub.setAlpha(1f);
+//                    tv_count.setAlpha(1f);
                 }
-
-
 
 
                 if (fb.getIslimited() == 1) {
@@ -109,21 +107,22 @@ public class AddWidget extends FrameLayout {
                 if (count == 0) {
                     return;
                 }
-                if (count == 1 && foodAdapter instanceof FoodAdapter) {
-                    ViewAnimator.animate(sub)
-                            .translationX(0, add.getLeft() - sub.getLeft())
-                            .rotation(-360)
-                            .alpha(255, 0)
-                            .duration(300)
-                            .interpolator(new AccelerateInterpolator())
-                            .andAnimate(tv_count)
-                            .translationX(0, add.getLeft() - tv_count.getLeft())
-                            .rotation(-360)
-                            .alpha(255, 0)
-                            .interpolator(new AccelerateInterpolator())
-                            .duration(300)
-                            .start()
-                    ;
+//                if (count == 1 && foodAdapter instanceof FoodAdapter) {
+                if (count == 1) {
+//                    ViewAnimator.animate(sub)
+//                            .translationX(0, add.getLeft() - sub.getLeft())
+//                            .rotation(-360)
+//                            .alpha(255, 0)
+//                            .duration(300)
+//                            .interpolator(new AccelerateInterpolator())
+//                            .andAnimate(tv_count)
+//                            .translationX(0, add.getLeft() - tv_count.getLeft())
+//                            .rotation(-360)
+//                            .alpha(255, 0)
+//                            .interpolator(new AccelerateInterpolator())
+//                            .duration(300)
+//                            .start()
+//                    ;
                     sub.setAlpha(0f);
                     tv_count.setAlpha(0f);
                 }

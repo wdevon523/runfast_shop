@@ -95,10 +95,6 @@ public class OrderDetailAdapter extends RecyclerView.Adapter {
         TextView mTvManDeliverTime;
         @BindView(R.id.btn_cancel_order)
         Button mBtnCancelOrder;
-        @BindView(R.id.btn_contact_business)
-        Button mBtnContactBusiness;
-        @BindView(R.id.btn_contact_man)
-        Button mBtnContactMan;
 
         public BottomViewHolder(View view) {
             super(view);

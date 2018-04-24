@@ -1,31 +1,43 @@
 package com.gxuc.runfast.shop.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.gxuc.runfast.shop.BuildConfig;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.fragment.MessageFragment;
 import com.gxuc.runfast.shop.fragment.MineFragment;
 import com.gxuc.runfast.shop.fragment.OrderFragment;
 import com.gxuc.runfast.shop.fragment.TakeOutFoodFragment;
 import com.gxuc.runfast.shop.impl.MyCallback;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.ActivityManager;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.MyAutoUpdate;
+import com.ta.utdid2.android.utils.SystemUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +54,9 @@ import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
 import retrofit2.Call;
 import retrofit2.Response;
+
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 public class MainActivity extends ToolBarActivity implements RadioGroup.OnCheckedChangeListener {
 
@@ -66,7 +81,69 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         //toolbar.setNavigationIcon(null);
         bindJpushAlias();
         requestCheckNewVersion();
+        requestPermissions();
         initDate(savedInstanceState);
+    }
+
+    private void requestPermissions() {
+
+        if (SharePreferenceUtil.getInstance().getBooleanValue(CustomConstant.IS_FIRST, false)){
+            SharePreferenceUtil.getInstance().putBooleanValue(CustomConstant.IS_FIRST, false);
+            if (!SystemUtil.isNotificationEnabled(this)) {
+                showPermissionDialog("应用需要获取通知栏权限,请前往应用信息-权限中开启", true);
+            }
+        }
+    }
+
+    private void showPermissionDialog(String message, final boolean isNotification) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("权限申请")
+                .setMessage(message)
+                .setCancelable(false)
+                .setNegativeButton("暂不", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (isNotification) {
+                            toSetting();
+                        } else {
+                            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                    .setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID)));
+                        }
+                        dialog.dismiss();
+                        finish();
+                    }
+                }).show();
+        dialog.setCanceledOnTouchOutside(false);
+        Button negativeButton = dialog.getButton(BUTTON_NEGATIVE);
+        if (negativeButton != null) {
+            negativeButton.setTextColor(ContextCompat.getColor(this, R.color.text_999999));
+            negativeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+        }
+        Button positiveButton = dialog.getButton(BUTTON_POSITIVE);
+        if (positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(this, R.color.colorAccent));
+            positiveButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+        }
+    }
+
+    private void toSetting() {
+        Intent localIntent = new Intent();
+        localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= 9) {
+            localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+            localIntent.setData(Uri.fromParts("package", getPackageName(), null));
+        } else if (Build.VERSION.SDK_INT <= 8) {
+            localIntent.setAction(Intent.ACTION_VIEW);
+            localIntent.setClassName("com.android.settings", "com.android.setting.InstalledAppDetails");
+            localIntent.putExtra("com.android.settings.ApplicationPkgName", getPackageName());
+        }
+        startActivity(localIntent);
     }
 
     private void requestCheckNewVersion() {

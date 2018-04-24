@@ -16,12 +16,12 @@ public final class ApiServiceFactory {
     //    public static final String HOST = "http://120.77.70.27/iwapb/";
 
 
-//    public static final String HOST = "http://www.gxptkc.com/iwapb/";
-//    public static final String WEB_HOST = "http://www.gxptkc.com/web/";
+    public static final String HOST = "https://www.gxptkc.com/iwapb/";
+    public static final String WEB_HOST = "https://www.gxptkc.com/web/";
 
 
-    public static final String HOST = "http://192.168.2.221:8080/runfast/iwapb/";
-    public static final String WEB_HOST = "http://192.168.2.221:8080/runfast/web/";
+//    public static final String HOST = "http://192.168.2.221:8080/iwapb/";
+//    public static final String WEB_HOST = "http://192.168.2.221:8080/web/";
 
     public static final String BASE_URL = HOST + "business/";
     public static final String BASE_IMG_URL = "http://image.gxptkc.com";

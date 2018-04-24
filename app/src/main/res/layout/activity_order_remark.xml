@@ -16,6 +16,7 @@
         android:hint="@string/order_remark_content"
         android:gravity="left|top"
         android:layout_margin="@dimen/dimen_15_dp"
+        android:maxLength="200"
         android:paddingTop="@dimen/dimen_8_dp"
         android:paddingLeft="@dimen/dimen_5_dp"
         android:textSize="@dimen/textsize_xxl"/>

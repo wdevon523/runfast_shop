@@ -54,7 +54,7 @@ public class ValidateUtil {
         if (null == mobileNo) {
             return false;
         }
-        Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[012356789])|170|147|145)\\d{8}$");
+        Pattern p = Pattern.compile("^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
         return p.matcher(mobileNo).matches();
     }
 
@@ -81,7 +81,8 @@ public class ValidateUtil {
         if (null == email) {
             return false;
         }
-        String strPattern = "^[a-zA-Z0-9\\w\\.-]*@[a-zA-Z0-9\\w\\.-]*[a-zA-Z0-9]$";
+//        String strPattern = "^[a-zA-Z0-9\\w\\.-]*@[a-zA-Z0-9\\w\\.-]*[a-zA-Z0-9]$";
+        String strPattern = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
         Pattern p = Pattern.compile(strPattern);
         return p.matcher(email).matches();
     }

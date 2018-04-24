@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +64,9 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             holder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfo.distance)) + "km");
             holder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfo.salesnum) + "单");
             holder.tv_sale_startPay.setText(businessInfo.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfo.startPay));
-            holder.tv_sale_time.setText(businessInfo.speed + "分钟");
+            holder.tv_sale_time.setText(businessInfo.speed);
+
+            holder.iv_gold_business.setVisibility(businessInfo.goldBusiness ? View.VISIBLE : View.GONE);
 
             if (businessInfo.isDeliver == 0) {
                 holder.tv_sale_price.setText(businessInfo.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfo.charge));
@@ -214,7 +217,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
         TextView tv_business_name, tv_business_levelId, tv_sale_distance,
                 tv_business_sales_num, tv_sale_startPay, tv_sale_time, tv_sale_price, tv_show_product;
 
-        ImageView iv_is_charge, iv_business_logo;
+        ImageView iv_is_charge, iv_business_logo, iv_gold_business;
 
         LinearLayout ll_contain_act, layout_breakfast_item, ll_contain_product, ll_business_open, ll_business_close;
 
@@ -232,6 +235,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             tv_sale_time = (TextView) itemView.findViewById(R.id.tv_sale_time);
             tv_sale_price = (TextView) itemView.findViewById(R.id.tv_sale_price);
             iv_is_charge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
+            iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
             iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
 
             rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);

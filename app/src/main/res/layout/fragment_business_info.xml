@@ -177,11 +177,44 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <com.gxuc.runfast.shop.view.ZFlowLayout
-            android:id="@+id/ll_img_contain"
+        <RelativeLayout
+            android:id="@+id/rl_business_licence"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_10_dp" />
+            android:layout_height="@dimen/dimen_48_dp"
+            android:layout_marginTop="@dimen/dimen_10_dp"
+            android:background="@color/color_white"
+            android:paddingLeft="@dimen/dimen_15_dp"
+            android:paddingRight="@dimen/dimen_15_dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_business_licence" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/dimen_27_dp"
+                android:text="营业资质"
+                android:textColor="@color/color_address_black"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_right" />
+
+        </RelativeLayout>
+
+        <!--<com.gxuc.runfast.shop.view.ZFlowLayout-->
+            <!--android:id="@+id/ll_img_contain"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="@dimen/dimen_10_dp" />-->
 
     </LinearLayout>
 

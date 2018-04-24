@@ -17,6 +17,7 @@ import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,8 @@ public class LauncherActivity extends AppCompatActivity {
     private User userInfo;
     private String mobile;
     private String password;
+    private String thirdLoginId;
+    private int thirdLoginType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +54,20 @@ public class LauncherActivity extends AppCompatActivity {
     private void initData() {
         mobile = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.MOBILE);
         password = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD);
-        if (!TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(password)) {
-            handler.sendEmptyMessageDelayed(2001, 2000);
-        } else {
-            handler.sendEmptyMessageDelayed(2002, 2000);
-        }
+
+        thirdLoginId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.THIRD_LOGIN_ID);
+        thirdLoginType = SharePreferenceUtil.getInstance().getIntValue(CustomConstant.THIRD_LOGIN_TYPR);
+//        if (!TextUtils.isEmpty(mobile) && !TextUtils.isEmpty(password)) {
+//            handler.sendEmptyMessage(2001);
+        handler.sendEmptyMessageDelayed(2003, 3000);
+//        } else if (!TextUtils.isEmpty(thirdLoginId)) {
+//            handler.sendEmptyMessage(2002);
+//            handler.sendEmptyMessageDelayed(2003,3000);
+//        } else {
+//            handler.sendEmptyMessageDelayed(2003,2000);
+//        }
+
+
 //        } else {
 ////            handler.sendEmptyMessageDelayed(2002, 2000);
 //            startActivity(new Intent(this, LoginActivity.class));
@@ -72,12 +84,54 @@ public class LauncherActivity extends AppCompatActivity {
                     login();
                     break;
                 case 2002:
+                    thirdLogin();
+                    break;
+                case 2003:
                     startActivity(new Intent(LauncherActivity.this, MainActivity.class));
                     finish();
                     break;
             }
         }
     };
+
+    private void thirdLogin() {
+        CustomApplication.getRetrofit().postThirdLogin(thirdLoginId, thirdLoginType, CustomApplication.alias, 0).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                dealThirdLogin(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+//                startActivity(new Intent(LauncherActivity.this, MainActivity.class));
+//                finish();
+            }
+        });
+    }
+
+    private void dealThirdLogin(String body) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+//            CustomToast.INSTANCE.showToast(this, msg);
+                CustomApplication.isRelogining = false;
+//            CustomApplication.isRelogining = false;
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_ID, thirdLoginId);
+                SharePreferenceUtil.getInstance().putIntValue(CustomConstant.THIRD_LOGIN_TYPR, thirdLoginType);
+                JSONObject app_cuser = jsonObject.getJSONObject("app_cuser");
+                User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
+                UserService.saveUserInfo(user);
+                UserService.setAutoLogin("1");
+            } else {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+            }
+//            startActivity(new Intent(this, MainActivity.class));
+//            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void login() {
         CustomApplication.getRetrofit().postLogin(mobile, MD5Util.MD5(password), CustomApplication.alias, 0).enqueue(new Callback<String>() {
@@ -93,8 +147,8 @@ public class LauncherActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                startActivity(new Intent(LauncherActivity.this, MainActivity.class));
-                finish();
+//                startActivity(new Intent(LauncherActivity.this, MainActivity.class));
+//                finish();
             }
 
         });
@@ -110,8 +164,7 @@ public class LauncherActivity extends AppCompatActivity {
             if (!success) {
                 CustomToast.INSTANCE.showToast(this, msg);
 //                startActivity(new Intent(this, LoginActivity.class));
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+
             } else {
 //                CustomApplication.isRelogining = false;
                 SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, mobile);
@@ -121,9 +174,9 @@ public class LauncherActivity extends AppCompatActivity {
                 User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
                 user.setPassword(password);
                 UserService.saveUserInfo(user);
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
             }
+//            startActivity(new Intent(this, MainActivity.class));
+//            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }

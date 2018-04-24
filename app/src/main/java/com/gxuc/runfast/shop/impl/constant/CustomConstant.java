@@ -16,6 +16,12 @@ public class CustomConstant {
 
     public static String keyStore = "";
 
+    public static String IS_FIRST = "isFirst";
+
+    public static final String THIRD_LOGIN_ID = "thirdLoginId";
+
+    public static final String THIRD_LOGIN_TYPR = "thirdLoginType";
+
     public static final String MOBILE = "mobile";
 
     public static final String PASSWORD = "password";

@@ -48,7 +48,6 @@
                                 android:id="@+id/tv_user_address"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="宏福苑小区81号309"
                                 android:textColor="@color/color_address_black"
                                 android:textSize="16sp" />
 
@@ -63,7 +62,6 @@
                                     android:id="@+id/tv_user_name"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="李先生"
                                     android:textColor="@color/color_text_gray"
                                     android:textSize="13sp" />
 
@@ -72,7 +70,6 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="15dp"
-                                    android:text="13712345678"
                                     android:textColor="@color/color_text_gray"
                                     android:textSize="13sp" />
                             </LinearLayout>
@@ -265,7 +262,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
-                            android:text="肯德基宅急送"
                             android:textColor="@color/color_address_black"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -303,15 +299,17 @@
                             android:layout_height="wrap_content"
                             android:text="订单 ¥ "
                             android:textColor="@color/color_text_gray"
-                            android:textSize="13sp" />
+                            android:textSize="13sp"
+                            android:visibility="gone"/>
 
                         <TextView
                             android:id="@+id/tv_order_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="17"
                             android:textColor="@color/color_text_gray"
-                            android:textSize="13sp" />
+                            android:textSize="13sp"
+                            android:layout_marginRight="15dp"
+                            android:visibility="gone"/>
 
                         <LinearLayout
                             android:id="@+id/layout_coupons"
@@ -321,7 +319,6 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
                                 android:text="优惠- ¥ "
                                 android:textColor="@color/color_text_gray"
                                 android:textSize="13sp" />
@@ -330,7 +327,6 @@
                                 android:id="@+id/tv_coupon_price"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="6"
                                 android:textColor="@color/color_text_gray"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -340,7 +336,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="end"
-                            android:text="小计"
+                            android:text="合计"
                             android:textColor="@color/color_address_black"
                             android:textSize="13sp" />
 
@@ -355,7 +351,6 @@
                             android:id="@+id/tv_sub_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="11"
                             android:textColor="@color/color_balance_price"
                             android:textSize="20sp" />
                     </LinearLayout>

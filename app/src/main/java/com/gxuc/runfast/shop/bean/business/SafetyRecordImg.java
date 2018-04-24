@@ -1,10 +1,12 @@
 package com.gxuc.runfast.shop.bean.business;
 
+import java.io.Serializable;
+
 /**
  * Created by Devon on 2017/11/2.
  */
 
-public class SafetyRecordImg {
+public class SafetyRecordImg implements Serializable {
 
     /**
      * id : 10704

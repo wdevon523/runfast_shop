@@ -14,10 +14,15 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
+//import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.umeng.socialize.Config;
+import com.umeng.socialize.PlatformConfig;
+import com.umeng.socialize.UMShareAPI;
 
 import org.xutils.x;
 
 import cn.jpush.android.api.JPushInterface;
+import cn.shopex.pay.Contants;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
@@ -44,7 +49,8 @@ public class CustomApplication extends BaseApplication {
 
     public static boolean isRelogining = false;
     public static boolean isNeedUpdate = false;
-    public static String  alias;
+    public static String alias;
+//    private static IWXAPI wxapi;
 
     @Override
     public void onCreate() {
@@ -55,9 +61,18 @@ public class CustomApplication extends BaseApplication {
         //ShareSDK.initSDK(this);
         //初始化 xutils的网络请求部分
         x.Ext.init(this);
+//        Config.DEBUG = true;
+        UMShareAPI.get(this);
 
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+
+//        JAnalyticsInterface.init(this);
+
+        PlatformConfig.setWeixin(Contants.WEI_XIN_ID, "dkehfeuu38575uydhj3Y75u3yei2o45h");
+        PlatformConfig.setQQZone("1106021946", "2SWJL1R0L380FtAS");
+
+//        regToWx();
 
         context = getApplicationContext();
 //        initNet();
@@ -77,6 +92,11 @@ public class CustomApplication extends BaseApplication {
             alias = JPushInterface.getRegistrationID(this);
         }
     }
+
+//    private void regToWx() {
+//        wxapi = WXAPIFactory.createWXAPI(this, Contants.WEI_XIN_ID, true);
+//        wxapi.registerApp(Contants.WEI_XIN_ID);
+//    }
 
     private void initNet() {
         Retrofit mRetrofit = new Retrofit.Builder()
@@ -98,6 +118,10 @@ public class CustomApplication extends BaseApplication {
     public static Context getContext() {
         return context;
     }
+
+//    public static IWXAPI getIWXAPI() {
+//        return wxapi;
+//    }
 
     /**
      * 程序退出的时候 调用这个方法

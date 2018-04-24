@@ -124,7 +124,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
             businessHolder.ll_business_open.setVisibility(businessInfos.isopen == 0 ? View.VISIBLE : View.GONE);
             businessHolder.ll_business_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
             businessHolder.view_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
-
+            businessHolder.iv_gold_business.setVisibility(businessInfos.goldBusiness ? View.VISIBLE : View.GONE);
 
             if (businessInfos.isDeliver == 0) {
                 businessHolder.tv_sale_price.setText(businessInfos.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfos.charge));
@@ -267,7 +267,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
         TextView tv_business_name, tv_new_business, tv_business_levelId, tv_sale_distance,
                 tv_business_sales_num, tv_sale_startPay, tv_sale_time, tv_sale_price;
 
-        ImageView iv_is_charge, iv_business_logo;
+        ImageView iv_is_charge, iv_business_logo, iv_gold_business;
 
         LinearLayout ll_contain_act, layout_breakfast_item, ll_business_open, ll_business_close;
 
@@ -286,6 +286,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
             tv_sale_time = (TextView) itemView.findViewById(R.id.tv_sale_time);
             tv_sale_price = (TextView) itemView.findViewById(R.id.tv_sale_price);
             iv_is_charge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
+            iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
             iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
 
             rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);

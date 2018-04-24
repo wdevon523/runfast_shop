@@ -115,7 +115,7 @@ public class PayChannelActivity extends ToolBarActivity {
         if (orderInfo != null) {
             orderId = orderInfo.getId();
             orderCode = orderInfo.getOrderCode();
-            price = orderInfo.getPrice();
+            price = orderInfo.getTotalpay();
             businessName = orderInfo.getBusinessName();
             logo = orderInfo.getLogo();
         }
@@ -183,11 +183,12 @@ public class PayChannelActivity extends ToolBarActivity {
     }
 
     private void requestAliPay() {
-
+        CustomProgressDialog.startProgressDialog(this);
 
         CustomApplication.getRetrofit().aliPay(orderId, "1").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
@@ -201,12 +202,14 @@ public class PayChannelActivity extends ToolBarActivity {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
             }
         });
     }
 
     private void requestWeiXinPay() {
+        CustomProgressDialog.startProgressDialog(this);
+
         CustomApplication.getRetrofit().weiXintPay(orderId, "0").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -220,7 +223,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
             }
         });
     }
@@ -229,6 +232,7 @@ public class PayChannelActivity extends ToolBarActivity {
         CustomApplication.getRetrofit().weiXintSign(weiXinPayBean.prepay_id, weiXinPayBean.map.nonceStr, weiXinPayBean.map.timeStamp, "Sign=WXPay").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
+                CustomProgressDialog.stopProgressDialog();
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
@@ -241,7 +245,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                CustomProgressDialog.stopProgressDialog();
             }
         });
     }

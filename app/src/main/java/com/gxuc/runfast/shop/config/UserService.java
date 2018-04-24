@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import com.gxuc.runfast.shop.activity.LoginActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.example.supportv1.app.BaseApplication;

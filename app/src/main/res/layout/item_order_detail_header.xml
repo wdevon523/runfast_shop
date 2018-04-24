@@ -46,10 +46,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/dimen_20_dp"
-        android:gravity="center"
         android:layout_marginLeft="@dimen/dimen_15_dp"
         android:layout_marginRight="@dimen/dimen_15_dp"
         android:layout_marginTop="@dimen/dimen_18_dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
         <Button
@@ -93,26 +93,6 @@
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/btn_contact_business"
-            android:layout_width="80dp"
-            android:layout_height="@dimen/dimen_32_dp"
-            android:layout_margin="@dimen/dimen_3_dp"
-            android:background="@drawable/shape_button_pay"
-            android:text="联系商家"
-            android:textColor="@color/white"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btn_contact_man"
-            android:layout_width="80dp"
-            android:layout_height="@dimen/dimen_32_dp"
-            android:layout_margin="@dimen/dimen_3_dp"
-            android:background="@drawable/shape_button_orange"
-            android:text="联系骑手"
-            android:textColor="@color/white"
-            android:visibility="gone" />
-
-        <Button
             android:id="@+id/btn_appraise"
             android:layout_width="80dp"
             android:layout_height="@dimen/dimen_32_dp"
@@ -122,5 +102,59 @@
             android:textColor="@color/white"
             android:visibility="gone" />
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_driver_info"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_75_dp"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1_dp"
+            android:background="@color/view_e5e5e5" />
+
+        <com.gxuc.runfast.shop.view.CircleImageView
+            android:id="@+id/iv_driver_avater"
+            android:layout_width="@dimen/dimen_40_dp"
+            android:layout_height="@dimen/dimen_40_dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_15_dp"
+            android:src="@drawable/icon_driver_avater" />
+
+        <TextView
+            android:id="@+id/tv_driver_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_10_dp"
+            android:layout_toRightOf="@+id/iv_driver_avater" />
+
+
+        <TextView
+            android:id="@+id/tv_driver_type"
+            android:layout_width="@dimen/dimen_50_dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_10_dp"
+            android:layout_toRightOf="@+id/tv_driver_name"
+            android:background="@drawable/icon_orange_back"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="快车专送"
+            android:textColor="@color/color_white"
+            android:textSize="10sp" />
+
+        <ImageView
+            android:id="@+id/btn_contact_driver"
+            android:layout_width="@dimen/dimen_35_dp"
+            android:layout_height="@dimen/dimen_35_dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_15_dp"
+            android:padding="@dimen/dimen_5_dp"
+            android:src="@drawable/icon_call_phone" />
+
+    </RelativeLayout>
 
 </LinearLayout>

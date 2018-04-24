@@ -33,7 +33,7 @@
 
 
     <string name="scroll_behavior">com.example.runfastshop.behaviors.ScrollBehavior</string>
-    <string name="order_remark_content">请输入备注内容</string>
+    <string name="order_remark_content">请输入备注内容，最多100字</string>
     <string name="order_remark_commit">确定</string>
     <string name="sure">确定</string>
 
@@ -41,4 +41,24 @@
     <string name="write_send_evaluation">评价配送服务</string>
     <string name="hint_evaluation">亲，写点什么吧，最少评价15字，您的评价是其他用户的重要参考！</string>
     <string name="publish">发表</string>
+
+    <string name="where_from">物品从哪里发出</string>
+    <string name="where_to">物品送到哪里去</string>
+    <string name="get_now">立即取件</string>
+    <string name="get_default">选择物品类型、重量</string>
+    <string name="coupon">优惠券</string>
+    <string name="coupon_default">暂无可用优惠券</string>
+    <string name="more_service">更多服务</string>
+    <string name="cargo_damage">货损险</string>
+    <string name="cargo_damage_default">未选购</string>
+    <string name="tip">小费</string>
+    <string name="tip_default">加小费抢单更快</string>
+    <string name="remark">备注</string>
+    <string name="remark_default">物品描述或送件要求</string>
+    <string name="deal">同意并接受《外卖跑腿用户协议》</string>
+    <string name="submit_order">提交订单</string>
+    <string name="meet_question">遇到以下问题</string>
+    <string name="meet_question_default">查看全部问题</string>
+    <string name="delivery_price">配送费</string>
+
 </resources>

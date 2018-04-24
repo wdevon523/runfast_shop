@@ -9,6 +9,8 @@
         android:id="@+id/tv_product_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/tv_product_spec"
         android:text="鸡排"
         android:textColor="@color/color_address_black"
         android:textSize="13sp" />
@@ -20,7 +22,6 @@
         android:layout_marginLeft="@dimen/dimen_10_dp"
         android:layout_marginRight="@dimen/dimen_10_dp"
         android:layout_toLeftOf="@+id/tv_product_num"
-        android:layout_toRightOf="@+id/tv_product_name"
         android:textColor="@color/color_text_gray"
         android:textSize="13sp" />
 

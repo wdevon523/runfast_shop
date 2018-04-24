@@ -5,9 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Location;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -20,7 +19,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
@@ -28,19 +26,19 @@ import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
+import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.activity.MainActivity;
+import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.OrderGoodsAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.DriverInfo;
-import com.gxuc.runfast.shop.bean.order.OrderInfo;
+import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
@@ -48,11 +46,6 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
-import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.ToolBarActivity;
-import com.gxuc.runfast.shop.bean.order.OrderDetail;
-import com.gxuc.runfast.shop.util.CustomToast;
-import com.example.supportv1.utils.ImageLoaderUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.CircleImageView;
@@ -66,18 +59,22 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
+import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class OrderDetailActivity extends ToolBarActivity implements View.OnClickListener
+public class OrderDetailActivity extends ToolBarActivity implements View.OnClickListener, BGARefreshLayout.BGARefreshLayoutDelegate
 //        , AMap.OnMyLocationChangeListener
 {
 
 
     @BindView(R.id.map)
     MapView mMapView;
-    @BindView(R.id.scroll_view)
-    ScrollView scrollView;
+    //    @BindView(R.id.scroll_view)
+//    ScrollView scrollView;
+    @BindView(R.id.rl_refresh)
+    BGARefreshLayout mRefreshLayout;
     @BindView(R.id.view_top)
     View viewTop;
     @BindView(R.id.iv_back_map)
@@ -98,10 +95,6 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     Button mBtnConfirmCompleted;
     @BindView(R.id.btn_cancel_order)
     Button mBtnCancelOrder;
-    @BindView(R.id.btn_contact_business)
-    Button mBtnContactBusiness;
-    @BindView(R.id.btn_contact_man)
-    Button mBtnContactMan;
     @BindView(R.id.btn_appraise)
     Button mBtnAppraise;
     @BindView(R.id.iv_order_detail_business_img)
@@ -134,12 +127,28 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     TextView mTvOrderDetailPatType;
     @BindView(R.id.tv_order_detail_remark)
     TextView mTvOrderDetailRemark;
+    @BindView(R.id.tv_order_detail_old_shipping)
+    TextView tvOrderDetailOldShipping;
     @BindView(R.id.tv_order_detail_showps)
     TextView tvOrderDetailShowps;
     @BindView(R.id.tv_order_detail_packaging)
     TextView tvOrderDetailPackaging;
     @BindView(R.id.tv_order_detail_coupons)
     TextView tvOrderDetailCoupons;
+    @BindView(R.id.iv_driver_avater)
+    CircleImageView ivDriverAvater;
+    @BindView(R.id.tv_driver_name)
+    TextView tvDriverName;
+    @BindView(R.id.tv_driver_type)
+    TextView tvDriverType;
+    @BindView(R.id.btn_contact_driver)
+    ImageView btnContactDriver;
+    @BindView(R.id.rl_contact_business)
+    RelativeLayout rlContactBusiness;
+    @BindView(R.id.rl_driver_info)
+    RelativeLayout rlDriverInfo;
+    @BindView(R.id.rl_business_name)
+    RelativeLayout llBusinessName;
 
     private AMap aMap;
     private List<String> mStrings;
@@ -178,7 +187,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //            drawMarkers();//绘制小蓝气泡
 //            initMap();
         }
-
+        initRefreshLayout();
         initData();
         setListener();
 //        getNetData();
@@ -217,6 +226,16 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //            }
 //        }
 //    }
+
+    private void initRefreshLayout() {
+        // 为BGARefreshLayout 设置代理
+        mRefreshLayout.setDelegate(this);
+        BGAMeiTuanRefreshViewHolder meiTuanRefreshViewHolder = new BGAMeiTuanRefreshViewHolder(this, false);
+        meiTuanRefreshViewHolder.setPullDownImageResource(R.mipmap.bga_refresh_mt_pull_down);
+        meiTuanRefreshViewHolder.setChangeToReleaseRefreshAnimResId(R.drawable.bga_refresh_mt_change_to_release_refresh);
+        meiTuanRefreshViewHolder.setRefreshingAnimResId(R.drawable.bga_refresh_mt_refreshing);
+        mRefreshLayout.setRefreshViewHolder(meiTuanRefreshViewHolder);
+    }
 
 
     private void drawDriverMarkers() {
@@ -276,17 +295,18 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         View view = getLayoutInflater().inflate(R.layout.icon_business, null);
         LinearLayout llMapOrderStatus = (LinearLayout) view.findViewById(R.id.ll_map_order_status);
         TextView tvMapOrdertatus = (TextView) view.findViewById(R.id.tv_map_order_status);
+        CircleImageView ivLogo = (CircleImageView) view.findViewById(R.id.iv_logo);
+        x.image().bind(ivLogo, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo, NetConfig.optionsHeadImage);
         llMapOrderStatus.setVisibility(View.VISIBLE);
-        if (orderDetailInfo.goodsSellRecord.status == 2 || orderDetailInfo.goodsSellRecord.status == 3) {
+        if (orderDetailInfo.goodsSellRecord.status == 1) {
+            tvMapOrdertatus.setText("等待商家接单");
+        } else if (orderDetailInfo.goodsSellRecord.status == 2 || orderDetailInfo.goodsSellRecord.status == 3) {
             tvMapOrdertatus.setText("商家正在备货");
         } else if (orderDetailInfo.goodsSellRecord.status == 4) {
             tvMapOrdertatus.setText("商家已打包");
         } else {
             llMapOrderStatus.setVisibility(View.GONE);
         }
-        CircleImageView ivLogo = (CircleImageView) view.findViewById(R.id.iv_logo);
-
-        x.image().bind(ivLogo, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo, NetConfig.optionsHeadImage);
 //        ImageLoaderUtil.displayImage(this, ivLogo, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo);
         Bitmap bitmap = ViewUtils.convertViewToBitmap(view);
 
@@ -311,7 +331,9 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         //将Marker添加到地图上去
         aMap.addMarker(markerOptionsBusiness).showInfoWindow();
 
-        aMap.moveCamera(cameraUpdateCenter);
+        if (orderDetailInfo.goodsSellRecord.status <= 2 && orderDetailInfo.goodsSellRecord.status > 0) {
+            aMap.moveCamera(cameraUpdateCenter);
+        }
     }
 
 
@@ -399,7 +421,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             marker.showInfoWindow();
         }
 
-        scrollView.setVisibility(isshowBigMap ? View.GONE : View.VISIBLE);
+//        scrollView.setVisibility(isshowBigMap ? View.GONE : View.VISIBLE);
+        mRefreshLayout.setVisibility(isshowBigMap ? View.GONE : View.VISIBLE);
         ivCloseMap.setVisibility(isshowBigMap ? View.VISIBLE : View.GONE);
         //设置默认定位按钮是否显示，非必需设置。
 //        aMap.getUiSettings().setMyLocationButtonEnabled(isshowBigMap);
@@ -436,11 +459,16 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                     String data = response.body();
                     fillView(data);
                 }
+                mRefreshLayout.endRefreshing();
+                mRefreshLayout.setEnabled(true);
             }
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-                CustomToast.INSTANCE.showToast("网络异常");
+                if (mRefreshLayout != null) {
+                    mRefreshLayout.endRefreshing();
+                    mRefreshLayout.setEnabled(true);
+                }
             }
         });
     }
@@ -474,6 +502,22 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
         showBtnStatus(orderDetailInfo.goodsSellRecord.status);
 
+        if (orderDetailInfo.goodsSellRecord.isCancel != null) {
+            if (orderDetailInfo.goodsSellRecord.isCancel == 1) {
+                mBtnCancelOrder.setVisibility(View.GONE);
+                mTvOrderManState.setText("已申请取消，等待商家处理" + " >");
+            } else if (orderDetailInfo.goodsSellRecord.isCancel == 2) {
+                mBtnCancelOrder.setVisibility(View.GONE);
+                mTvOrderManState.setText("商家同意取消订单" + " >");
+            } else if (orderDetailInfo.goodsSellRecord.isCancel == 3) {
+                mBtnCancelOrder.setVisibility(View.VISIBLE);
+                mTvOrderManState.setText("商家不同意取消订单" + " >");
+            }
+        }
+
+        tvDriverName.setText(orderDetailInfo.goodsSellRecord.shopper);
+        tvDriverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
+
 //        ImageLoaderUtil.displayImage(this, mIvOrderDetailBusinessImg, orderDetailInfo.goodsSellRecord.logo);
         x.image().bind(mIvOrderDetailBusinessImg, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo, NetConfig.optionsHeadImage);
         mTvOrderDetailBusinessName.setText(orderDetailInfo.goodsSellRecord.businessName);
@@ -485,11 +529,14 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 llContainProduct.addView(orderGoodsAdapter.getView(i, null, null));
             }
         }
-        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.goodsSellRecord.showps);
+        tvOrderDetailOldShipping.setVisibility(orderDetailInfo.goodsSellRecord.showps == orderDetailInfo.total ? View.GONE : View.VISIBLE);
+        tvOrderDetailOldShipping.setText(orderDetailInfo.goodsSellRecord.showps == 0 ? "" : "¥ " + orderDetailInfo.goodsSellRecord.showps);
+        tvOrderDetailOldShipping.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
+        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.total);
         tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.goodsSellRecord.packing);
         tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.goodsSellRecord.yhprice);
-        mTvOrderDetailPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.price);
-        mTvOrderDetailCouponPrice.setText("-¥ " + orderDetailInfo.goodsSellRecord.yhprice);
+        mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.goodsSellRecord.disprice == null ? 0 : orderDetailInfo.goodsSellRecord.disprice));
+        mTvOrderDetailCouponPrice.setText("-¥ " + orderDetailInfo.goodsSellRecord.activityprice);
         mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.totalpay);
         mTvOrderDetailDeliverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
         if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.readyTime) || !TextUtils.equals(orderDetailInfo.goodsSellRecord.readyTime, "null")) {
@@ -530,10 +577,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                             drawDriverMarkers();
                         }
                     }
-                } catch (
-                        JSONException e)
-
-                {
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -550,51 +594,62 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     private void showBtnStatus(int status) {
 
         if (status == -3) {
+            //-3:商家拒单
             mBtnBuyAgain.setVisibility(View.VISIBLE);
-            mBtnContactBusiness.setVisibility(View.VISIBLE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
 
             mBtnAppraise.setVisibility(View.GONE);
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
 
             mMapView.setVisibility(View.GONE);
             viewTop.setVisibility(View.GONE);
         } else if (status == -1) {
+            //-1：订单取消
             mBtnBuyAgain.setVisibility(View.VISIBLE);
 
             mBtnAppraise.setVisibility(View.GONE);
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactBusiness.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
+            rlContactBusiness.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
 
             mMapView.setVisibility(View.GONE);
             viewTop.setVisibility(View.GONE);
         } else if (status == 0) {
+            //0：客户下单
             mBtnPayNow.setVisibility(View.VISIBLE);
             mBtnCancelOrder.setVisibility(View.VISIBLE);
 
             mBtnBuyAgain.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactBusiness.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
+            rlContactBusiness.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
+            mMapView.setVisibility(View.GONE);
+            viewTop.setVisibility(View.GONE);
         } else if (status == 1 || status == 2) {
+            //1：客户已付款  2：商家接单
             mBtnCancelOrder.setVisibility(View.VISIBLE);
-            mBtnContactBusiness.setVisibility(View.VISIBLE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
+            mMapView.setVisibility(View.VISIBLE);
+            viewTop.setVisibility(View.VISIBLE);
 
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
             mBtnBuyAgain.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
         } else if (status == 3) {
+            //3：骑手接单
             mBtnCancelOrder.setVisibility(View.VISIBLE);
-            mBtnContactBusiness.setVisibility(View.VISIBLE);
-            mBtnContactMan.setVisibility(View.VISIBLE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
+            rlDriverInfo.setVisibility(View.VISIBLE);
+            mMapView.setVisibility(View.VISIBLE);
+            viewTop.setVisibility(View.VISIBLE);
 
             mBtnConfirmCompleted.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
@@ -603,10 +658,13 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         }
 //        else if (status == 4) {
 //        }
-        else if (status == 5) {
+        else if (status == 4 || status == 5) {
+            //4：商品打包 ，5：商品配送
             mBtnConfirmCompleted.setVisibility(View.VISIBLE);
-            mBtnContactBusiness.setVisibility(View.VISIBLE);
-            mBtnContactMan.setVisibility(View.VISIBLE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
+            rlDriverInfo.setVisibility(View.VISIBLE);
+            mMapView.setVisibility(View.VISIBLE);
+            viewTop.setVisibility(View.VISIBLE);
 
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
@@ -617,6 +675,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //        } else if (status == 7) {
 //        }
         else if (status == 8) {
+            // 6：商品送达，7:确认收货 ，8：订单完成
             mBtnBuyAgain.setVisibility(View.VISIBLE);
             mBtnAppraise.setVisibility(orderDetailInfo.goodsSellRecord.isComent == null
                     ? View.VISIBLE : View.GONE);
@@ -624,8 +683,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
-            mBtnContactBusiness.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
+            rlContactBusiness.setVisibility(View.GONE);
 
             mMapView.setVisibility(View.GONE);
             viewTop.setVisibility(View.GONE);
@@ -636,15 +695,24 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnContactBusiness.setVisibility(View.GONE);
-            mBtnContactMan.setVisibility(View.GONE);
+            rlContactBusiness.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
+            mMapView.setVisibility(View.GONE);
+            viewTop.setVisibility(View.GONE);
         }
 
     }
 
-    @OnClick({R.id.tv_order_man_state, R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.btn_contact_business, R.id.btn_contact_man, R.id.btn_appraise})
+    @OnClick({R.id.tv_order_man_state, R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.rl_contact_business, R.id.btn_contact_driver, R.id.btn_appraise, R.id.rl_business_name})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.rl_business_name:
+                Intent businessIntent = new Intent(OrderDetailActivity.this, BusinessActivity.class);
+                businessIntent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
+                businessIntent.putExtra("orderInfo", orderDetailInfo.goodsSellRecord.businessId);
+                startActivity(businessIntent);
+                break;
+
             //订单状态
             case R.id.tv_order_man_state:
                 Intent orderIntent = new Intent(this, OrderStatusActivity.class);
@@ -663,7 +731,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
                 payChannelIntent.putExtra("orderId", orderDetailInfo.goodsSellRecord.id);
                 payChannelIntent.putExtra("orderCode", orderDetailInfo.goodsSellRecord.orderCode);
-                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
+                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.totalpay);
                 payChannelIntent.putExtra("businessName", orderDetailInfo.goodsSellRecord.businessName);
                 payChannelIntent.putExtra("logo", orderDetailInfo.goodsSellRecord.logo);
                 startActivity(payChannelIntent);
@@ -678,7 +746,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //                requestCancelOrder();
                 break;
             //联系商家
-            case R.id.btn_contact_business:
+            case R.id.rl_contact_business:
                 Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.goodsSellRecord.businessMobile));
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
@@ -693,7 +761,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 startActivity(intent);
                 break;
             //联系骑手
-            case R.id.btn_contact_man:
+            case R.id.btn_contact_driver:
                 Intent data = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.goodsSellRecord.shopperMobile));
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
@@ -770,12 +838,21 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    ToastUtil.showToast(jsonObject.optString("msg"));
+                    if (jsonObject.optBoolean("success")) {
+                        getOrderDetail(orderId, userInfo);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-                CustomToast.INSTANCE.showToast("网络异常");
+
             }
         });
     }
@@ -790,7 +867,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-                CustomToast.INSTANCE.showToast("网络异常");
+
             }
         });
 
@@ -806,7 +883,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 }
             }
 
-            if (scrollView.getVisibility() == View.GONE) {
+//            if (scrollView.getVisibility() == View.GONE) {
+            if (mRefreshLayout.getVisibility() == View.GONE) {
                 showBigMap(false);
                 return true;
             }
@@ -826,7 +904,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_back_map:
-                if (scrollView.getVisibility() == View.GONE) {
+//                if (scrollView.getVisibility() == View.GONE) {
+                if (mRefreshLayout.getVisibility() == View.GONE) {
                     showBigMap(false);
                 } else {
                     if (isFromePayFinish) {
@@ -845,4 +924,16 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 break;
         }
     }
+
+    @Override
+    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
+        mRefreshLayout.setEnabled(false);
+        getOrderDetail(orderId, userInfo);
+    }
+
+    @Override
+    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
+        return false;
+    }
+
 }

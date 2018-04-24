@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.adapter.MessageAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
@@ -155,6 +155,6 @@ public class MessageFragment extends Fragment {
 
     @OnClick(R.id.tv_login)
     public void onViewClicked() {
-        startActivity(new Intent(getActivity(), LoginActivity.class));
+        startActivity(new Intent(getActivity(), LoginQucikActivity.class));
     }
 }

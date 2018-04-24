@@ -122,25 +122,42 @@
     </style>
 
     <!--<style name="ImageScale" parent="android:Theme.Black.NoTitleBar">-->
-        <!--<item name="android:windowAnimationStyle">@style/AnimHead</item>-->
-        <!--<item name="android:windowNoTitle">true</item>-->
-        <!--&lt;!&ndash; 无标题 &ndash;&gt;-->
-        <!--<item name="android:windowFullscreen">true</item>-->
-        <!--&lt;!&ndash; 设置全屏显示 &ndash;&gt;-->
-        <!--<item name="android:windowFrame">@null</item>-->
-        <!--&lt;!&ndash; 边框 &ndash;&gt;-->
-        <!--<item name="android:windowIsFloating">false</item>-->
-        <!--&lt;!&ndash; 是否浮现在activity之上 &ndash;&gt;-->
-        <!--<item name="android:windowIsTranslucent">true</item>-->
-        <!--&lt;!&ndash; 半透明 &ndash;&gt;-->
-        <!--<item name="android:windowBackground">@android:color/black</item>-->
-        <!--<item name="android:backgroundDimEnabled">false</item>-->
-        <!--&lt;!&ndash; 模糊 &ndash;&gt;-->
+    <!--<item name="android:windowAnimationStyle">@style/AnimHead</item>-->
+    <!--<item name="android:windowNoTitle">true</item>-->
+    <!--&lt;!&ndash; 无标题 &ndash;&gt;-->
+    <!--<item name="android:windowFullscreen">true</item>-->
+    <!--&lt;!&ndash; 设置全屏显示 &ndash;&gt;-->
+    <!--<item name="android:windowFrame">@null</item>-->
+    <!--&lt;!&ndash; 边框 &ndash;&gt;-->
+    <!--<item name="android:windowIsFloating">false</item>-->
+    <!--&lt;!&ndash; 是否浮现在activity之上 &ndash;&gt;-->
+    <!--<item name="android:windowIsTranslucent">true</item>-->
+    <!--&lt;!&ndash; 半透明 &ndash;&gt;-->
+    <!--<item name="android:windowBackground">@android:color/black</item>-->
+    <!--<item name="android:backgroundDimEnabled">false</item>-->
+    <!--&lt;!&ndash; 模糊 &ndash;&gt;-->
     <!--</style>-->
 
     <style name="Theme_dialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@drawable/dialog_bg_corner_radius</item>
         <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
+
+        <item name="tabIndicatorColor">@color/text_fb7d30</item>
+        <item name="tabIndicatorHeight">@dimen/dimen_2_dp</item>
+        <item name="tabBackground">@color/white</item>
+        <item name="tabTextAppearance">@style/MyCustomTabTextAppearance</item>
+        <item name="tabSelectedTextColor">@color/text_fb7d30</item>
+    </style>
+
+    <!--<item name="tabMaxWidth">@dimen/dimen_150_dp</item>-->
+
+    <style name="MyCustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">@dimen/dimen_15_dp</item>
+        <item name="android:textColor">@color/text_999999</item>
+        <item name="textAllCaps">true</item>
     </style>
 
 </resources>

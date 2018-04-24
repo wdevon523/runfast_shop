@@ -3,9 +3,10 @@ package com.gxuc.runfast.shop.impl;
 
 import android.content.Intent;
 
-import com.gxuc.runfast.shop.activity.LoginActivity;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 
 import cn.shopex.pay.Contants;
@@ -22,7 +23,7 @@ public abstract class MyCallback<T> implements Callback<T> {
     @Override
     public void onResponse(Call<T> call, Response<T> response) {
         if (!response.isSuccessful()) {
-            CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+            ToastUtil.showToast("网络数据异常");
             return;
         }
 
@@ -35,12 +36,12 @@ public abstract class MyCallback<T> implements Callback<T> {
             if (!CustomApplication.isRelogining) {
                 CustomApplication.isRelogining = true;
                 //跳转到登录页面
-                Intent intent = new Intent(CustomApplication.getContext(), LoginActivity.class);
+                Intent intent = new Intent(CustomApplication.getContext(), LoginQucikActivity.class);
                 intent.putExtra("isRelogin", true);
 //            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 //            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                CustomApplication.getContext().startActivity(intent);
+
             }
         } else {
             onSuccessResponse(call, response);
@@ -49,7 +50,7 @@ public abstract class MyCallback<T> implements Callback<T> {
 
     @Override
     public void onFailure(Call<T> call, Throwable t) {
-        CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络异常");
+        ToastUtil.showToast("网络数据异常");
         onFailureResponse(call, t);
     }
 

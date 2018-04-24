@@ -186,6 +186,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
                 info.mini_imgPath = busObject.optString("mini_imgPath");
                 info.imgPath = busObject.optString("imgPath");
                 info.name = busObject.optString("name");
+                info.isopen = busObject.optInt("isopen");
                 info.distance = busObject.optDouble("distance");
                 info.levelId = busObject.optInt("levelId");
                 info.salesnum = busObject.optInt("salesnum");
@@ -195,6 +196,7 @@ public class SearchProductActivity extends ToolBarActivity implements LoadMoreAd
                 info.charge = busObject.optDouble("charge");
                 info.isDeliver = busObject.optInt("isDeliver");
                 info.speed = busObject.optString("speed");
+                info.goldBusiness = busObject.optBoolean("goldBusiness");
                 info.alist = new ArrayList<>();
                 JSONArray alist = busObject.optJSONArray("alist");
                 if (alist != null) {

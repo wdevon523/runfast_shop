@@ -20,7 +20,6 @@ import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.R;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
@@ -52,7 +51,7 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         helper.setVisible(R.id.tv_no_food_store, item.getNum() == 0);
 
         if (item.getIslimited() == 1 || (!TextUtils.isEmpty(item.getShowprice()) && !TextUtils.equals("null", item.getShowprice()))) {
-            helper.setVisible(R.id.ll_food_act, true);
+//            helper.setVisible(R.id.ll_food_act, true);
 
             if ((!TextUtils.isEmpty(item.getShowprice()) && !TextUtils.equals("null", item.getShowprice()))) {
                 helper.setVisible(R.id.tv_food_discount, true);
@@ -69,7 +68,9 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
             }
 
         } else {
-            helper.setVisible(R.id.ll_food_act, false);
+//            helper.setVisible(R.id.ll_food_act, false);
+            helper.setVisible(R.id.tv_food_discount, false);
+            helper.setVisible(R.id.tv_food_limit, false);
         }
 
 

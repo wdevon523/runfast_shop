@@ -49,6 +49,14 @@ public class UrlConstant {
      * 登录
      */
     public static final String LOGIN = "login.do";
+    /**
+     * 快速登录
+     */
+    public static final String LOGIN_QUICK = "loginBySms.do";
+    /**
+     * 第三方登录
+     */
+    public static final String THIRD_LOGIN = "thirdLogin.do";
 
     /**
      * 登出
@@ -66,7 +74,7 @@ public class UrlConstant {
     public static final String USER_INFO = "user/index.do";
 
     /**
-     * 找回密码
+     * 获取找回密码验证码
      */
     public static final String FORGET_PASSWORD = "findpwd.do";
 
@@ -96,9 +104,24 @@ public class UrlConstant {
     public static final String QUERY_AUTH_CODE = "getSmsCode.do";
 
     /***
+     * 获取绑定手机的验证码
+     */
+    public static final String BIND_MOBILE_CODE = "getThirdSmsCode.do";
+
+    /***
+     * 绑定手机
+     */
+    public static final String BIND_MOBILE = "registerAndBind.do";
+
+    /***
      * 获取修改密码验证码
      */
     public static final String QUERY_EDIT_PWD_CODE = "user/getcode.do";
+
+    /***
+     * 获取快速登录验证码
+     */
+    public static final String LOGIN_QIUCK_CODE = "getCode.do";
 
     /***
      * 上传图片
@@ -395,10 +418,17 @@ public class UrlConstant {
     public static final String ORDER_CANCEL = "userOrder/cancel.do";
 
     /**
-     * 获取购物车
+     * 确认订单获取商品
      */
 //    public static final String GET_SHOPPING_CART = "pay/getCart.do";
     public static final String GET_SHOPPING_CART = "pay/fillinorder.do";
+
+    /**
+     * 获取购物车
+     */
+//    public static final String GET_SHOPPING_CART = "pay/getCart.do";
+    public static final String GET_SHOPPINGS = "pay/getShopings.do";
+
     /**
      * 选择优惠券
      */
@@ -463,4 +493,7 @@ public class UrlConstant {
      * 根据商品id获取店家id
      */
     public static final String GET_BUSINESS_ID = "business/getguige.do";
+
+
+    public static final String WEIXIN_LOGIN = "sns/oauth2/access_token";
 }

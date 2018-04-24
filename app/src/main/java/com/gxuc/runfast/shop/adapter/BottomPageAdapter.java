@@ -3,6 +3,7 @@ package com.gxuc.runfast.shop.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.activity.BreakfastActivity;
+import com.gxuc.runfast.shop.activity.WebActivity;
+import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.maintop.TopImage1;
 import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
@@ -18,7 +22,14 @@ import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by huiliu on 2017/9/4.
@@ -26,7 +37,7 @@ import java.util.List;
  * @email liu594545591@126.com
  * @introduce
  */
-public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.BottomViewHolder>{
+public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.BottomViewHolder> {
 
     private Context mContext;
     private List<TopImage1> data;
@@ -53,14 +64,44 @@ public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.Bo
         holder.ll_bottom_ad.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (topImage1.getAdType() == 4) {
-                    Intent intent = new Intent(mContext, BusinessActivity.class);
-                    intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_AD);
-                    intent.putExtra("business", topImage1);
-                    mContext.startActivity(intent);
-                }else {
-                    //TODO 只处理了外卖操作。此处商家操作待处理
-                   CustomToast.INSTANCE.showToast(mContext,"活动暂未开放");
+                switch (topImage1.getAdType()) {
+                    case 1://内容
+                        Intent webIntent = new Intent(mContext, WebActivity.class);
+                        if (topImage1.getLinkAddr().contains("http")) {
+                            webIntent.putExtra("url", topImage1.getLinkAddr());
+                        } else {
+                            webIntent.putExtra("url", ApiServiceFactory.WEB_HOST + topImage1.getLinkAddr());
+                        }
+                        mContext.startActivity(webIntent);
+                        break;
+                    case 2:
+                        CustomToast.INSTANCE.showToast(mContext, "2链接");
+                        break;
+                    case 3:
+                        Intent data = new Intent(mContext, BreakfastActivity.class);
+                        data.putExtra("typeName", topImage1.getTypename());
+                        mContext.startActivity(data);
+                        break;
+                    case 4:
+                        Intent intent = new Intent(mContext, BusinessActivity.class);
+                        intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_AD);
+                        intent.putExtra("business", topImage1);
+                        mContext.startActivity(intent);
+                        break;
+                    case 5:
+                        String[] split = topImage1.getLinkAddr().split("=");
+                        int goodId = Integer.parseInt(split[1]);
+                        requestBusinessId(goodId);
+                        break;
+                    case 6:
+                        Intent webData = new Intent(mContext, WebActivity.class);
+                        if (topImage1.getLinkAddr().contains("http")) {
+                            webData.putExtra("url", topImage1.getLinkAddr());
+                        } else {
+                            webData.putExtra("url", ApiServiceFactory.WEB_HOST + topImage1.getLinkAddr());
+                        }
+                        mContext.startActivity(webData);
+                        break;
                 }
             }
         });
@@ -72,20 +113,57 @@ public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.Bo
         return data.size();
     }
 
-     class BottomViewHolder extends RecyclerView.ViewHolder {
-         TextView tv_bottom_scroll_name;
-         TextView tv_bottom_scroll_tag;
-         SimpleDraweeView iv_bottom_scroll;
-         LinearLayout ll_bottom_ad;
+    class BottomViewHolder extends RecyclerView.ViewHolder {
+        TextView tv_bottom_scroll_name;
+        TextView tv_bottom_scroll_tag;
+        SimpleDraweeView iv_bottom_scroll;
+        LinearLayout ll_bottom_ad;
 
-         public BottomViewHolder(View itemView) {
-             super(itemView);
-             tv_bottom_scroll_name = (TextView) itemView.findViewById(R.id.tv_bottom_scroll_name);
-             tv_bottom_scroll_tag = (TextView) itemView.findViewById(R.id.tv_bottom_scroll_tag);
-             iv_bottom_scroll = (SimpleDraweeView) itemView.findViewById(R.id.iv_bottom_scroll);
-             ll_bottom_ad = (LinearLayout) itemView.findViewById(R.id.ll_bottom_ad);
-         }
-     }
+        public BottomViewHolder(View itemView) {
+            super(itemView);
+            tv_bottom_scroll_name = (TextView) itemView.findViewById(R.id.tv_bottom_scroll_name);
+            tv_bottom_scroll_tag = (TextView) itemView.findViewById(R.id.tv_bottom_scroll_tag);
+            iv_bottom_scroll = (SimpleDraweeView) itemView.findViewById(R.id.iv_bottom_scroll);
+            ll_bottom_ad = (LinearLayout) itemView.findViewById(R.id.ll_bottom_ad);
+        }
+    }
 
+    private void requestBusinessId(int goodId) {
+        CustomApplication.getRetrofit().getBusinessId(goodId).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+
+                if (!response.isSuccessful()) {
+                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    return;
+                }
+
+                String body = response.body();
+                if (!TextUtils.isEmpty(body)) {
+                    dealGood(body);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void dealGood(String body) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            JSONObject goods = jsonObject.optJSONObject("goods");
+            int businessId = goods.optInt("businessId");
+            Intent intent = new Intent(mContext, BusinessActivity.class);
+            intent.putExtra("businessId", businessId);
+            intent.putExtra("goodId", goods.optInt("id"));
+            intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_GOOD_AD);
+            mContext.startActivity(intent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

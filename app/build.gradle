@@ -10,8 +10,8 @@ android {
 //        applicationId "com.example.runfastshop"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 40
-        versionName "3.0.2"
+        versionCode 47
+        versionName "3.0.9"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        signingConfig signingConfigs.config
@@ -110,4 +110,9 @@ dependencies {
 
     compile 'cn.jiguang.sdk:jpush:3.0.6'
     compile 'cn.jiguang.sdk:jcore:1.1.6'
+//    compile 'cn.jiguang.sdk:janalytics:1.2.0'
+
+    compile 'com.github.yidun:captcha-android-demo:2.0'
+
+//    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
 }

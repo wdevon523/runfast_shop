@@ -262,7 +262,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.QUERY_EDIT_PWD_CODE)
-    Call<String> getEditPwdCode(@Field("mobile") String mobile);
+    Call<String> getEditPwdCode(@Field("mobile") String mobile,
+                                @Field("NECaptchaValidate") String nECaptchaValidate);
 
     /**
      * 获取注册验证码
@@ -271,7 +272,49 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.QUERY_AUTH_CODE)
-    Call<String> getCode(@Field("mobile") String mobile);
+    Call<String> getCode(@Field("mobile") String mobile,
+                         @Field("NECaptchaValidate") String nECaptchaValidate);
+
+    /**
+     * 获取快速登录
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.LOGIN_QIUCK_CODE)
+    Call<String> getLoginQuickCode(@Field("mobile") String mobile,
+                                   @Field("NECaptchaValidate") String nECaptchaValidate);
+
+    /**
+     * 获取绑定手机的验证码
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BIND_MOBILE_CODE)
+    Call<String> getBindCode(@Field("mobile") String mobile
+            , @Field("NECaptchaValidate") String nECaptchaValidate
+//            , @Field("thirdLoginId") String thirdLoginId,
+//                             @Field("thirdLoginType") int thirdLoginType,
+//                             @Field("alias") String alias,
+//                             @Field("bpType") int bpType
+    );
+
+    /**
+     * 绑定手机
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BIND_MOBILE)
+    Call<String> bindMobile(@Field("mobile") String mobile,
+                            @Field("password") String password,
+                            @Field("code") String code,
+                            @Field("thirdLoginId") String thirdLoginId,
+                            @Field("thirdLoginType") int thirdLoginType,
+                            @Field("alias") String alias,
+                            @Field("bpType") int bpType
+    );
 
     /**
      * 获取忘记密码验证码
@@ -280,7 +323,8 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.FORGET_PASSWORD)
-    Call<String> getForgetCode(@Field("mobile") String mobile);
+    Call<String> getForgetCode(@Field("mobile") String mobile,
+                               @Field("NECaptchaValidate") String nECaptchaValidate);
 
     /**
      * 登录请求
@@ -297,6 +341,39 @@ public interface NetInterface {
                            @Field("password") String password,
                            @Field("alias") String alias,
                            @Field("bptype") Integer bptype);
+
+    /**
+     * 快速登录请求
+     * 发送post请求的时候，必须要加上@FormUrlEncoded，不然就会报错
+     *
+     * @param mobile
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.LOGIN_QUICK)
+    Call<String> postLogiQuick(@Field("mobile") String mobile,
+                           @Field("code") String code,
+                           @Field("alias") String alias,
+                           @Field("bptype") Integer bptype);
+
+    /**
+     * 第三方登录请求
+     * 发送post请求的时候，必须要加上@FormUrlEncoded，不然就会报错
+     *
+     * @param thirdLoginId
+     * @param thirdLoginType
+     * @param alias
+     * @param bpType
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.THIRD_LOGIN)
+    Call<String> postThirdLogin(@Field("thirdLoginId") String thirdLoginId,
+                                @Field("thirdLoginType") int thirdLoginType,
+                                @Field("alias") String alias,
+                                @Field("bpType") Integer bpType);
 
     /**
      * 登出
@@ -806,7 +883,7 @@ public interface NetInterface {
     Call<String> cancelOrder(@Field("id") Integer id);
 
     /**
-     * 获取购物车
+     * 确认订单获取商品
      *
      * @param bid
      * @return
@@ -815,6 +892,17 @@ public interface NetInterface {
     @POST(UrlConstant.GET_SHOPPING_CART)
 //    Call<String> getShoppingCar(@Field("bid") Integer bid);
     Call<String> getShoppingCar(@Field("businessId") Integer bid);
+
+    /**
+     * 获取购物车
+     *
+     * @param bid
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_SHOPPINGS)
+//    Call<String> getShoppingCar(@Field("bid") Integer bid);
+    Call<String> getShoppings(@Field("businessId") Integer bid);
 
     /**
      * 选择收货地址
@@ -971,5 +1059,17 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_BUSINESS_ID)
     Call<String> getBusinessId(@Field("id") int id);
+
+    /**
+     * 获取骑手经纬度
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.WEIXIN_LOGIN)
+    Call<String> weiXinLogin(@Field("appid") String appid,
+                             @Field("secret") String secret,
+                             @Field("code") String code,
+                             @Field("grant_type") String grant_type);
 
 }

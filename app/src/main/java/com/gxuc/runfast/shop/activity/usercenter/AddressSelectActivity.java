@@ -131,6 +131,8 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
                         Intent intent = new Intent();
                         intent.putExtra("addressInfo", addressInfo);
                         intent.putExtra("shippingPrice", jsonObject.optDouble("total"));
+                        intent.putExtra("ftotal", jsonObject.optDouble("ftotal"));
+                        intent.putExtra("oldShippingPrice", jsonObject.optDouble("showps"));
                         setResult(IntentConfig.ADDRESS_SELECT, intent);
                         finish();
                     } else {

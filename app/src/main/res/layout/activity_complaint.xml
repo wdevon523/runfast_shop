@@ -9,7 +9,6 @@
 
     <include layout="@layout/layout_title" />
 
-
     <EditText
         android:id="@+id/et_complaint_count"
         android:layout_width="match_parent"
@@ -35,7 +34,7 @@
         android:hint="请输入您的电子邮箱"
         android:inputType="textEmailAddress"
         android:maxLines="1"
-        android:padding="15dp"
+        android:paddingLeft="@dimen/dimen_15_dp"
         android:textColor="@color/color_address_black"
         android:textColorHint="@color/color_text_gray"
         android:textSize="14sp" />
@@ -51,4 +50,5 @@
         android:text="提交"
         android:textColor="@android:color/white"
         android:textSize="18sp" />
+
 </LinearLayout>

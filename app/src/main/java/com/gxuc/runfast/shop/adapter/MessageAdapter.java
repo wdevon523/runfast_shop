@@ -63,7 +63,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 break;
         }
         holder.tv_message_name.setText(messageInfo.getTitle());
-        holder.tv_message_date.setText(messageInfo.getCreateTime());
+        holder.tv_message_date.setText(messageInfo.getCreateTime().substring(5, 16));
         holder.tv_message_content.setText(messageInfo.getContent());
 
     }

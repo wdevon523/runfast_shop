@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.bean.business;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public class BusinessDetail {
     private Integer issubsidy;//是否补贴配送费1是0否
     private double subsidy ;//补贴金额
     private String  typeName;//商家类型名称
-    private List<SafetyRecordImg> imgs;
+    private ArrayList<SafetyRecordImg> imgs;
     private Integer sorting;//排序方式 1 推荐排序 2 月销量排序 3 距离排序 4评分排序
     private  double  distance;
     private double showpacking ;//打包费
@@ -96,11 +97,11 @@ public class BusinessDetail {
     private String keyword;//查询使用
     private String showActity;//商家活动
 
-    public List<SafetyRecordImg> getImgs() {
+    public ArrayList<SafetyRecordImg> getImgs() {
         return imgs;
     }
 
-    public void setImgs(List<SafetyRecordImg> imgs) {
+    public void setImgs(ArrayList<SafetyRecordImg> imgs) {
         this.imgs = imgs;
     }
 

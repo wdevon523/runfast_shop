@@ -13,7 +13,7 @@ import java.util.List;
  * @email liu594545591@126.com
  * @introduce
  */
-public class GoodsSellRecordChildren implements Parcelable{
+public class GoodsSellRecordChildren implements Parcelable {
 
     /**
      * 外卖商品订单记录子类
@@ -30,6 +30,7 @@ public class GoodsSellRecordChildren implements Parcelable{
     private BigDecimal price;//原价 
     private BigDecimal disprice;//优惠价
     private BigDecimal totalprice;//总金额 
+    private BigDecimal totaldisprice;//总金额
     private String orderCode;//订单号
     private Integer goodsSellStandardId;//商品规格ID
     private String goodsSellStandardName;//商品规格名称
@@ -39,6 +40,7 @@ public class GoodsSellRecordChildren implements Parcelable{
     private Integer userId;//用户id
     private Integer status;//订单状态
     private String createTime;
+    private String mini_imgPath;
     private Integer activity;//是否参与活动1是
     private Integer activityId;//活动Id
     private String activityName;//活动名称
@@ -53,6 +55,22 @@ public class GoodsSellRecordChildren implements Parcelable{
     private String showoption;
     private BigDecimal yhprice;//优惠总金额
     private List<Integer> optsubids; //商品id集合
+
+    public BigDecimal getTotaldisprice() {
+        return totaldisprice;
+    }
+
+    public void setTotaldisprice(BigDecimal totaldisprice) {
+        this.totaldisprice = totaldisprice;
+    }
+
+    public String getMini_imgPath() {
+        return mini_imgPath;
+    }
+
+    public void setMini_imgPath(String mini_imgPath) {
+        this.mini_imgPath = mini_imgPath;
+    }
 
     public static long getSerialVersionUID() {
         return serialVersionUID;
