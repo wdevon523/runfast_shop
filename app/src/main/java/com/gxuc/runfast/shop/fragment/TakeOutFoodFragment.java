@@ -216,7 +216,7 @@ public class TakeOutFoodFragment extends Fragment implements
         Log.e("AmapError", "权限允许");
         switch (requestCode) {
             case 10000:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //用户同意授权
                     initMap();
                 } else {

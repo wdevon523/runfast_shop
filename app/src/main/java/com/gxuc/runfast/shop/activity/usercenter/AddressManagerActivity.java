@@ -434,9 +434,9 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
                 break;
             case R.id.tv_current_address:
 //                Intent intent = new Intent();
-//                intent.putExtra("address", isSearch?addressSearch.get(0).title:addresses.get(0).title);
-//                intent.putExtra("addressInfo",mAddress);
-//                intent.putExtra("addressLat",mAddressInfo);
+//                intent.putExtra("address", isSearch ? addressSearch.get(0).title : addresses.get(0).title);
+//                intent.putExtra("addressInfo", mAddress);
+//                intent.putExtra("addressLat", mAddressInfo);
 //                setResult(RESULT_OK, intent);
 //                finish();
                 break;

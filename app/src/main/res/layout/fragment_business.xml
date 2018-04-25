@@ -7,22 +7,20 @@
     android:splitMotionEvents="false"
     android:orientation="horizontal"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/scroll_behavior"
     tools:context=".fragment.BusinessFragment">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler1"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="@dimen/dimen_70_dp"
         android:layout_height="match_parent"
         android:background="@color/type_gray"
         android:overScrollMode="never"
         app:layout_behavior="@string/scroll_behavior"/>
 
     <FrameLayout
-        android:id="@+id/layout_right"
-        android:layout_width="280dp"
-        android:layout_height="match_parent">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler2"
@@ -32,5 +30,6 @@
             app:layout_behavior="@string/scroll_behavior"/>
 
         <include layout="@layout/view_stick_header"/>
+
     </FrameLayout>
 </LinearLayout>

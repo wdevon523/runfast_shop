@@ -17,6 +17,7 @@ import com.gxuc.runfast.shop.adapter.shopcaradater.FoodAdapter;
 import com.gxuc.runfast.shop.adapter.shopcaradater.TypeAdapter;
 import com.gxuc.runfast.shop.bean.TypeBean;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
+import com.gxuc.runfast.shop.util.LogUtils;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.view.SimpleDividerDecoration;
@@ -43,6 +44,8 @@ public class BusinessFragment extends LazyFragment {
     public FoodAdapter foodAdapter;
     private boolean sIsScrolling;
     private boolean idDestroy;
+    private View stickView;
+    private TextView tvStickyHeaderView;
 
     public BusinessFragment() {
         // Required empty public constructor
@@ -61,8 +64,6 @@ public class BusinessFragment extends LazyFragment {
 
     private void initData() {
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
-        FrameLayout layout_right = (FrameLayout) findViewById(R.id.layout_right);
-
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         typeAdapter = new TypeAdapter(types);
         View view = new View(getContext());
@@ -71,6 +72,7 @@ public class BusinessFragment extends LazyFragment {
         typeAdapter.bindToRecyclerView(recyclerView1);
         recyclerView1.addItemDecoration(new SimpleDividerDecoration(getContext()));
         ((DefaultItemAnimator) recyclerView1.getItemAnimator()).setSupportsChangeAnimations(false);
+
         recyclerView1.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
@@ -122,23 +124,23 @@ public class BusinessFragment extends LazyFragment {
         view.setMinimumHeight(ViewUtils.dip2px(getContext(), 50));
         foodAdapter.addFooterView(view);
         foodAdapter.bindToRecyclerView(recyclerView2);
-        final View stickView = findViewById(R.id.stick_header);
-        final TextView tvStickyHeaderView = (TextView) stickView.findViewById(R.id.tv_header);
+        stickView = findViewById(R.id.stick_header);
+        tvStickyHeaderView = (TextView) stickView.findViewById(R.id.tv_header);
         recyclerView2.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-//                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-//                    sIsScrolling = true;
-//                    Glide.with(getActivity()).pauseRequests();
-//                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-//                    if (sIsScrolling == true) {
-//                        Glide.with(getActivity()).resumeRequests();
-//                    }
-//                    sIsScrolling = false;
-//                }
-            }
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+////                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
+////                    sIsScrolling = true;
+////                    Glide.with(getActivity()).pauseRequests();
+////                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+////                    if (sIsScrolling == true) {
+////                        Glide.with(getActivity()).resumeRequests();
+////                    }
+////                    sIsScrolling = false;
+////                }
+//            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

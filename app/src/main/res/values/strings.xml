@@ -32,7 +32,7 @@
     <string name="update_tip_confrim">确定</string>
 
 
-    <string name="scroll_behavior">com.example.runfastshop.behaviors.ScrollBehavior</string>
+    <string name="scroll_behavior">@string/appbar_scrolling_view_behavior</string>
     <string name="order_remark_content">请输入备注内容，最多100字</string>
     <string name="order_remark_commit">确定</string>
     <string name="sure">确定</string>

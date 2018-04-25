@@ -74,6 +74,7 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
         public void onLocationChanged(AMapLocation aMapLocation) {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
+                    myMapLocation = aMapLocation;
                     //可在其中解析amapLocation获取相应内容。
                     regeocodeSearch(aMapLocation.getLatitude(), aMapLocation.getLongitude(), 2000);
                 } else {
@@ -96,6 +97,7 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
     private LoadMoreAdapter searchAdapter;
 
     private boolean isSearch;//是否是搜索查询
+    private AMapLocation myMapLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,12 +159,23 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
         geocodeSearch.setOnGeocodeSearchListener(this);
     }
 
-    @OnClick({R.id.tv_location_city, R.id.iv_refresh, R.id.tv_search_name, R.id.tv_cancel_search})
+    @OnClick({R.id.tv_location_city, R.id.tv_current_address, R.id.iv_refresh, R.id.tv_search_name, R.id.tv_cancel_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_location_city:
                 break;
+            case R.id.tv_current_address:
+                Intent intent = new Intent();
+                intent.putExtra("address", isSearch ? addressSearch.get(0).title : addresses.get(0).title);
+                intent.putExtra("pointLat", isSearch ? addressSearch.get(0).latLng.latitude : addresses.get(0).latLng.latitude);
+                intent.putExtra("pointLon", isSearch ? addressSearch.get(0).latLng.longitude : addresses.get(0).latLng.longitude);
+                setResult(1002, intent);
+                finish();
+                break;
             case R.id.iv_refresh:
+//                if (myMapLocation != null) {
+//                    regeocodeSearch(myMapLocation.getLatitude(), myMapLocation.getLongitude(), 2000);
+//                }
                 break;
             case R.id.tv_search_name:
                 isSearch = true;
@@ -278,6 +291,7 @@ public class DeliveryAddressActivity extends ToolBarActivity implements GeocodeS
             if (pois != null && pois.size() > 0) {
                 addresses.clear();
                 addressSearch.clear();
+                adapter.notifyDataSetChanged();
                 for (int i = 0; i < pois.size(); i++) {
                     String title = pois.get(i).getTitle();
                     String adName = pois.get(i).getAdName();
