@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.WeiXinPayInfo;
 import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.config.UserService;
@@ -35,6 +37,7 @@ import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
 import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -81,6 +84,7 @@ public class PayChannelActivity extends ToolBarActivity {
     private double price;
     private String businessName;
     private String logo;
+    private boolean isPaotui;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,7 @@ public class PayChannelActivity extends ToolBarActivity {
 //        mOrderId = getIntent().getIntExtra("orderId", 0);
 //        mPrice = getIntent().getDoubleExtra("price", 0.0);
 //        businessName = getIntent().getStringExtra("businessName");
+        isPaotui = getIntent().getBooleanExtra("isPaotui", false);
         orderInfo = getIntent().getParcelableExtra("orderInfo");
 //        orderDetailInfo = (OrderDetail) getIntent().getSerializableExtra("orderDetail");
         orderId = getIntent().getIntExtra("orderId", 0);
@@ -280,16 +285,70 @@ public class PayChannelActivity extends ToolBarActivity {
                         showPayInputDialog();
                         break;
                     case 1:
-                        requestWeiXinPay();
+                        if (isPaotui) {
+                            requestPaoTuiPay("WXPAY_APP");
+                        } else {
+                            requestWeiXinPay();
+                        }
 //                        requestWeiXinSign();
 //                        wechatpay();
                         break;
                     case 0:
-                        requestAliPay();
+                        if (isPaotui) {
+                            requestPaoTuiPay("ALIPAY_APP");
+                        } else {
+                            requestAliPay();
+                        }
                         break;
                 }
                 break;
         }
+    }
+
+    private void requestPaoTuiPay(final String channel) {
+
+        CustomApplication.getRetrofitPaoTui().paoTuiPay(orderCode, channel).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        String data = jsonObject.optString("data");
+                        if (TextUtils.equals("ALIPAY_APP", channel)) {
+                            alipay(data);
+                        } else {
+                            WeiXinPayInfo weiXinPayInfo = GsonUtil.fromJson(data, WeiXinPayInfo.class);
+                            wechatPaoTuipay(weiXinPayInfo);
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorCode"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void wechatPaoTuipay(WeiXinPayInfo weiXinPayInfo) {
+        WeChatPayHandle weChatPayHandle = new WeChatPayHandle(this);
+        WeiXinPayOutput weiXinPayOutput = new WeiXinPayOutput();
+        weiXinPayOutput.setAppid(weiXinPayInfo.appid);
+        weiXinPayOutput.setPay_sign(weiXinPayInfo.sign);
+        weiXinPayOutput.setApi_key(Contants.WEI_XIN_SECRET);
+        weiXinPayOutput.setNonce_str(weiXinPayInfo.noncestr);
+        weiXinPayOutput.setTimestamp(weiXinPayInfo.timestamp);
+        weiXinPayOutput.setPartnerid(Contants.WEI_XIN_BUSINESS_ID);
+        weiXinPayOutput.setPrepayid(weiXinPayInfo.prepayid);
+        weChatPayHandle.pay(weiXinPayOutput);
+        isPayBack = true;
     }
 
     private void requestWalletPay(String password) {

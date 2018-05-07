@@ -677,26 +677,26 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         else if (status == 8) {
             // 6：商品送达，7:确认收货 ，8：订单完成
             mBtnBuyAgain.setVisibility(View.VISIBLE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
+            rlDriverInfo.setVisibility(View.VISIBLE);
             mBtnAppraise.setVisibility(orderDetailInfo.goodsSellRecord.isComent == null
                     ? View.VISIBLE : View.GONE);
 
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            rlDriverInfo.setVisibility(View.GONE);
-            rlContactBusiness.setVisibility(View.GONE);
 
             mMapView.setVisibility(View.GONE);
             viewTop.setVisibility(View.GONE);
         } else {
             mBtnBuyAgain.setVisibility(View.VISIBLE);
 
+            rlContactBusiness.setVisibility(View.GONE);
+            rlDriverInfo.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            rlContactBusiness.setVisibility(View.GONE);
-            rlDriverInfo.setVisibility(View.GONE);
             mMapView.setVisibility(View.GONE);
             viewTop.setVisibility(View.GONE);
         }
@@ -756,6 +756,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                     //                                          int[] grantResults)
                     // to handle the case where the user grants the permission. See the documentation
                     // for ActivityCompat#requestPermissions for more details.
+                    ToastUtil.showToast("请先开启电话权限");
                     return;
                 }
                 startActivity(intent);
@@ -771,6 +772,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                     //                                          int[] grantResults)
                     // to handle the case where the user grants the permission. See the documentation
                     // for ActivityCompat#requestPermissions for more details.
+                    ToastUtil.showToast("请先开启电话权限");
                     return;
                 }
                 startActivity(data);

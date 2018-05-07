@@ -118,6 +118,11 @@ public class AddressSelectActivity extends ToolBarActivity implements AddressSel
             intent.putExtra(IntentFlag.KEY, IntentFlag.EDIT_ADDRESS);
             intent.putExtra("addressInfo", addressInfo);
             startActivity(intent);
+        } else if (mFlags == IntentFlag.PURCHASE){
+            Intent intent = new Intent();
+            intent.putExtra("addressInfo", addressInfo);
+            setResult(RESULT_OK, intent);
+            finish();
         }
     }
 

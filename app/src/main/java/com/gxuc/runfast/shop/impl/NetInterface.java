@@ -353,9 +353,9 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.LOGIN_QUICK)
     Call<String> postLogiQuick(@Field("mobile") String mobile,
-                           @Field("code") String code,
-                           @Field("alias") String alias,
-                           @Field("bptype") Integer bptype);
+                               @Field("code") String code,
+                               @Field("alias") String alias,
+                               @Field("bptype") Integer bptype);
 
     /**
      * 第三方登录请求
@@ -1071,5 +1071,131 @@ public interface NetInterface {
                              @Field("secret") String secret,
                              @Field("code") String code,
                              @Field("grant_type") String grant_type);
+
+    /**
+     * 提交订单（代购）
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.PURCHASE)
+    Call<String> confirmPurchase(@Field("goodsDescription") String goodsDescription,
+                                 @Field("fromType") String fromType,
+                                 @Field("fromLng") double fromLng,
+                                 @Field("fromLat") double fromLat,
+                                 @Field("fromAddress") String fromAddress,
+                                 @Field("type") String type,
+                                 @Field("tip") int tip,
+                                 @Field("toId") int toId,
+                                 @Field("userLng") String userLng,
+                                 @Field("userLat") String userLat);
+
+
+    /**
+     * 提交订单（跑腿）
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.PURCHASE)
+    Call<String> submitOrder(@Field("goodsType") String goodsType,
+                             @Field("goodsWeight") int goodsWeight,
+                             @Field("pickTime") String pickTime,
+                             @Field("fromId") int fromId,
+                             @Field("toId") int toId,
+                             @Field("type") String type,
+                             @Field("tip") int tip,
+                             @Field("userLng") String userLng,
+                             @Field("userLat") String userLat,
+                             @Field("remark") String remark);
+
+    /**
+     * 获取跑腿代购订单列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELIVERY_ORDER)
+    Call<String> getDeliveryOrder(@Field("page") int page,
+                                  @Field("size") int goodsType);
+
+    /**
+     * 获取跑腿代购订单详情
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELIVERY_ORDER_DETAIL)
+    Call<String> getDeliveryOrderDetail(@Field("orderId") int orderId);
+
+    /**
+     * 取消跑腿代购订单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CANCEL_DELIVERY_ORDER)
+    Call<String> cancelDeliveryOrder(@Field("orderId") int orderId);
+
+    /**
+     * 删除跑腿代购订单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELETE_DELIVERY_ORDER)
+    Call<String> deleteDeliveryOrder(@Field("orderId") int orderId);
+
+    /**
+     * 获取跑腿代购订单状态列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELIVERY_ORDER_STATUS)
+    Call<String> getDeliveryOrderStatus(@Field("orderId") int orderId);
+
+    /**
+     * 根据填写的订单获取配送信息（代购）
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELIVERY_ORDER_INFO)
+    Call<String> getPurchaseOrderInfo(@Field("fromType") String fromType,
+                                      @Field("fromLng") double fromLng,
+                                      @Field("fromLat") double fromLat,
+                                      @Field("fromAddress") String fromAddress,
+                                      @Field("goodsDescription") String goodsDescription,
+                                      @Field("toId") int toId,
+                                      @Field("type") String type,
+                                      @Field("userLng") String userLng,
+                                      @Field("userLat") String userLat);
+
+    /**
+     * 根据填写的订单获取配送信息（取送件）
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELIVERY_ORDER_INFO)
+    Call<String> getDeliveryOrderInfo(@Field("goodsType") String goodsType,
+                                      @Field("goodsWeight") int goodsWeight,
+                                      @Field("pickTime") String pickTime,
+                                      @Field("fromId") int fromId,
+                                      @Field("toId") int toId,
+                                      @Field("type") String type,
+                                      @Field("userLng") String userLng,
+                                      @Field("userLat") String userLat);
+
+    /**
+     * 跑腿支付
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.PAO_TUI_PAY)
+    Call<String> paoTuiPay(@Field("orderNo") String orderNo,
+                           @Field("channel") String channel);
 
 }

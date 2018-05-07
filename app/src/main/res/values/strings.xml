@@ -60,5 +60,8 @@
     <string name="meet_question">遇到以下问题</string>
     <string name="meet_question_default">查看全部问题</string>
     <string name="delivery_price">配送费</string>
+    <string name="load_all_date">已经加载全部数据</string>
+
+    <item name="tag_day" type="id"></item>
 
 </resources>

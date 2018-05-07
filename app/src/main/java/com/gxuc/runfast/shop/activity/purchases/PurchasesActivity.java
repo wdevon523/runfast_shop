@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.activity.purchases;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.fragment.DeliveryFragment;
-import com.gxuc.runfast.shop.fragment.OrderFragment;
+import com.gxuc.runfast.shop.fragment.PurchaseFragment;
 
 import java.lang.reflect.Field;
 
@@ -79,8 +80,10 @@ public class PurchasesActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fl_back_but:
+                finish();
                 break;
             case R.id.fl_right:
+                startActivity(new Intent(this, DeliveryOrderActivity.class));
                 break;
         }
     }
@@ -104,11 +107,11 @@ public class PurchasesActivity extends ToolBarActivity {
         public Fragment getItem(int position) {
             //创建Fragment并返回
             if (position == 0) {
-                return new OrderFragment();
+                return new PurchaseFragment();
             } else if (position == 1) {
                 return new DeliveryFragment();
             }
-            return new OrderFragment();
+            return new PurchaseFragment();
         }
 
         @Override

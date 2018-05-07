@@ -108,7 +108,7 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
                     if (foodBean.getIslimited() == 1) {
                         if (foodBean.getLimittype() == 0) {
                             if (selectCount == foodBean.getLimitNum()) {
-                                ToastUtil.showToast("已达到限购上线");
+                                ToastUtil.showToast("已达到限购上限");
                                 return;
                             } else {
                                 selectCount++;

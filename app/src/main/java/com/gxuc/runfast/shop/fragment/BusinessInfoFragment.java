@@ -23,6 +23,7 @@ import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
 import com.shizhefei.fragment.LazyFragment;
 
@@ -100,6 +101,7 @@ public class BusinessInfoFragment extends LazyFragment {
                     //                                          int[] grantResults)
                     // to handle the case where the user grants the permission. See the documentation
                     // for ActivityCompat#requestPermissions for more details.
+                    ToastUtil.showToast("请先开启电话权限");
                     return;
                 }
                 startActivity(intent);

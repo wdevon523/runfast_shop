@@ -1,7 +1,11 @@
 package com.gxuc.runfast.shop.adapter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +62,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
     }
 
     @Override
-    public void onBindViewHolder(OrderListViewHolder holder, int position) {
+    public void onBindViewHolder(OrderListViewHolder holder, final int position) {
 //        //将position保存在itemView的Tag中，以便点击时进行获取
         final OrderInfo orderInfo = data.get(position);
         holder.itemView.setTag(position);
@@ -121,7 +125,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             }
         });
 
-        holder.tv_order_shop_complain.setVisibility((orderInfo.getStatus() == 8 && orderInfo.getIsComent() == null) ? View.VISIBLE : View.GONE);
+//        holder.tv_order_shop_complain.setVisibility((orderInfo.getStatus() == 8 && orderInfo.getIsComent() == null) ? View.VISIBLE : View.GONE);
+        holder.tv_order_call_driver.setVisibility((orderInfo.getStatus() >= 3) ? View.VISIBLE : View.GONE);
+        holder.tv_order_call_business.setVisibility((orderInfo.getStatus() >= 2) ? View.VISIBLE : View.GONE);
         holder.tv_order_shop_complain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,6 +144,76 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             }
         });
 
+        holder.tv_order_call_business.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderInfo.getBusinessMobile()));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    ToastUtil.showToast("请先开启电话权限");
+                    return;
+                }
+                context.startActivity(intent);
+            }
+        });
+
+        holder.tv_order_call_driver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderInfo.getShopperMobile()));
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    ToastUtil.showToast("请先开启电话权限");
+                    return;
+                }
+                context.startActivity(intent);
+            }
+        });
+
+        holder.tv_order_confirm_completed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestConfirmCompleted(orderInfo.getId(), position);
+            }
+        });
+
+
+    }
+
+    private void requestConfirmCompleted(int orderId, final int position) {
+        CustomApplication.getRetrofit().receiveOrder(orderId).enqueue(new MyCallback<String>() {
+
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    ToastUtil.showToast(jsonObject.optString("msg"));
+                    if (jsonObject.optBoolean("success")) {
+                        notifyItemChanged(position);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     private void requestBuyAgain(int orderId, final int businessId) {
@@ -186,6 +262,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         TextView tv_order_shop_time;
         TextView tv_order_shop_content;
         TextView tv_order_shop_complain;
+        TextView tv_order_call_driver;
+        TextView tv_order_call_business;
+        TextView tv_order_confirm_completed;
         TextView tv_order_shop_again;
         TextView tv_order_shop_price;
         ImageView iv_order_shop;
@@ -198,6 +277,9 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             tv_order_shop_content = (TextView) itemView.findViewById(R.id.tv_order_shop_content);
             tv_order_shop_price = (TextView) itemView.findViewById(R.id.tv_order_shop_price);
             tv_order_shop_complain = (TextView) itemView.findViewById(R.id.tv_order_shop_complain);
+            tv_order_call_driver = (TextView) itemView.findViewById(R.id.tv_order_call_driver);
+            tv_order_call_business = (TextView) itemView.findViewById(R.id.tv_order_call_business);
+            tv_order_confirm_completed = (TextView) itemView.findViewById(R.id.tv_order_confirm_completed);
             tv_order_shop_again = (TextView) itemView.findViewById(R.id.tv_order_shop_again);
             iv_order_shop = (ImageView) itemView.findViewById(R.id.iv_order_shop);
         }

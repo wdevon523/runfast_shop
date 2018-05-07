@@ -238,8 +238,8 @@ public class MineFragment extends Fragment {
                 startActivity(new Intent(getContext(), ConsultationActivity.class));
                 break;
             case R.id.layout_about://关于
-                startActivity(new Intent(getContext(), AboutActivity.class));
-//                startActivity(new Intent(getContext(), PurchasesActivity.class));
+//                startActivity(new Intent(getContext(), AboutActivity.class));
+                startActivity(new Intent(getContext(), PurchasesActivity.class));
                 break;
         }
     }

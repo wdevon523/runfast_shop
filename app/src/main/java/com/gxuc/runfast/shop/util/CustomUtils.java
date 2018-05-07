@@ -212,4 +212,19 @@ public class CustomUtils {
     public static List<Activity> getActivities(){
         return activities;
     }
+
+    public static String getStatusStr(String status) {
+        if (TextUtils.equals("CREATED", status)) {
+            return "待支付";
+        } else if (TextUtils.equals("PAID", status)) {
+            return "已支付";
+        } else if (TextUtils.equals("TAKEN", status)) {
+            return "骑手接单";
+        } else if (TextUtils.equals("COMPLETED", status)) {
+            return "已完成";
+        } else if (TextUtils.equals("CANCELED", status)) {
+            return "已取消";
+        }
+        return "";
+    }
 }

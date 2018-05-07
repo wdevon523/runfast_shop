@@ -173,7 +173,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_50_dp">
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/dimen_50_dp">
 
         <TextView
             android:id="@+id/textView2"
@@ -191,7 +192,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dimen_18_dp" />
+            android:layout_marginLeft="@dimen/dimen_18_dp"
+            android:layout_toRightOf="@+id/textView2" />
     </RelativeLayout>
 
 </LinearLayout>

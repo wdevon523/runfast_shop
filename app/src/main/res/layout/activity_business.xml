@@ -327,6 +327,7 @@
             android:id="@+id/vp_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
     </LinearLayout>
 
     <include layout="@layout/layout_popup_product" />

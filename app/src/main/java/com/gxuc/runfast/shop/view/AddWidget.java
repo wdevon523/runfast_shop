@@ -79,7 +79,7 @@ public class AddWidget extends FrameLayout {
                 if (fb.getIslimited() == 1) {
                     if (fb.getLimittype() == 0) {
                         if (count == fb.getLimitNum()) {
-                            ToastUtil.showToast("已达到限购上线");
+                            ToastUtil.showToast("已达到限购上限");
                             return;
                         } else {
                             count++;

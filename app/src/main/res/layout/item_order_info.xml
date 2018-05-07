@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginLeft="@dimen/dimen_10_dp"
-    android:background="@color/white"
     android:layout_marginRight="@dimen/dimen_10_dp"
-    android:layout_marginTop="8dp">
+    android:layout_marginTop="8dp"
+    android:background="@color/white">
 
     <!--<ImageView-->
     <!--android:layout_width="match_parent"-->
@@ -135,10 +135,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:layout_marginRight="25dp"
-            android:layout_marginTop="12dp"
             android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical|end"
             android:orientation="horizontal">
 
@@ -150,7 +150,41 @@
                 android:gravity="center"
                 android:text="去评价"
                 android:textColor="@color/color_address_black"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_order_call_driver"
+                android:layout_width="92dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/text_button_background"
+                android:gravity="center"
+                android:text="联系骑手"
+                android:textColor="@color/color_address_black"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_order_call_business"
+                android:layout_width="92dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/text_button_background"
+                android:gravity="center"
+                android:text="联系商家"
+                android:textColor="@color/color_address_black"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_order_confirm_completed"
+                android:layout_width="92dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/text_button_background"
+                android:gravity="center"
+                android:text="确认收货"
+                android:textColor="@color/color_address_black"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_order_shop_again"

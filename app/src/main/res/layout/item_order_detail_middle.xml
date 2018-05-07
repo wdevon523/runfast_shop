@@ -127,7 +127,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/text_fb7d30"
+            android:textColor="@color/text_ff9f14"
             android:textSize="@dimen/dimen_14_dp" />
 
     </RelativeLayout>

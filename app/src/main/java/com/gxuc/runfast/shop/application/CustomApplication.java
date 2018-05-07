@@ -115,6 +115,10 @@ public class CustomApplication extends BaseApplication {
         return ApiServiceFactory.getApi();
     }
 
+    public static NetInterface getRetrofitPaoTui() {
+        return ApiServiceFactory.getApiPaoTui();
+    }
+
     public static Context getContext() {
         return context;
     }

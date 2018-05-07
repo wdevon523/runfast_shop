@@ -24,7 +24,7 @@
 
         <FrameLayout
             android:id="@+id/fl_back_but"
-            android:layout_width="@dimen/dimen_80_dp"
+            android:layout_width="@dimen/dimen_60_dp"
             android:layout_height="match_parent">
 
             <ImageView
@@ -39,7 +39,7 @@
 
         <FrameLayout
             android:id="@+id/fl_right"
-            android:layout_width="@dimen/dimen_80_dp"
+            android:layout_width="@dimen/dimen_60_dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true">
 

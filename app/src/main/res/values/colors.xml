@@ -409,8 +409,9 @@
     <color name="text_fb4e44">#fb4e44</color>
     <color name="text_4d89e6">#4d89e6</color>
     <color name="bg_80ffffff">#80ffffff</color>
+    <color name="bg_60000000">#60000000</color>
     <!--<color name="text_fb7d30">#fb7d30</color>-->
-    <color name="text_fb7d30">#ff9f14</color>
+    <color name="text_ff9f14">#ff9f14</color>
     <color name="text_fc9153">#fc9153</color>
     <color name="view_e5e5e5">#e5e5e5</color>
     <color name="bg_fff4ed">#fff4ed</color>

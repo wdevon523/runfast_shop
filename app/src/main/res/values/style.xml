@@ -145,11 +145,11 @@
 
     <style name="MyCustomTabLayout" parent="Widget.Design.TabLayout">
 
-        <item name="tabIndicatorColor">@color/text_fb7d30</item>
+        <item name="tabIndicatorColor">@color/text_ff9f14</item>
         <item name="tabIndicatorHeight">@dimen/dimen_2_dp</item>
         <item name="tabBackground">@color/white</item>
         <item name="tabTextAppearance">@style/MyCustomTabTextAppearance</item>
-        <item name="tabSelectedTextColor">@color/text_fb7d30</item>
+        <item name="tabSelectedTextColor">@color/text_ff9f14</item>
     </style>
 
     <!--<item name="tabMaxWidth">@dimen/dimen_150_dp</item>-->

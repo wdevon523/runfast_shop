@@ -28,6 +28,7 @@ public class IntentFlag {
 
     public static final int ORDER_ADDRESS = 0;//订单跳地址
     public static final int MANAGER_ADDRESS = 1;//地址管理跳地址
+    public static final int PURCHASE = 2;//地址管理跳地址
 
 
 

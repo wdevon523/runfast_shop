@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
@@ -128,19 +129,19 @@ public class BusinessFragment extends LazyFragment {
         tvStickyHeaderView = (TextView) stickView.findViewById(R.id.tv_header);
         recyclerView2.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-//            @Override
-//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//                super.onScrollStateChanged(recyclerView, newState);
-////                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
-////                    sIsScrolling = true;
-////                    Glide.with(getActivity()).pauseRequests();
-////                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-////                    if (sIsScrolling == true) {
-////                        Glide.with(getActivity()).resumeRequests();
-////                    }
-////                    sIsScrolling = false;
-////                }
-//            }
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING || newState == RecyclerView.SCROLL_STATE_SETTLING) {
+                    sIsScrolling = true;
+                    Glide.with(getActivity()).pauseRequests();
+                } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (sIsScrolling == true) {
+                        Glide.with(getActivity()).resumeRequests();
+                    }
+                    sIsScrolling = false;
+                }
+            }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

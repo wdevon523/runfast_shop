@@ -79,7 +79,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="-1dp"
-                    android:background="@color/text_fb7d30"
+                    android:background="@color/text_ff9f14"
                     android:paddingBottom="@dimen/dimen_2_dp"
                     android:paddingLeft="@dimen/dimen_5_dp"
                     android:paddingRight="@dimen/dimen_5_dp"
@@ -97,7 +97,7 @@
                     android:paddingLeft="@dimen/dimen_5_dp"
                     android:paddingRight="@dimen/dimen_5_dp"
                     android:paddingTop="@dimen/dimen_2_dp"
-                    android:textColor="@color/text_fb7d30"
+                    android:textColor="@color/text_ff9f14"
                     android:textSize="@dimen/dimen_10_dp"
                     android:visibility="gone" />
 

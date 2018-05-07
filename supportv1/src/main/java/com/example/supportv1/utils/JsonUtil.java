@@ -46,15 +46,26 @@ public class JsonUtil {
     }
 
     /**
+     * json字符串转成对象
+     * @param str
+     * @param type
+     * @return
+     */
+    public static <T> T fromJson(String str, Class<T> type) {
+        Gson gson = new Gson();
+        return gson.fromJson(str, type);
+    }
+
+    /**
      * 将json转换成对象
      *
-     * @param json     传入的Gson对象
-     * @param classOfT 要转换的类型名
+     * @param str     传入的Gson对象
+     * @param type 要转换的类型名
      * @return 转换后的对象
      */
-    public static <T> T json2Object(String json, Type classOfT) {
+    public static <T> T fromJson(String str, Type type) {
         Gson gson = new Gson();
-        return gson.fromJson(json, classOfT);
+        return gson.fromJson(str, type);
     }
 
     /**

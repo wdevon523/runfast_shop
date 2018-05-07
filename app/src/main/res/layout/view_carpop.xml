@@ -31,7 +31,7 @@
                 <View
                     android:layout_width="4dp"
                     android:layout_height="16dp"
-                    android:background="@color/text_fb7d30" />
+                    android:background="@color/text_ff9f14" />
 
                 <TextView
                     android:layout_width="0dp"

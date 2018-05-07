@@ -174,7 +174,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_44_dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/text_fb7d30"
+        android:background="@color/text_ff9f14"
         android:gravity="center"
         android:text="@string/publish"
         android:textColor="@color/white"

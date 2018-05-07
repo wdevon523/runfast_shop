@@ -307,6 +307,16 @@
             android:screenOrientation="portrait" />
 
         <activity
+            android:name=".activity.purchases.DeliveryOrderActivity"
+            android:label="跑腿代购订单"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.purchases.DeliveryOrderDetailActivity"
+            android:label="订单详情"
+            android:screenOrientation="portrait" />
+
+        <activity
             android:name=".activity.BusinessLicenceActivity"
             android:label="营业资质"
             android:screenOrientation="portrait" />

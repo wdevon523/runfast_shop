@@ -10,9 +10,13 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -148,5 +152,53 @@ public class SystemUtil {
         }
         return false;
     }
+
+    public static void hideSoftKeyboard(View view) {
+        if (view == null) return;
+        View mFocusView = view;
+
+//        Context context = view.getContext();
+//        if (context != null && context instanceof Activity) {
+//            Activity activity = ((Activity) context);
+//            mFocusView = activity.getCurrentFocus();
+//        }
+//        if (mFocusView == null) return;
+//        mFocusView.clearFocus();
+        InputMethodManager manager = (InputMethodManager) mFocusView.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromWindow(mFocusView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    public static void showSoftKeyboard(View view) {
+        if (view == null) return;
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        if (!view.isFocused()) view.requestFocus();
+
+        InputMethodManager inputMethodManager = (InputMethodManager) view.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(view, 0);
+    }
+
+    public static final String DATE_FORMAT= "yyyy-MM-dd HH:mm:ss";
+
+    public static String getNowDateFormat() {
+        final Date currentTime = new Date();
+        final SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
+        return formatter.format(currentTime);
+    }
+
+    public static String getTime(long l) {
+        String date = YYYYMMDDHHMMSS.get().format(new Date(l));
+        return date;
+    }
+
+    private final static ThreadLocal<SimpleDateFormat> YYYYMMDDHHMMSS = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        }
+    };
+
 
 }

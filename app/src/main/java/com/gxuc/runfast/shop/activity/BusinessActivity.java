@@ -786,7 +786,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         try {
             foodBeens.clear();
             types.clear();
-           int adPosition = 0;
+            int adPosition = 0;
             JSONObject object = new JSONObject(data);
             packing = object.optString("packing");
             if (TextUtils.isEmpty(packing) || TextUtils.equals("null", packing)) {
@@ -930,6 +930,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         foodSpecBean.setIsCommand(foodBeens.get(i).getIsCommand());
                         foodSpecBean.setPrice(new BigDecimal(shoppingCartInfo.shoppings.get(j).price));
                         foodSpecBean.setDisprice(shoppingCartInfo.shoppings.get(j).disprice != null ? shoppingCartInfo.shoppings.get(j).disprice : "0");
+//                        foodSpecBean.setDisprice(foodBeens.get(j).getDisprice() != null ? foodBeens.get(j).getDisprice() : "0");
                         foodSpecBean.setIcon(foodBeens.get(i).getIcon());
                         foodSpecBean.setCut(foodBeens.get(i).getCut());
                         foodSpecBean.setType(foodBeens.get(i).getType());
@@ -1173,7 +1174,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 //                trolley.setGoodsSellStandardId(mFoodBean.getGoodsSpecId());
 //            }
             String optionId = "";
-            if (!TextUtils.isEmpty(mFoodBean.getGoodsSellOptionId()) && mFoodBean.getGoodsSellOptionId() != null) {
+            if (!TextUtils.isEmpty(mFoodBean.getGoodsSellOptionId()) && mFoodBean.getGoodsSellOptionId() != null && !TextUtils.equals("0", mFoodBean.getGoodsSellOptionId())) {
                 optionId = mFoodBean.getGoodsSellOptionId();
             }
             if (!TextUtils.isEmpty(mFoodBean.getOptionIds()) && mFoodBean.getOptionIds() != null) {
@@ -1699,7 +1700,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                             if (fbSpec.getIslimited() == 1) {
                                 if (fbSpec.getLimittype() == 0) {
                                     if (fbSpec.getSelectCount() + specNum > fbSpec.getLimitNum()) {
-                                        ToastUtil.showToast("已达到限购上线");
+                                        ToastUtil.showToast("已达到限购上限");
                                         return;
                                     } else {
                                         foodBeanTwo.setSelectCount(fbSpec.getSelectCount() + specNum);

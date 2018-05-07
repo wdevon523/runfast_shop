@@ -496,4 +496,43 @@ public class UrlConstant {
 
 
     public static final String WEIXIN_LOGIN = "sns/oauth2/access_token";
+
+    /**
+     * 递交订单（代购）
+     */
+    public static final String PURCHASE = "user/order/confirm";
+
+    /**
+     * 获取跑腿代购订单列表
+     */
+    public static final String DELIVERY_ORDER = "user/order/list";
+
+    /**
+     * 获取跑腿代购订单详情
+     */
+    public static final String DELIVERY_ORDER_DETAIL = "user/order/detail";
+
+    /**
+     * 删除跑腿代购订单
+     */
+    public static final String DELETE_DELIVERY_ORDER = "user/order/delete";
+    /**
+     * 取消跑腿代购订单
+     */
+    public static final String CANCEL_DELIVERY_ORDER = "user/order/cancel";
+
+    /**
+     * 获取跑腿代购订单状态列表
+     */
+    public static final String DELIVERY_ORDER_STATUS = "user/order/status";
+
+    /**
+     * 根据填写的订单获取配送信息
+     */
+    public static final String DELIVERY_ORDER_INFO = "user/order/fillIn";
+
+    /**
+     * 根据填写的订单获取配送信息
+     */
+    public static final String PAO_TUI_PAY = "user/pay/prepay";
 }
