@@ -1198,4 +1198,46 @@ public interface NetInterface {
     Call<String> paoTuiPay(@Field("orderNo") String orderNo,
                            @Field("channel") String channel);
 
+    /**
+     * 跑腿支付
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.QUERY_PAOTUI_STATUS)
+    Call<String> queryPaoTuiStatus(@Field("orderNo") String orderNo);
+
+    /**
+     * 获取当前所属代理商
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_AGENT)
+    Call<String> getAgent(@Field("userLng") double userLng,
+                                   @Field("userLat") double userLat);
+
+    /**
+     * 统一获取获取代理商促销信息
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_HOME_ACT)
+    Call<String> getHomeAct(@Field("agentId") String agenId);
+
+    /**
+     * 获取附近商家列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_NEAR_BY_BUSINESS)
+    Call<String> getNearByBusiness(@Field("agentId") String agenId,
+                                   @Field("userLng") double userLng,
+                                   @Field("userLat") double userLat,
+                                   @Field("sorting") int sorting,
+                                   @Field("activityType") String activityType,
+                                   @Field("catalogId") String catalogId);
+
 }

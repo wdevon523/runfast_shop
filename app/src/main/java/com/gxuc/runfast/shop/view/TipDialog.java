@@ -4,6 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +89,25 @@ public class TipDialog extends Dialog implements View.OnClickListener {
         etOrtherTip.setText("");
         etOrtherTip.clearFocus();
         etOrtherTip.setCursorVisible(false);
+        etOrtherTip.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s) && Integer.valueOf(s.toString().trim()) > 200) {
+                    etOrtherTip.setText("200");
+                    etOrtherTip.setSelection(etOrtherTip.getText().length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -148,6 +170,7 @@ public class TipDialog extends Dialog implements View.OnClickListener {
             etOrtherTip.requestFocus();
             SystemUtil.showSoftKeyboard(etOrtherTip);
         } else {
+            etOrtherTip.setText("");
             SystemUtil.hideSoftKeyboard(etOrtherTip);
         }
         etOrtherTip.setCursorVisible(isOrder);

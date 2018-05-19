@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
+import com.gxuc.runfast.shop.activity.purchases.DeliveryOrderDetailActivity;
 import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
@@ -36,6 +37,7 @@ public class PaySuccessActivity extends ToolBarActivity {
     private double price;
     private String businessName;
     private String logo;
+    private boolean isPaotui;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,18 +59,26 @@ public class PaySuccessActivity extends ToolBarActivity {
         price = getIntent().getDoubleExtra("price", 0);
         businessName = getIntent().getStringExtra("businessName");
         logo = getIntent().getStringExtra("logo");
+        isPaotui = getIntent().getBooleanExtra("isPaotui", false);
 
-        x.image().bind(ivBusinessAvater,  UrlConstant.ImageBaseUrl + logo);
+        x.image().bind(ivBusinessAvater, UrlConstant.ImageBaseUrl + logo);
         tvPayBusinessName.setText(businessName);
         tvPayPrice.setText("¥" + (price));
     }
 
     @OnClick(R.id.tv_pay_finish)
     public void onViewClicked() {
-        Intent intent = new Intent(this, OrderDetailActivity.class);
-        intent.putExtra("orderId", orderId);
-        intent.putExtra("isFromePayFinish", true);
-        startActivity(intent);
-        finish();
+        if (isPaotui) {
+            Intent intent = new Intent(this, DeliveryOrderDetailActivity.class);
+            intent.putExtra("orderId", orderId);
+            startActivity(intent);
+            finish();
+        } else {
+            Intent intent = new Intent(this, OrderDetailActivity.class);
+            intent.putExtra("orderId", orderId);
+            intent.putExtra("isFromePayFinish", true);
+            startActivity(intent);
+            finish();
+        }
     }
 }

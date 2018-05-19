@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.supportv1.utils.JsonUtil;
-import com.example.supportv1.utils.LogUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -84,7 +83,7 @@ public class DeliveryOrderActivity extends ToolBarActivity {
             return;
         }
 
-        CustomApplication.getRetrofitPaoTui().getDeliveryOrder(currentPage, 10).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDeliveryOrder(currentPage, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

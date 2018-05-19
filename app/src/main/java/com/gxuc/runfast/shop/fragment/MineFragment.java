@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
+import com.gxuc.runfast.shop.activity.SubmitOrderActivity;
 import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AboutActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
@@ -131,8 +132,11 @@ public class MineFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         viewNewVersion.setVisibility(CustomApplication.isNeedUpdate ? View.VISIBLE : View.GONE);
-        if (!hidden && userInfo != null) {
-            requestGetUserInfo();
+//        if (!hidden && userInfo != null) {
+//            requestGetUserInfo();
+//        }
+        if (!hidden) {
+            initData();
         }
     }
 
@@ -239,7 +243,8 @@ public class MineFragment extends Fragment {
                 break;
             case R.id.layout_about://关于
 //                startActivity(new Intent(getContext(), AboutActivity.class));
-                startActivity(new Intent(getContext(), PurchasesActivity.class));
+//                startActivity(new Intent(getContext(), PurchasesActivity.class));
+                startActivity(new Intent(getContext(), SubmitOrderActivity.class));
                 break;
         }
     }

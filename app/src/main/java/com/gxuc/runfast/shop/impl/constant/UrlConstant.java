@@ -14,8 +14,8 @@ public class UrlConstant {
     public static final String HOST = ApiServiceFactory.HOST;
     public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
-    public static final String ImageBaseUrl = "http://image.gxptkc.com";
-//    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
+//    public static final String ImageBaseUrl = "http://image.gxptkc.com";
+    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
 
     public static final String ImageHeadBaseUrl = "http://image.gxptkc.com/";
 
@@ -535,4 +535,24 @@ public class UrlConstant {
      * 根据填写的订单获取配送信息
      */
     public static final String PAO_TUI_PAY = "user/pay/prepay";
+
+    /**
+     * 查询跑腿订单状态
+     */
+    public static final String QUERY_PAOTUI_STATUS = "user/pay/orderQuery";
+
+    /**
+     * 获取当前所属代理商
+     */
+    public static final String GET_AGENT = "user/wm/home/agent";
+
+    /**
+     * 统一获取获取代理商促销信息
+     */
+    public static final String GET_HOME_ACT = "user/wm/home/page";
+
+    /**
+     * 获取附近商家列表
+     */
+    public static final String GET_NEAR_BY_BUSINESS = "user/wm/home/businessNearBy";
 }

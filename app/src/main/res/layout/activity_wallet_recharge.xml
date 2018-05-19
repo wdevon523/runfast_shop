@@ -21,7 +21,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_wallet_white"
+            android:background="@color/bg_fbfbfb"
             android:paddingBottom="20dp"
             android:paddingTop="20dp">
 

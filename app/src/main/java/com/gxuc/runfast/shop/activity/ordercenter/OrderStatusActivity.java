@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.supportv1.utils.JsonUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -66,7 +65,7 @@ public class OrderStatusActivity extends ToolBarActivity {
     }
 
     private void requestDeliveryOrderStatus() {
-        CustomApplication.getRetrofitPaoTui().getDeliveryOrderStatus(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDeliveryOrderStatus(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

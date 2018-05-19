@@ -148,7 +148,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:gravity="center_vertical"
+        android:gravity="center_vertical|right"
         android:orientation="horizontal">
 
         <TextView
@@ -171,7 +171,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="优惠 "
+            android:text="已优惠 "
             android:textColor="@color/color_text_gray"
             android:textSize="13sp" />
 
@@ -179,36 +179,31 @@
             android:id="@+id/tv_order_detail_coupon_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dimen_15_dp"
             android:textColor="@color/color_text_gray"
             android:textSize="13sp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tv_order_detail_sub_price"
+            android:includeFontPadding="false"
+            android:text="合计 "
+            android:textColor="@color/color_address_black"
+            android:textSize="13sp" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_order_detail_sub_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:includeFontPadding="false"
+            android:textColor="@color/color_balance_price"
+            android:textSize="20dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/tv_order_detail_sub_price"
-                android:includeFontPadding="false"
-                android:text="合计 "
-                android:textColor="@color/color_address_black"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/tv_order_detail_sub_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:includeFontPadding="false"
-                android:textColor="@color/color_balance_price"
-                android:textSize="20dp" />
-
-        </RelativeLayout>
     </LinearLayout>
 
     <RelativeLayout

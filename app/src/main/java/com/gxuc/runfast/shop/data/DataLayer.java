@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.data;
 
 import android.app.Application;
 import android.support.v4.util.SimpleArrayMap;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.gxuc.runfast.shop.BuildConfig;
@@ -173,8 +174,11 @@ public final class DataLayer {
         private Request addParam(Request oldRequest) {
 
             Headers.Builder builder = oldRequest.headers()
-                    .newBuilder()
-                    .add("token", SharePreferenceUtil.getInstance().getStringValue("token"));
+                    .newBuilder();
+//                    .add("token", SharePreferenceUtil.getInstance().getStringValue("token"));
+            if (!TextUtils.isEmpty(SharePreferenceUtil.getInstance().getStringValue("token"))){
+                builder.add("token", SharePreferenceUtil.getInstance().getStringValue("token"));
+            }
 
             Request newRequest = oldRequest.newBuilder()
                     .method(oldRequest.method(), oldRequest.body())

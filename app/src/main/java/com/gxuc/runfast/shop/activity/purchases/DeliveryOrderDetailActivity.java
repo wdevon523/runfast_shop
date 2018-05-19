@@ -92,7 +92,7 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
 
     private void requesrDeliveryOrderDetail() {
 
-        CustomApplication.getRetrofitPaoTui().getDeliveryOrderDetail(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDeliveryOrderDetail(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -128,8 +128,8 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
         tvSendName.setText(deliveryOrderDetailInfo.toName);
         tvSendMobile.setText(deliveryOrderDetailInfo.toMobile);
         tvDeliveryPrice.setText("¥ " + deliveryOrderDetailInfo.deliveryCost);
-        tvTotalPrice.setText("总计 ¥" + deliveryOrderDetailInfo.amountPayable);
-        tvActualPay.setText("实付 ¥" + deliveryOrderDetailInfo.amountPaid);
+        tvTotalPrice.setText("总计 ¥" + Integer.valueOf(deliveryOrderDetailInfo.amountPayable) / 100);
+        tvActualPay.setText("实付 ¥" + (TextUtils.isEmpty(deliveryOrderDetailInfo.amountPaid) ? "0" : Integer.valueOf(deliveryOrderDetailInfo.amountPaid) / 100));
         tvExpectedTime.setText(deliveryOrderDetailInfo.pickTime);
         tvDeliveryDistance.setText(deliveryOrderDetailInfo.distance + "米");
 //        tvDeliveryDriver.setText(deliveryOrderDetailInfo.);

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
-            android:background="@color/color_wallet_white">
+            android:background="@color/bg_fbfbfb">
             <TextView
                 android:id="@+id/tv_recharge_detail"
                 android:layout_width="wrap_content"

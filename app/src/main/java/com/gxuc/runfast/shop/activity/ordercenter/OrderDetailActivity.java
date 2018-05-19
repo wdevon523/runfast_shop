@@ -111,8 +111,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     TextView mTvOrderDetailSubPrice;
     @BindView(R.id.tv_order_detail_deliver_type)
     TextView mTvOrderDetailDeliverType;
-    @BindView(R.id.rl_order_detail_deliver_time)
-    RelativeLayout mRlOrderDetailDeliverTime;
+    @BindView(R.id.ll_order_detail_deliver_time)
+    LinearLayout mLlOrderDetailDeliverTime;
     @BindView(R.id.tv_order_detail_deliver_time)
     TextView mTvOrderDetailDeliverTime;
     @BindView(R.id.tv_order_detail_man_info)
@@ -121,8 +121,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     TextView mTvOrderDetailManPhone;
     @BindView(R.id.tv_order_detail_number)
     TextView mTvOrderDetailNumber;
-    @BindView(R.id.rl_order_detail_pay_type)
-    RelativeLayout mRlOrderDetailPatType;
+    @BindView(R.id.ll_order_detail_pay_type)
+    LinearLayout mLlOrderDetailPatType;
     @BindView(R.id.tv_order_detail_pat_type)
     TextView mTvOrderDetailPatType;
     @BindView(R.id.tv_order_detail_remark)
@@ -135,6 +135,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     TextView tvOrderDetailPackaging;
     @BindView(R.id.tv_order_detail_coupons)
     TextView tvOrderDetailCoupons;
+    @BindView(R.id.tv_order_detail_creat_time)
+    TextView tvOrderDetailCreatTime;
     @BindView(R.id.iv_driver_avater)
     CircleImageView ivDriverAvater;
     @BindView(R.id.tv_driver_name)
@@ -347,7 +349,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         // 设置Marker点击之后显示的标题
         // 设置Marker的图标样式
 //        markerOptionsBusiness.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_shop_car));
-        markerOptionsUser.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location));
+        markerOptionsUser.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_refresh_location));
         // 设置Marker是否可以被拖拽，
         markerOptionsUser.draggable(false);
         // 设置Marker的可见性
@@ -536,20 +538,21 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.goodsSellRecord.packing);
         tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.goodsSellRecord.yhprice);
         mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.goodsSellRecord.disprice == null ? 0 : orderDetailInfo.goodsSellRecord.disprice));
-        mTvOrderDetailCouponPrice.setText("-¥ " + orderDetailInfo.goodsSellRecord.activityprice);
+        mTvOrderDetailCouponPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.activityprice);
         mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.totalpay);
         mTvOrderDetailDeliverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
+        tvOrderDetailCreatTime.setText(orderDetailInfo.goodsSellRecord.createTime);
         if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.readyTime) || !TextUtils.equals(orderDetailInfo.goodsSellRecord.readyTime, "null")) {
             mTvOrderDetailDeliverTime.setText(orderDetailInfo.goodsSellRecord.disTime);
-            mRlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
+            mLlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
         } else {
-            mRlOrderDetailDeliverTime.setVisibility(View.GONE);
+            mLlOrderDetailDeliverTime.setVisibility(View.GONE);
         }
         mTvOrderDetailManInfo.setText(orderDetailInfo.goodsSellRecord.userAddress + orderDetailInfo.goodsSellRecord.address);
         mTvOrderDetailManPhone.setText(orderDetailInfo.goodsSellRecord.userName + "  " + orderDetailInfo.goodsSellRecord.userMobile);
         mTvOrderDetailNumber.setText(orderDetailInfo.goodsSellRecord.orderCode);
         if (orderDetailInfo.goodsSellRecord.isPay == 1) {
-            mRlOrderDetailPatType.setVisibility(View.VISIBLE);
+            mLlOrderDetailPatType.setVisibility(View.VISIBLE);
             if (orderDetailInfo.goodsSellRecord.payType == 0) {
                 mTvOrderDetailPatType.setText("支付宝");
             } else if (orderDetailInfo.goodsSellRecord.payType == 1) {
@@ -558,7 +561,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 mTvOrderDetailPatType.setText("钱包");
             }
         } else {
-            mRlOrderDetailPatType.setVisibility(View.GONE);
+            mLlOrderDetailPatType.setVisibility(View.GONE);
         }
         mTvOrderDetailRemark.setText(orderDetailInfo.goodsSellRecord.content);
     }

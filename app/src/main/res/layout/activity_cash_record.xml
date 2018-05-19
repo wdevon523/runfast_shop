@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/color_wallet_white"
+    android:background="@color/bg_fbfbfb"
     tools:context=".activity.usercenter.CashRecordActivity">
 
     <include layout="@layout/layout_title"/>

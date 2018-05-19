@@ -199,7 +199,7 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
 
     private void requestCancelDeliveryOrder(int orderId) {
 
-        CustomApplication.getRetrofitPaoTui().cancelDeliveryOrder(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().cancelDeliveryOrder(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -227,7 +227,7 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
     }
 
     private void requestDeleteDeliveryOrder(int orderId, final int position) {
-        CustomApplication.getRetrofitPaoTui().deleteDeliveryOrder(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().deleteDeliveryOrder(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

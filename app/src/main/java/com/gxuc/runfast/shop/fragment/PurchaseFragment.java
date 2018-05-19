@@ -142,12 +142,14 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
                 llChooseDestination.setBackgroundResource(R.drawable.round_biankuang_fc9153);
                 tvBuyNearby.setBackgroundResource(R.drawable.round_biankuang_cccccc);
                 rlDestination.setVisibility(View.VISIBLE);
+                requestPurchaseInfo(TextUtils.equals(fromType, "SPECIFIED"));
                 break;
             case R.id.tv_buy_nearby:
                 fromType = "NEARBY";
                 llChooseDestination.setBackgroundResource(R.drawable.round_biankuang_cccccc);
                 tvBuyNearby.setBackgroundResource(R.drawable.round_biankuang_fc9153);
                 rlDestination.setVisibility(View.GONE);
+                requestPurchaseInfo(TextUtils.equals(fromType, "SPECIFIED"));
                 break;
             case R.id.tv_destination:
                 Intent intent = new Intent(getContext(), AddressManagerActivity.class);
@@ -227,7 +229,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
 
-        CustomApplication.getRetrofitPaoTui().getPurchaseOrderInfo(fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0,
+        CustomApplication.getRetrofitNew().getPurchaseOrderInfo(fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0,
                 destinationAddr, goodsDescription, addressInfo.getId(), "DAIGOU", lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -260,7 +262,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
 
     private void requestConfirmPurchase(boolean iSspecified) {
 
-        CustomApplication.getRetrofitPaoTui().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, "DAIGOU", tip, addressInfo.getId(), lng, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, "DAIGOU", tip, addressInfo.getId(), lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

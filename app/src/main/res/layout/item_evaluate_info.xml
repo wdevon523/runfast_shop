@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:rb="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/color_white"
@@ -48,16 +48,16 @@
             </LinearLayout>
 
 
-            <com.willy.ratingbar.ScaleRatingBar
+            <com.willy.ratingbar.BaseRatingBar
                 android:id="@+id/rb_order_evaluate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/dimen_5_dp"
                 android:layout_marginTop="@dimen/dimen_5_dp"
-                rb:drawableEmpty="@drawable/icon_unselected"
-                rb:drawableFilled="@drawable/icon_selected"
-                rb:numStars="5"
-                rb:starPadding="1dp" />
+                app:srb_drawableEmpty="@drawable/icon_unselected"
+                app:srb_drawableFilled="@drawable/icon_selected"
+                app:srb_numStars="5"
+                app:srb_starPadding="1dp" />
 
             <TextView
                 android:id="@+id/tv_content"

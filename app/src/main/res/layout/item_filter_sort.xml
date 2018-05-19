@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_filter_sort_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_40_dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/dimen_10_dp"
+        android:textColor="@color/text_666666"
+        android:textSize="@dimen/dimen_13_dp" />
+
+</LinearLayout>

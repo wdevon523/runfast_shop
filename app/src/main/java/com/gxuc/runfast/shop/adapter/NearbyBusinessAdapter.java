@@ -26,7 +26,7 @@ import com.gxuc.runfast.shop.view.recyclerview.HorizontalPageLayoutManager;
 import com.gxuc.runfast.shop.view.recyclerview.PagingScrollHelper;
 import com.jude.rollviewpager.RollPagerView;
 import com.willy.ratingbar.RotationRatingBar;
-import com.willy.ratingbar.ScaleRatingBar;
+import com.willy.ratingbar.BaseRatingBar;
 
 import org.xutils.x;
 
@@ -114,7 +114,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
             businessHolder.tv_business_name.setText(businessInfos.name);
             businessHolder.tv_business_levelId.setText(String.valueOf(businessInfos.levelId));
             businessHolder.rb_order_evaluate.setRating(businessInfos.levelId);
-            businessHolder.rb_order_evaluate.setTouchable(false);
+            businessHolder.rb_order_evaluate.setClickable(false);
             businessHolder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfos.distance)) + "km");
             businessHolder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfos.salesnum) + "单");
             businessHolder.tv_sale_startPay.setText(businessInfos.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfos.startPay));
@@ -271,7 +271,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
 
         LinearLayout ll_contain_act, layout_breakfast_item, ll_business_open, ll_business_close;
 
-        ScaleRatingBar rb_order_evaluate;
+        BaseRatingBar rb_order_evaluate;
 
         View view_close;
 
@@ -289,7 +289,7 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
             iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
             iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
 
-            rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+            rb_order_evaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
             ll_business_open = (LinearLayout) itemView.findViewById(R.id.ll_business_open);
             ll_business_close = (LinearLayout) itemView.findViewById(R.id.ll_business_close);

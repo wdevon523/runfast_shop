@@ -13,7 +13,7 @@ import com.gxuc.runfast.shop.bean.enshrien.Enshrine;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.willy.ratingbar.ScaleRatingBar;
+import com.willy.ratingbar.BaseRatingBar;
 
 import org.xutils.x;
 
@@ -63,7 +63,7 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
 //            holder.tvSalePrice.setText(enshrine.baseCharge == NaN ? "配送费¥0" : "配送费¥" + String.valueOf(enshrine.baseCharge));
             holder.tvSalePrice.setText("配送费¥" + enshrine.startPay);
             holder.rbOrderEvaluate.setRating(enshrine.levelId);
-            holder.rbOrderEvaluate.setTouchable(false);
+            holder.rbOrderEvaluate.setClickable(false);
 //            holder.tvSaleTime.setText(enshrine.speed);
 //            if (enshrine.isDeliver == 0) {
 //                holder.ivCharge.setVisibility(View.VISIBLE);
@@ -114,7 +114,7 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
         //活动页
         public LinearLayout layoutSubPrice, layoutDiscount;
         public TextView tvSubPrice, tvDiscount;
-        public ScaleRatingBar rbOrderEvaluate;
+        public BaseRatingBar rbOrderEvaluate;
 
         public EnshrineViewHolder(View itemView) {
             super(itemView);
@@ -132,7 +132,7 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
             tvSalePrice = (TextView) itemView.findViewById(R.id.tv_sale_price);
             tvSubPrice = (TextView) itemView.findViewById(R.id.tv_sub_price);
             tvDiscount = (TextView) itemView.findViewById(R.id.tv_discount);
-            rbOrderEvaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+            rbOrderEvaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
             layoutSubPrice = (LinearLayout) itemView.findViewById(R.id.layout_sub_price);
             layoutDiscount = (LinearLayout) itemView.findViewById(R.id.layout_discount);

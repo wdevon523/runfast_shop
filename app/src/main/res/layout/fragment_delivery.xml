@@ -481,7 +481,8 @@
                     android:layout_marginLeft="@dimen/dimen_28_dp"
                     android:background="@null"
                     android:hint="@string/remark_default"
-                    android:textColor="@color/bg_44be99"
+                    android:maxLines="1"
+                    android:textColor="@color/text_999999"
                     android:textSize="@dimen/dimen_12_dp" />
 
             </LinearLayout>
@@ -650,7 +651,6 @@
         </LinearLayout>
 
     </RelativeLayout>
-
 
 
 </RelativeLayout>

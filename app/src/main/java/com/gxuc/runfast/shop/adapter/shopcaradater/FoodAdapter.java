@@ -16,6 +16,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.bean.FoodBean;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.R;

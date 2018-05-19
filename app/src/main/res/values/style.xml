@@ -160,4 +160,20 @@
         <item name="textAllCaps">true</item>
     </style>
 
+    <style name="CustomTheme" parent="DefaultCityPickerTheme">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <!--<item name="cpCancelTextColor">@color/bg_fba42a</item>-->
+        <!--<item name="cpSearchCursorDrawable">@color/bg_fba42a</item>-->
+        <!--<item name="cpIndexBarNormalTextColor">@color/bg_fba42a</item>-->
+        <!--<item name="cpIndexBarSelectedTextColor">@color/bg_fba42a</item>-->
+        <item name="cpSectionHeight">@dimen/dimen_36_dp</item>
+        <!--<item name="cpOverlayBackground">@color/bg_fba42a</item>-->
+    </style>
+
+    <style name="CustomAnim">
+        <item name="android:windowEnterAnimation">@anim/custom_push_down_in</item>
+        <item name="android:windowExitAnimation">@anim/custom_push_up_out</item>
+    </style>
+
 </resources>

@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.util.List;
 
@@ -68,9 +69,9 @@ public class HourMinuteChooseAdapter extends RecyclerView.Adapter implements Vie
     public void onClick(View v) {
         if (listener != null) {
             //注意这里使用getTag方法获取position
-            listener.onItemClick(v, (int) v.getTag());
-            clickPosition = (int) v.getTag();
             clickDay = v.getTag(R.id.tag_day).toString();
+            clickPosition = (int) v.getTag();
+            listener.onItemClick(v, clickPosition, clickDay);
             notifyDataSetChanged();
         }
     }
@@ -90,6 +91,6 @@ public class HourMinuteChooseAdapter extends RecyclerView.Adapter implements Vie
 
     //define interface
     public interface OnHourMinuteChooseClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, String clickDay);
     }
 }

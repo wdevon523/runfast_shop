@@ -32,4 +32,11 @@
         <attr name="isint" format="boolean"/>
     </declare-styleable>
 
+    <declare-styleable name="IndicatorView">
+        <attr name="indicatorColor" format="color"/>
+        <attr name="indicatorColorSelected" format="color"/>
+        <attr name="indicatorWidth" format="integer"/>
+        <attr name="indicatorGravity" format="integer"/>
+    </declare-styleable>
+
 </resources>

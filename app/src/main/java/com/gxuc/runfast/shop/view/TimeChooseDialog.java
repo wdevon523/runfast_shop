@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +17,7 @@ import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.adapter.HourMinuteChooseAdapter;
 import com.gxuc.runfast.shop.util.SystemUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +35,7 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
     private RecyclerView recyclerHourMinute;
     private LinearLayoutManager linearLayoutManager;
     private String day = "TODAY";
+    private String clickDay;
     private String hourMinute;
     private HourMinuteChooseAdapter hourMinuteChooseAdapter;
 
@@ -46,11 +49,14 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_cancel:
-                hourMinute = "";
                 dismiss();
-                listener.onTimeDialogClick("", hourMinute);
+                listener.onTimeDialogClick("", "");
                 break;
             case R.id.tv_sure:
+                if (!TextUtils.equals(day, clickDay)) {
+                    ToastUtil.showToast("请选择时间");
+                    return;
+                }
                 dismiss();
                 listener.onTimeDialogClick(day, hourMinute);
                 break;
@@ -70,8 +76,9 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position, String clickDay) {
         hourMinute = timesList.get(position);
+        this.clickDay = clickDay;
     }
 
     public interface OnTimeDialogClickListener {
@@ -125,7 +132,7 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
                 }
             }
         }
-        hourMinuteChooseAdapter.setList(timesList,day);
+        hourMinuteChooseAdapter.setList(timesList, day);
     }
 
     private void initTodayTime() {
@@ -147,6 +154,6 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
                 }
             }
         }
-        hourMinuteChooseAdapter.setList(timesList,day);
+        hourMinuteChooseAdapter.setList(timesList, day);
     }
 }

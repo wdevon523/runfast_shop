@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.gxuc.runfast.shop.BuildConfig;
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.fragment.HomeFragment;
 import com.gxuc.runfast.shop.fragment.MessageFragment;
 import com.gxuc.runfast.shop.fragment.MineFragment;
 import com.gxuc.runfast.shop.fragment.OrderFragment;
@@ -208,7 +209,8 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         mFragments = new ArrayList<>();
         FragmentManager manager = getSupportFragmentManager();
         if (savedInstanceState == null) {
-            Fragment fragment = new TakeOutFoodFragment();
+//            Fragment fragment = new TakeOutFoodFragment();
+            Fragment fragment = new HomeFragment();
             mFragments.add(fragment);
             fragment = new MessageFragment();
             mFragments.add(fragment);

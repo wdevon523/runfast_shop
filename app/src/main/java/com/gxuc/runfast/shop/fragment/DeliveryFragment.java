@@ -231,7 +231,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
 
     private void requestsubmitOrder() {
         String remark = etRemark.getText().toString();
-        CustomApplication.getRetrofitPaoTui().submitOrder(goodsType, goodsWeight, pickTime,
+        CustomApplication.getRetrofitNew().submitOrder(goodsType, goodsWeight, pickTime,
                 addressInfoFrom.getId(), addressInfoTo.getId(), "QUSONGJIAN", tip, lng, lat, remark).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -269,7 +269,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
 
-        CustomApplication.getRetrofitPaoTui().getDeliveryOrderInfo(goodsType, goodsWeight, pickTime, addressInfoFrom.getId(), addressInfoTo.getId(), "QUSONGJIAN", lng, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDeliveryOrderInfo(goodsType, goodsWeight, pickTime, addressInfoFrom.getId(), addressInfoTo.getId(), "QUSONGJIAN", lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -334,6 +334,11 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
 
     @Override
     public void onTimeDialogClick(String day, String hourMinute) {
+        if (TextUtils.isEmpty(day)) {
+            pickTime = SystemUtil.getNowDateFormat();
+            tvChooseTime.setText("立即取件");
+            return;
+        }
         if (TextUtils.equals("TODAY", day)) {
             String nowDateFormat = SystemUtil.getNowDateFormat();
             String data = nowDateFormat.substring(0, 11);

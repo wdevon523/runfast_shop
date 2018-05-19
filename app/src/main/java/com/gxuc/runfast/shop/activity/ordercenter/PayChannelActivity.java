@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -15,7 +14,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.WeiXinPayInfo;
-import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -35,11 +32,9 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.WeiXinPayBean;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.util.GsonUtil;
-import com.gxuc.runfast.shop.util.MD5Util;
 import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
-import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 
 import org.json.JSONException;
@@ -98,7 +93,11 @@ public class PayChannelActivity extends ToolBarActivity {
     protected void onResume() {
         super.onResume();
         if (isPayBack) {
-            requsetCheckPayStatus();
+            if (isPaotui) {
+                requestQueryPaoTuiStatus();
+            } else {
+                requsetCheckPayStatus();
+            }
         }
 
     }
@@ -175,6 +174,38 @@ public class PayChannelActivity extends ToolBarActivity {
                         startActivity(intent);
                         finish();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void requestQueryPaoTuiStatus() {
+        CustomApplication.getRetrofitNew().queryPaoTuiStatus(orderCode).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+                        intent.putExtra("orderId", orderId);
+                        intent.putExtra("price", price);
+                        intent.putExtra("isPaotui", isPaotui);
+
+                        startActivity(intent);
+                        finish();
+                    }
+//                    else {
+//                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+//                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -307,7 +338,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
     private void requestPaoTuiPay(final String channel) {
 
-        CustomApplication.getRetrofitPaoTui().paoTuiPay(orderCode, channel).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().paoTuiPay(orderCode, channel).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

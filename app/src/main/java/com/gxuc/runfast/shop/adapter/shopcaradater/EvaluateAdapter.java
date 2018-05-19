@@ -14,7 +14,7 @@ import com.gxuc.runfast.shop.bean.EvaluateInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.R;
-import com.willy.ratingbar.ScaleRatingBar;
+import com.willy.ratingbar.BaseRatingBar;
 
 import org.xutils.x;
 
@@ -75,7 +75,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             evaluateViewHolder.rb_order_evaluate.setRating((float) (evaluateInfo.score + 2));
-            evaluateViewHolder.rb_order_evaluate.setTouchable(false);
+            evaluateViewHolder.rb_order_evaluate.setClickable(false);
             x.image().bind(evaluateViewHolder.ivHead, UrlConstant.ImageBaseUrl + evaluateInfo.pic, NetConfig.optionsPagerCache);
         }
     }
@@ -97,7 +97,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public TextView tvUserName, tvEvaluateTime, tvContent, tvFlag, tvReply;
         public LinearLayout layoutBusiness;
         public ImageView ivHead;
-        public ScaleRatingBar rb_order_evaluate;
+        public BaseRatingBar rb_order_evaluate;
 
         public EvaluateViewHolder(View itemView) {
             super(itemView);
@@ -108,7 +108,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvFlag = (TextView) itemView.findViewById(R.id.tv_flag);
             tvReply = (TextView) itemView.findViewById(R.id.tv_business_reply);
             layoutBusiness = (LinearLayout) itemView.findViewById(R.id.layout_business);
-            rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+            rb_order_evaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
         }
     }

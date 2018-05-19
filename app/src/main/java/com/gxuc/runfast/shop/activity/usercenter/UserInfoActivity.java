@@ -130,7 +130,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
     private void updateUi() {
         if (!TextUtils.isEmpty(userInfo.getPic())) {
-            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.getPic(), NetConfig.optionsHeadImage);
+            x.image().bind(ivHead, UrlConstant.ImageBaseUrl + userInfo.getPic(), NetConfig.optionsHeadImage);
         }
         tvUserNickname.setText(TextUtils.isEmpty(userInfo.getNickname()) ? userInfo.getMobile() : userInfo.getNickname());
         tvUserPhone.setText(TextUtils.isEmpty(userInfo.getMobile()) ? "添加" : userInfo.getMobile());
@@ -291,6 +291,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                         UserService.clearUserInfo();
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, "");
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_ID, "");
+                        SharePreferenceUtil.getInstance().putStringValue("token", "");
                         SharePreferenceUtil.getInstance().putIntValue(CustomConstant.THIRD_LOGIN_TYPR, -1);
                         finish();
                     } else {
@@ -486,7 +487,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     userInfo.setPic(imagePath);
                     updateUserInfo(imagePath);
                     UserService.saveUserInfo(userInfo);
-                    x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + imagePath, NetConfig.optionsHeadImage);
+                    x.image().bind(ivHead, UrlConstant.ImageBaseUrl + imagePath, NetConfig.optionsHeadImage);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -285,7 +285,7 @@ public class TakeOutFoodFragment extends Fragment implements
 //                }
 //            }
 //        });
-        height = layoutSearchLocation.getHeight();
+
 
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

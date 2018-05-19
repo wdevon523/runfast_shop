@@ -15,7 +15,6 @@ import com.gxuc.runfast.shop.util.SystemUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 //import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
@@ -115,8 +114,8 @@ public class CustomApplication extends BaseApplication {
         return ApiServiceFactory.getApi();
     }
 
-    public static NetInterface getRetrofitPaoTui() {
-        return ApiServiceFactory.getApiPaoTui();
+    public static NetInterface getRetrofitNew() {
+        return ApiServiceFactory.getApiNew();
     }
 
     public static Context getContext() {

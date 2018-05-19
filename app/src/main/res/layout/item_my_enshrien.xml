@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:rb="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_breakfast_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -40,15 +40,15 @@
             android:layout_marginTop="@dimen/dimen_3_dp"
             android:orientation="horizontal">
 
-            <com.willy.ratingbar.ScaleRatingBar
+            <com.willy.ratingbar.BaseRatingBar
                 android:id="@+id/rb_order_evaluate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                rb:drawableEmpty="@drawable/icon_unselected"
-                rb:drawableFilled="@drawable/icon_selected"
-                rb:numStars="5"
-                rb:starPadding="1dp" />
+                app:srb_drawableEmpty="@drawable/icon_unselected"
+                app:srb_drawableFilled="@drawable/icon_selected"
+                app:srb_numStars="5"
+                app:srb_starPadding="1dp" />
 
             <TextView
                 android:id="@+id/tv_business_levelId"

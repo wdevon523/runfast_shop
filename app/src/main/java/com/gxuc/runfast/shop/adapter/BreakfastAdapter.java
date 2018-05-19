@@ -16,7 +16,7 @@ import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.willy.ratingbar.ScaleRatingBar;
+import com.willy.ratingbar.BaseRatingBar;
 
 import org.json.JSONException;
 import org.xutils.x;
@@ -60,7 +60,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             holder.tv_business_name.setText(businessInfo.name);
             holder.tv_business_levelId.setText(String.valueOf(businessInfo.levelId));
             holder.rb_order_evaluate.setRating(businessInfo.levelId);
-            holder.rb_order_evaluate.setTouchable(false);
+            holder.rb_order_evaluate.setClickable(false);
             holder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfo.distance)) + "km");
             holder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfo.salesnum) + "单");
             holder.tv_sale_startPay.setText(businessInfo.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfo.startPay));
@@ -221,7 +221,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
 
         LinearLayout ll_contain_act, layout_breakfast_item, ll_contain_product, ll_business_open, ll_business_close;
 
-        ScaleRatingBar rb_order_evaluate;
+        BaseRatingBar rb_order_evaluate;
         RelativeLayout rl_show_product;
         View view_close;
 
@@ -238,7 +238,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
             iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
             iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
 
-            rb_order_evaluate = (ScaleRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+            rb_order_evaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
 
             ll_contain_act = (LinearLayout) itemView.findViewById(R.id.ll_contain_act);
             ll_contain_product = (LinearLayout) itemView.findViewById(R.id.ll_contain_product);

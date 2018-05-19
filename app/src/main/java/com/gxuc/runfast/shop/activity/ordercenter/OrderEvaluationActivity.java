@@ -17,7 +17,6 @@ import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 import com.willy.ratingbar.BaseRatingBar;
-import com.willy.ratingbar.ScaleRatingBar;
 import com.zhy.view.flowlayout.FlowLayout;
 import com.zhy.view.flowlayout.TagAdapter;
 import com.zhy.view.flowlayout.TagFlowLayout;
@@ -46,11 +45,11 @@ public class OrderEvaluationActivity extends ToolBarActivity {
     @BindView(R.id.tv_order_evaluation_business_name)
     TextView tvOrderEvaluationBusinessName;
     @BindView(R.id.rb_order_evaluate)
-    ScaleRatingBar rbOrderEvaluate;
+    BaseRatingBar rbOrderEvaluate;
     @BindView(R.id.fl_order_evaluation_options)
     TagFlowLayout flOrderEvaluationOptions;
     @BindView(R.id.rb_driver_evaluate)
-    ScaleRatingBar rbDriverEvaluate;
+    BaseRatingBar rbDriverEvaluate;
     @BindView(R.id.fl_driver_evaluation_options)
     TagFlowLayout flDriverEvaluationOptions;
     @BindView(R.id.et_evaluation)
