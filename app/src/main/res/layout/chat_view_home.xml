@@ -5,12 +5,12 @@
     android:layout_height="wrap_content"
     android:background="@drawable/icon_home_receive_order">
 
-    <ImageView
+    <com.gxuc.runfast.shop.view.CircleImageView
         android:id="@+id/iv_home_business_logo"
         android:layout_width="@dimen/dimen_35_dp"
         android:layout_height="@dimen/dimen_35_dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/dimen_5_dp" />
+        android:layout_marginLeft="@dimen/dimen_6_dp" />
 
 
     <LinearLayout
@@ -26,16 +26,17 @@
             android:id="@+id/tv_home_order_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="商家已接单"
             android:textColor="@color/text_333333"
             android:textSize="@dimen/dimen_12_dp" />
 
         <TextView
+            android:id="@+id/tv_deliver_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="预计送达: 11:23"
+            android:includeFontPadding="false"
+            android:layout_marginTop="@dimen/dimen_3_dp"
             android:textColor="@color/text_666666"
-            android:textSize="@dimen/dimen_10_dp" />
+            android:textSize="@dimen/dimen_8_dp" />
 
     </LinearLayout>
 

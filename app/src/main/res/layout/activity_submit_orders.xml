@@ -57,11 +57,115 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/ll_just_diver_send"
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ll_just_send_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_90_dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/dimen_50_dp"
+                        android:paddingRight="@dimen/dimen_50_dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tv_just_address_tag"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/round_bg_4d89e6"
+                                android:gravity="center"
+                                android:paddingBottom="@dimen/dimen_3_dp"
+                                android:paddingLeft="@dimen/dimen_5_dp"
+                                android:paddingRight="@dimen/dimen_5_dp"
+                                android:paddingTop="@dimen/dimen_3_dp"
+                                android:textColor="@color/text_4d89e6"
+                                android:textSize="@dimen/dimen_10_dp"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv_just_send_address_detail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textColor="@color/text_333333"
+                                android:textSize="@dimen/dimen_17_dp" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tv_just_send_name_and_mobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/dimen_10_dp"
+                            android:textColor="@color/text_666666"
+                            android:textSize="@dimen/dimen_12_dp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_1_dp"
+                        android:layout_marginLeft="@dimen/dimen_15_dp"
+                        android:layout_marginRight="@dimen/dimen_15_dp"
+                        android:background="@color/view_e5e5e5" />
+
+                    <RelativeLayout
+                        android:id="@+id/rl_just_send_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/text_just_send_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/dimen_15_dp"
+                            android:text="送达时间"
+                            android:textColor="@color/text_333333"
+                            android:textSize="@dimen/dimen_16_dp" />
+
+                        <TextView
+                            android:id="@+id/tv_just_send_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/dimen_10_dp"
+                            android:layout_toRightOf="@+id/text_just_send_time"
+                            android:text="立即送达"
+                            android:textColor="@color/text_4d89e6"
+                            android:textSize="@dimen/dimen_14_dp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/dimen_15_dp"
+                            android:src="@drawable/icon_right_black" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/ll_diver_send"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dimen_200_dp"
                     android:background="@drawable/bg_send"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -81,7 +185,7 @@
                             android:id="@+id/tv_take_yourself"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:layout_marginLeft="@dimen/dimen_20_dp"
+                            android:layout_marginLeft="@dimen/dimen_15_dp"
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="到店自取"
@@ -99,26 +203,48 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:paddingLeft="@dimen/dimen_50_dp"
+                            android:paddingRight="@dimen/dimen_50_dp">
 
-                            <TextView
-                                android:id="@+id/tv_send_address_detail"
-                                android:layout_width="@dimen/dimen_250_dp"
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:maxLines="2"
-                                android:text="湖北省武汉市洪山区新竹路光谷青年城"
-                                android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_17_dp" />
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tv_address_tag"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/round_bg_4d89e6"
+                                    android:gravity="center"
+                                    android:paddingBottom="@dimen/dimen_3_dp"
+                                    android:paddingLeft="@dimen/dimen_5_dp"
+                                    android:paddingRight="@dimen/dimen_5_dp"
+                                    android:paddingTop="@dimen/dimen_3_dp"
+                                    android:textColor="@color/text_4d89e6"
+                                    android:textSize="@dimen/dimen_10_dp"
+                                    android:visibility="gone" />
+
+                                <TextView
+                                    android:id="@+id/tv_send_address_detail"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:maxLines="2"
+                                    android:textColor="@color/text_333333"
+                                    android:textSize="@dimen/dimen_17_dp" />
+
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/tv_send_name_and_mobile"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/dimen_10_dp"
-                                android:text="张先生     18686868686"
                                 android:textColor="@color/text_666666"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_12_dp" />
 
                         </LinearLayout>
 
@@ -236,7 +362,8 @@
                             android:maxLines="2"
                             android:text="湖北省武汉市洪山区新竹路光谷青年城"
                             android:textColor="@color/text_333333"
-                            android:textSize="@dimen/dimen_17_dp" />
+                            android:textSize="@dimen/dimen_17_dp"
+                            android:textStyle="bold" />
 
 
                         <LinearLayout
@@ -254,12 +381,14 @@
                                 android:textSize="@dimen/dimen_13_dp" />
 
                             <TextView
+                                android:id="@+id/tv_look_map"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="@dimen/dimen_8_dp"
                                 android:text="查看地图"
                                 android:textColor="@color/text_4d89e6"
-                                android:textSize="@dimen/dimen_13_dp" />
+                                android:textSize="@dimen/dimen_13_dp"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -316,6 +445,8 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:focusable="true"
+                            android:focusableInTouchMode="true"
                             android:gravity="center"
                             android:orientation="vertical">
 
@@ -326,21 +457,22 @@
                                 android:textColor="@color/text_999999"
                                 android:textSize="@dimen/dimen_12_dp" />
 
-                            <TextView
-                                android:id="@+id/tv_take_yourself_mobile"
+                            <EditText
+                                android:id="@+id/et_take_yourself_mobile"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/dimen_5_dp"
+                                android:background="@null"
                                 android:drawablePadding="@dimen/dimen_8_dp"
                                 android:drawableRight="@drawable/icon_right_black"
-                                android:text="18686868686"
+                                android:inputType="number"
+                                android:maxLength="11"
                                 android:textColor="@color/text_333333"
                                 android:textSize="@dimen/dimen_13_dp" />
 
                         </LinearLayout>
 
                     </LinearLayout>
-
 
                     <View
                         android:layout_width="match_parent"
@@ -407,6 +539,7 @@
                             android:textSize="@dimen/dimen_15_dp" />
 
                         <TextView
+                            android:id="@+id/tv_eat_save_pack_price"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignBottom="@+id/text_eat"
@@ -422,7 +555,37 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
-                            android:button="@drawable/icon_agree_black" />
+                            android:button="@drawable/select_here_or_there"
+                            android:checked="true" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rl_eat_take_out"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_45_dp"
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/dimen_15_dp"
+                        android:paddingRight="@dimen/dimen_15_dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:includeFontPadding="false"
+                            android:text="打包"
+                            android:textColor="@color/text_333333"
+                            android:textSize="@dimen/dimen_15_dp" />
+
+                        <CheckBox
+                            android:id="@+id/cb_take_out"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:button="@drawable/select_here_or_there" />
 
                     </RelativeLayout>
 
@@ -437,35 +600,6 @@
                         android:orientation="vertical">
 
                         <RelativeLayout
-                            android:id="@+id/rl_eat_take_out"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/dimen_45_dp"
-                            android:background="@color/white"
-                            android:orientation="vertical"
-                            android:paddingLeft="@dimen/dimen_15_dp"
-                            android:paddingRight="@dimen/dimen_15_dp"
-                            android:visibility="gone">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:includeFontPadding="false"
-                                android:text="打包"
-                                android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_15_dp" />
-
-                            <CheckBox
-                                android:id="@+id/cb_take_out"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:button="@drawable/icon_agree_black" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dimen_40_dp"
                             android:paddingLeft="@dimen/dimen_15_dp"
@@ -473,8 +607,8 @@
 
                             <ImageView
                                 android:id="@+id/iv_business_logo"
-                                android:layout_width="@dimen/dimen_15_dp"
-                                android:layout_height="@dimen/dimen_15_dp"
+                                android:layout_width="@dimen/dimen_20_dp"
+                                android:layout_height="@dimen/dimen_20_dp"
                                 android:layout_centerVertical="true" />
 
                             <TextView
@@ -484,17 +618,31 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="@dimen/dimen_8_dp"
                                 android:layout_toRightOf="@+id/iv_business_logo"
-                                android:text="华莱士（银泰店）"
                                 android:textColor="@color/text_999999"
                                 android:textSize="@dimen/dimen_14_dp" />
 
-                            <ImageView
-                                android:id="@+id/iv_business_to_take"
+                            <TextView
+                                android:id="@+id/tv_business_to_take"
                                 android:layout_width="@dimen/dimen_45_dp"
                                 android:layout_height="@dimen/dimen_12_dp"
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
-                                android:src="@drawable/icon_business_to_take" />
+                                android:background="@drawable/biankuang_44be99"
+                                android:gravity="center"
+                                android:text="到店自取"
+                                android:textColor="@color/bg_44be99"
+                                android:textSize="@dimen/dimen_8_dp"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv_business_is_charge"
+                                android:layout_width="@dimen/dimen_45_dp"
+                                android:layout_height="@dimen/dimen_12_dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:gravity="center"
+                                android:textSize="@dimen/dimen_8_dp"
+                                android:visibility="gone" />
 
                         </RelativeLayout>
 
@@ -502,7 +650,33 @@
                             android:id="@+id/ll_contain_goods"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:background="@color/bg_f8f8f8"
                             android:orientation="vertical" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/dimen_30_dp"
+                            android:layout_marginLeft="@dimen/dimen_15_dp"
+                            android:layout_marginRight="@dimen/dimen_15_dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:text="打包费"
+                                android:textColor="@color/text_333333"
+                                android:textSize="@dimen/dimen_13_dp" />
+
+                            <TextView
+                                android:id="@+id/tv_package_price"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/text_333333"
+                                android:textSize="@dimen/dimen_13_dp" />
+
+                        </RelativeLayout>
 
                         <RelativeLayout
                             android:layout_width="match_parent"
@@ -516,7 +690,7 @@
                                 android:layout_centerVertical="true"
                                 android:text="配送费"
                                 android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                             <TextView
                                 android:id="@+id/tv_send_price"
@@ -524,9 +698,8 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
-                                android:text="¥ 5"
                                 android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                         </RelativeLayout>
 
@@ -537,7 +710,7 @@
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dimen_35_dp"
+                            android:layout_height="@dimen/dimen_30_dp"
                             android:paddingLeft="@dimen/dimen_15_dp"
                             android:paddingRight="@dimen/dimen_15_dp">
 
@@ -550,7 +723,7 @@
                                 android:drawablePadding="@dimen/dimen_5_dp"
                                 android:text="满减优惠"
                                 android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                             <TextView
                                 android:id="@+id/tv_enjoy_price"
@@ -558,16 +731,17 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
-                                android:text="- ¥ 10"
+                                android:text="- ¥ 0"
                                 android:textColor="@color/text_fb4e44"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp"
+                                android:textStyle="bold" />
 
                         </RelativeLayout>
 
                         <RelativeLayout
                             android:id="@+id/rl_red_packet"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dimen_35_dp"
+                            android:layout_height="@dimen/dimen_30_dp"
                             android:paddingLeft="@dimen/dimen_15_dp"
                             android:paddingRight="@dimen/dimen_15_dp">
 
@@ -577,7 +751,7 @@
                                 android:layout_centerVertical="true"
                                 android:text="可用红包"
                                 android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                             <TextView
                                 android:id="@+id/tv_red_packet"
@@ -589,14 +763,14 @@
                                 android:drawableRight="@drawable/icon_right_more"
                                 android:text="暂无可用"
                                 android:textColor="@color/text_999999"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                         </RelativeLayout>
 
                         <RelativeLayout
                             android:id="@+id/rl_cash_coupon"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dimen_35_dp"
+                            android:layout_height="@dimen/dimen_30_dp"
                             android:paddingLeft="@dimen/dimen_15_dp"
                             android:paddingRight="@dimen/dimen_15_dp">
 
@@ -606,7 +780,7 @@
                                 android:layout_centerVertical="true"
                                 android:text="商家代金券"
                                 android:textColor="@color/text_333333"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                             <TextView
                                 android:id="@+id/tv_cash_coupon"
@@ -618,7 +792,7 @@
                                 android:drawableRight="@drawable/icon_right_more"
                                 android:text="暂无可用"
                                 android:textColor="@color/text_999999"
-                                android:textSize="@dimen/dimen_14_dp" />
+                                android:textSize="@dimen/dimen_13_dp" />
 
                         </RelativeLayout>
 
@@ -638,8 +812,8 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="优惠总金额"
-                                android:textColor="@color/color_text_gray"
+                                android:text="已优惠"
+                                android:textColor="@color/text_333333"
                                 android:textSize="@dimen/dimen_14_dp" />
 
                             <TextView
@@ -647,8 +821,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginRight="@dimen/dimen_15_dp"
-                                android:text="¥10"
-                                android:textColor="@color/text_999999"
+                                android:textColor="@color/text_333333"
                                 android:textSize="@dimen/dimen_14_dp" />
 
                             <TextView
@@ -656,7 +829,7 @@
                                 android:layout_height="wrap_content"
                                 android:includeFontPadding="false"
                                 android:text="小计 "
-                                android:textColor="@color/color_address_black"
+                                android:textColor="@color/text_333333"
                                 android:textSize="@dimen/dimen_15_dp" />
 
                             <TextView
@@ -664,13 +837,18 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:includeFontPadding="false"
-                                android:text="¥20.8"
                                 android:textColor="@color/color_balance_price"
-                                android:textSize="@dimen/dimen_16_dp" />
+                                android:textSize="@dimen/dimen_16_dp"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_10_dp"
+                        android:background="@color/bg_f3f2f2" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -711,6 +889,7 @@
                             android:paddingRight="@dimen/dimen_15_dp">
 
                             <TextView
+                                android:id="@+id/text_remark"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
@@ -724,8 +903,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
+                                android:layout_marginLeft="@dimen/dimen_10_dp"
+                                android:layout_toRightOf="@+id/text_remark"
                                 android:drawablePadding="@dimen/dimen_10_dp"
                                 android:drawableRight="@drawable/icon_right_more"
+                                android:ellipsize="end"
+                                android:gravity="right"
+                                android:maxLines="2"
                                 android:text="口味、偏好等要求"
                                 android:textColor="@color/text_999999"
                                 android:textSize="@dimen/dimen_14_dp" />
@@ -792,7 +976,7 @@
                         android:id="@+id/tv_discount_price_detail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dimen_5_dp"
+                        android:layout_marginTop="@dimen/dimen_3_dp"
                         android:includeFontPadding="false"
                         android:text="优惠¥10+省配送费¥5"
                         android:textColor="@color/white"
@@ -808,7 +992,6 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/dimen_10_dp"
                     android:includeFontPadding="false"
-                    android:text="¥16.8"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dimen_16_dp" />
 
@@ -820,7 +1003,7 @@
                     android:includeFontPadding="false"
                     android:text="合计 "
                     android:textColor="@color/white"
-                    android:textSize="@dimen/dimen_13_dp" />
+                    android:textSize="@dimen/dimen_15_dp" />
 
             </RelativeLayout>
 

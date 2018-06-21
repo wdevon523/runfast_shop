@@ -9,47 +9,47 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.bean.mainmiddle.ClassTypeInfo;
+import com.gxuc.runfast.shop.bean.BusinessCategoryInfo;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * Created by 天上白玉京 on 2017/7/28.
  */
 
-public class BreakfastClassAdapter extends RecyclerView.Adapter<BreakfastClassAdapter.BreakfastClassViewHolder>{
+public class BreakfastClassAdapter extends RecyclerView.Adapter<BreakfastClassAdapter.BreakfastClassViewHolder> {
 
-    private List<ClassTypeInfo> typeInfos;
+    private List<BusinessCategoryInfo> businessCategoryInfoList;
 
     private Context context;
 
     private View.OnClickListener listener;
 
-    public BreakfastClassAdapter(List<ClassTypeInfo> typeInfos, Context context,View.OnClickListener listener) {
-        this.typeInfos = typeInfos;
+    public BreakfastClassAdapter(List<BusinessCategoryInfo> businessCategoryInfoList, Context context, View.OnClickListener listener) {
+        this.businessCategoryInfoList = businessCategoryInfoList;
         this.context = context;
         this.listener = listener;
     }
 
     @Override
     public BreakfastClassViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_class_select,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_class_select, parent, false);
         BreakfastClassViewHolder viewHolder = new BreakfastClassViewHolder(view);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(BreakfastClassViewHolder holder, int position) {
-        ClassTypeInfo classTypeInfo = typeInfos.get(position);
-        if (classTypeInfo != null) {
-            holder.tvName.setText(classTypeInfo.name);
-            holder.ivType.setImageResource(classTypeInfo.imgId);
-            if (classTypeInfo.isSelect){
+        BusinessCategoryInfo businessCategoryInfo = businessCategoryInfoList.get(position);
+        if (businessCategoryInfo != null) {
+            holder.tvName.setText(businessCategoryInfo.name);
+//            holder.ivType.setImageResource(classTypeInfo.imgId);
+            if (businessCategoryInfo.isSelect) {
                 holder.tvName.setTextColor(context.getResources().getColor(R.color.color_orange_select));
                 holder.ivSelect.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.tvName.setTextColor(context.getResources().getColor(R.color.color_text_gray_two));
                 holder.ivSelect.setVisibility(View.GONE);
             }
@@ -60,13 +60,19 @@ public class BreakfastClassAdapter extends RecyclerView.Adapter<BreakfastClassAd
 
     @Override
     public int getItemCount() {
-        return typeInfos == null?0:typeInfos.size();
+        return businessCategoryInfoList == null ? 0 : businessCategoryInfoList.size();
     }
 
-    public class BreakfastClassViewHolder extends RecyclerView.ViewHolder{
+    public void setList(ArrayList<BusinessCategoryInfo> businessCategoryInfoList) {
+        this.businessCategoryInfoList = businessCategoryInfoList;
+        notifyDataSetChanged();
+    }
+
+    public class BreakfastClassViewHolder extends RecyclerView.ViewHolder {
         public LinearLayout layoutSelect;
-        public ImageView ivType,ivSelect;
+        public ImageView ivType, ivSelect;
         public TextView tvName;
+
         public BreakfastClassViewHolder(View itemView) {
             super(itemView);
             layoutSelect = (LinearLayout) itemView.findViewById(R.id.layout_class_select);

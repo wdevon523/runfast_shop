@@ -5,11 +5,8 @@ import android.content.Intent;
 
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.ToastUtil;
-import com.lljjcoder.citylist.Toast.ToastUtils;
 
-import cn.shopex.pay.Contants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

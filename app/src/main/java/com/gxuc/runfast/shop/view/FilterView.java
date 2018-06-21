@@ -92,6 +92,8 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
     private ArrayList<FilterInfo> filterInfoActList;
     private ArrayList<FilterInfo> filterSortList;
     private FilterSortAdapter sortAdapter;
+    private FilterAdaper filterFeatureAdaper;
+    private FilterAdaper filterActAdaper;
     //    private FilterData filterData;
 
 //    private FilterLeftAdapter leftAdapter;
@@ -154,15 +156,18 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         filterInfoFeatureList = new ArrayList<>();
         FilterInfo filterInfoFeature = new FilterInfo();
         filterInfoFeature.name = "快车专送";
+        filterInfoFeature.type = 0;
         FilterInfo filterInfoFeature1 = new FilterInfo();
         filterInfoFeature1.name = "商家配送";
-        FilterInfo filterInfoFeature2 = new FilterInfo();
-        filterInfoFeature2.name = "接受预定";
+        filterInfoFeature1.type = 1;
+//        FilterInfo filterInfoFeature2 = new FilterInfo();
+//        filterInfoFeature2.name = "接受预定";
         FilterInfo filterInfoFeature3 = new FilterInfo();
         filterInfoFeature3.name = "支持自取";
+        filterInfoFeature3.type = 3;
         filterInfoFeatureList.add(filterInfoFeature);
         filterInfoFeatureList.add(filterInfoFeature1);
-        filterInfoFeatureList.add(filterInfoFeature2);
+//        filterInfoFeatureList.add(filterInfoFeature2);
         filterInfoFeatureList.add(filterInfoFeature3);
 
         filterInfoActList = new ArrayList<>();
@@ -194,6 +199,8 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         viewMaskBg.setVisibility(GONE);
         llContentListView.setVisibility(GONE);
         rlFilterContent.setVisibility(GONE);
+        sortAdapter = new FilterSortAdapter(mContext, filterSortList);
+        lvRight.setAdapter(sortAdapter);
     }
 
     private void initListener() {
@@ -202,6 +209,8 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         llNearby.setOnClickListener(this);
         llFilter.setOnClickListener(this);
         viewMaskBg.setOnClickListener(this);
+        tvClear.setOnClickListener(this);
+        tvSure.setOnClickListener(this);
         llContentListView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -221,12 +230,14 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
                 break;
             case R.id.ll_sort:
                 filterPosition = 1;
+                tvCategoryTitle.setText("综合排序");
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
                 }
                 break;
             case R.id.ll_nearby:
                 filterPosition = 2;
+                tvCategoryTitle.setText("综合排序");
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
                 }
@@ -239,6 +250,22 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
                 }
                 break;
             case R.id.view_mask_bg:
+                hide();
+                break;
+            case R.id.tv_clear:
+                for (int i = 0; i < filterInfoFeatureList.size(); i++) {
+                    filterInfoFeatureList.get(i).isCheck = false;
+                }
+                for (int i = 0; i < filterInfoActList.size(); i++) {
+                    filterInfoActList.get(i).isCheck = false;
+                }
+                filterFeatureAdaper.notifyDataSetChanged();
+                filterActAdaper.notifyDataSetChanged();
+                break;
+            case R.id.tv_sure:
+                if (onFiltrateClickListener != null) {
+                    onFiltrateClickListener.onFiltrateClickListener(filterInfoFeatureList, filterInfoActList);
+                }
                 hide();
                 break;
         }
@@ -268,9 +295,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         rlFilterContent.setVisibility(GONE);
         llContentListView.setVisibility(VISIBLE);
         lvRight.setVisibility(VISIBLE);
-
-        sortAdapter = new FilterSortAdapter(mContext, filterSortList);
-        lvRight.setAdapter(sortAdapter);
+        sortAdapter.setList(filterSortList);
 
         lvRight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -298,9 +323,9 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 //        }
 //        leftAdapter.setSelectedEntity(leftSelectedCategoryEntity);
 //
-//        lvLeft.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        lvLeft.setOnItemClickListener(new AdapterView.OnCheckListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            public void onChecked(AdapterView<?> parent, View view, int position, long id) {
 //                leftSelectedCategoryEntity = filterData.getCategory().get(position);
 //                leftAdapter.setSelectedEntity(leftSelectedCategoryEntity);
 //
@@ -315,9 +340,9 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 //        rightAdapter = new FilterRightAdapter(mContext, leftSelectedCategoryEntity.getList());
 //        lvRight.setAdapter(rightAdapter);
 //        rightAdapter.setSelectedEntity(rightSelectedCategoryEntity);
-//        lvRight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        lvRight.setOnItemClickListener(new AdapterView.OnCheckListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            public void onChecked(AdapterView<?> parent, View view, int position, long id) {
 //                rightSelectedCategoryEntity = leftSelectedCategoryEntity.getList().get(position);
 //                rightAdapter.setSelectedEntity(rightSelectedCategoryEntity);
 //                if (onItemCategoryClickListener != null) {
@@ -337,9 +362,9 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 //        sortAdapter = new FilterSortAdapter(mContext, filterSortList);
 //        lvRight.setAdapter(sortAdapter);
 //
-//        lvRight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        lvRight.setOnItemClickListener(new AdapterView.OnCheckListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            public void onChecked(AdapterView<?> parent, View view, int position, long id) {
 //                selectedSortEntity = filterData.getSorts().get(position);
 //                sortAdapter.setSelectedEntity(selectedSortEntity);
 //                if (onItemSortClickListener != null) {
@@ -355,19 +380,35 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         lvLeft.setVisibility(GONE);
         lvRight.setVisibility(GONE);
         rlFilterContent.setVisibility(VISIBLE);
-        FilterAdaper filterFeatureAdaper = new FilterAdaper(mContext, filterInfoFeatureList);
+        filterFeatureAdaper = new FilterAdaper(mContext, filterInfoFeatureList);
         gvBusinessFeature.setAdapter(filterFeatureAdaper);
 
-        FilterAdaper filterActAdaper = new FilterAdaper(mContext, filterInfoActList);
+        filterActAdaper = new FilterAdaper(mContext, filterInfoActList);
         gvBusinessAct.setAdapter(filterActAdaper);
 
+
+        gvBusinessFeature.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                filterInfoFeatureList.get(position).isCheck = !filterInfoFeatureList.get(position).isCheck;
+                filterFeatureAdaper.notifyDataSetChanged();
+            }
+        });
+
+        gvBusinessAct.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                filterInfoActList.get(position).isCheck = !filterInfoActList.get(position).isCheck;
+                filterActAdaper.notifyDataSetChanged();
+            }
+        });
 
 //        filterAdapter = new FilterOneAdapter(mContext, filterData.getFilters());
 //        lvRight.setAdapter(filterAdapter);
 //
-//        lvRight.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        lvRight.setOnItemClickListener(new AdapterView.OnCheckListener() {
 //            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            public void onChecked(AdapterView<?> parent, View view, int position, long id) {
 //                selectedFilterEntity = filterData.getFilters().get(position);
 //                filterAdapter.setSelectedEntity(selectedFilterEntity);
 //                if (onItemFilterClickListener != null) {
@@ -526,6 +567,17 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 
     public void setTvCategoryTitle(FilterInfo filterInfo) {
         tvCategoryTitle.setText(filterInfo.name);
+    }
+
+    // 分类Item点击
+    private OnFiltrateClickListener onFiltrateClickListener;
+
+    public void setOnFiltrateClickListener(OnFiltrateClickListener onFiltrateClickListener) {
+        this.onFiltrateClickListener = onFiltrateClickListener;
+    }
+
+    public interface OnFiltrateClickListener {
+        void onFiltrateClickListener(ArrayList<FilterInfo> filterInfoFeatureList, ArrayList<FilterInfo> filterInfoActList);
     }
 
 //

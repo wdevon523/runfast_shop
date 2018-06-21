@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.JsonUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -59,24 +60,31 @@ public class ConsultationActivity extends ToolBarActivity {
     }
 
     private void requestServiceInfo() {
-        CustomApplication.getRetrofit().getServiceInfo(agentId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getCustomInfo(agentId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
-                        String custom1 = jsonObject.optString("custom");
-                        customInfo = GsonUtil.fromJson(custom1, CustomInfo.class);
 
-//                        JSONObject custom = jsonObject.optJSONObject("custom");
-//                        mobile = custom.optString("mobile");
-//                        x.image().bind(ivCode, UrlConstant.ImageBaseUrl + jsonObject.optString("qrcode"));
-//                        tvServicePhone.setText("咨询热线：" + mobile);
-                        if (customInfo != null) {
-                            x.image().bind(ivCode, UrlConstant.ImageBaseUrl + customInfo.qrcode);
-                            tvServicePhone.setText("咨询热线：" + customInfo.mobile);
-                        }
+                        String data = jsonObject.optString("data");
+                        customInfo = JsonUtil.fromJson(data, CustomInfo.class);
+                        x.image().bind(ivCode, UrlConstant.ImageBaseUrl + customInfo.qrcode);
+                        tvServicePhone.setText("咨询热线：" + customInfo.mobile);
+//                        String custom1 = jsonObject.optString("custom");
+//                        customInfo = GsonUtil.fromJson(custom1, CustomInfo.class);
+//
+////                        JSONObject custom = jsonObject.optJSONObject("custom");
+////                        mobile = custom.optString("mobile");
+////                        x.image().bind(ivCode, UrlConstant.ImageBaseUrl + jsonObject.optString("qrcode"));
+////                        tvServicePhone.setText("咨询热线：" + mobile);
+//                        if (customInfo != null) {
+//                            x.image().bind(ivCode, UrlConstant.ImageBaseUrl + customInfo.qrcode);
+//                            tvServicePhone.setText("咨询热线：" + customInfo.mobile);
+//                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

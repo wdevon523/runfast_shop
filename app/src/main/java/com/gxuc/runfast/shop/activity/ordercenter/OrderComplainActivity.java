@@ -8,13 +8,14 @@ import android.widget.EditText;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.example.supportv1.utils.ValidateUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 
 import org.json.JSONException;
@@ -53,7 +54,7 @@ public class OrderComplainActivity extends ToolBarActivity {
         switch (view.getId()) {
             case R.id.btn_order_commit_info:
                 if (!TextUtils.isEmpty(mEtOrderComplaint.getText()) &&
-                        mEtOrderComplaint.getText().toString().length() > 5) {
+                        mEtOrderComplaint.getText().toString().length() >= 5) {
                     if (ValidateUtil.isEmail(mEtOrderComplaintEmail.getText().toString())) {
                         toCommitComments();
                     } else {
@@ -68,7 +69,7 @@ public class OrderComplainActivity extends ToolBarActivity {
     private void toCommitComments() {
         Integer id = mInfo.getId();
         Integer businessId = mInfo.getBusinessId();
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
@@ -92,7 +93,7 @@ public class OrderComplainActivity extends ToolBarActivity {
     private void dealOrderComplaint(String body) {
         try {
             JSONObject object = new JSONObject(body);
-            CustomToast.INSTANCE.showToast(this, object.optString("msg"));
+            ToastUtil.showToast(object.optString("msg"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

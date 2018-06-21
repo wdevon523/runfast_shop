@@ -25,15 +25,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdate;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.CameraPosition;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps2d.model.MyLocationStyle;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.geocoder.GeocodeResult;
@@ -49,7 +49,7 @@ import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.AddressSearchAdapter;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
 import com.gxuc.runfast.shop.data.IntentFlag;
 
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     private int pageNo = 1;
     private RegeocodeAddress mAddress;
     private int mFlags;
-    private AddressInfo mAddressInfo;
+    private AddressBean mAddressInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,7 +111,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
 
         mFlags = getIntent().getIntExtra(IntentFlag.KEY, -1);
         if (mFlags == 1) {
-            mAddressInfo = getIntent().getParcelableExtra("addressInfo");
+            mAddressInfo = (AddressBean) getIntent().getSerializableExtra("addressInfo");
         }
 
         if (aMap == null) {
@@ -155,7 +155,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
     private void initMap() {
         if (mFlags == 1) {
 
-            LatLng addressLatLng = new LatLng(Double.valueOf(mAddressInfo.getLatitude()), Double.valueOf(mAddressInfo.getLongitude()));
+            LatLng addressLatLng = new LatLng(Double.valueOf(mAddressInfo.latitude), Double.valueOf(mAddressInfo.longitude));
 
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(addressLatLng, 15);
             MarkerOptions markerOptionsUser = new MarkerOptions();
@@ -175,7 +175,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
         } else {
             myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
             myLocationStyle.interval(5000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
-            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
+            myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER);//连续定位、蓝点不会移动到地图中心点，定位点依照设备方向旋转，并且蓝点会跟随设备移动。
             myLocationStyle.showMyLocation(true);//设置是否显示定位小蓝点，用于满足只想使用定位，不想使用定位小蓝点的场景，设置false以后图面上不再有定位蓝点的概念，但是会持续回调位置信息。
             myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_mylocation)));//
             myLocationStyle.anchor(0.5f, 0.5f);
@@ -213,6 +213,8 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
                 //keyWord表示搜索字符串，
                 //第二个参数表示POI搜索类型，二者选填其一，选用POI搜索类型时建议填写类型代码，码表可以参考下方（而非文字）
                 //cityCode表示POI搜索区域，可以是城市编码也可以是城市名称，也可以传空字符串，空字符串代表全国在全国范围内进行搜索
+
+                query.setCityLimit(true);
                 query.setPageSize(10);// 设置每页最多返回多少条poiitem
                 query.setPageNum(1);//设置查询页码
                 pageNo = 1;
@@ -254,9 +256,9 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
                 addressInfo.title = title;
                 addressInfo.address = snippet;
                 addressInfo.latLng = new LatLng(latitude, longitude);
-                if (pageNo == 1 && i == 0) {
-                    tvCurrentAddress.setText(title);
-                }
+//                if (pageNo == 1 && i == 0) {
+//                    tvCurrentAddress.setText(title);
+//                }
                 addressSearch.add(addressInfo);
                 String ps = ",title=" + title + ",adName=" + adName + ",snippet=" + snippet;
                 Log.d("地址信息", addressInfo.toString());
@@ -424,7 +426,7 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
                 isSearch = true;
                 layoutAddressTitle.setVisibility(View.GONE);
                 if (mFlags == 1) {
-                    regeocodeSearch(Double.valueOf(mAddressInfo.getLatitude()), Double.valueOf(mAddressInfo.getLongitude()), 3000);
+                    regeocodeSearch(Double.valueOf(mAddressInfo.latitude), Double.valueOf(mAddressInfo.longitude), 3000);
                 } else {
                     if (myLocation != null) {
                         regeocodeSearch(myLocation.getLatitude(), myLocation.getLongitude(), 3000);

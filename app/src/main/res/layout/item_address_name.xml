@@ -5,10 +5,7 @@
     android:layout_marginBottom="1dp"
     android:background="@color/color_white"
     android:orientation="vertical"
-    android:paddingBottom="14dp"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp"
-    android:paddingTop="14dp">
+    android:padding="@dimen/dimen_15_dp">
 
     <TextView
         android:id="@+id/tv_address_title"

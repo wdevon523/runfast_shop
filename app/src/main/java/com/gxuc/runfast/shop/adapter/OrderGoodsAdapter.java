@@ -63,7 +63,7 @@ public class OrderGoodsAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        x.image().bind(viewHolder.ivOrderDetailGoodImage, UrlConstant.ImageBaseUrl + goodsSellRecordChildren.getMini_imgPath(), NetConfig.optionsHeadImage);
+        x.image().bind(viewHolder.ivOrderDetailGoodImage, UrlConstant.ImageBaseUrl + goodsSellRecordChildren.getMini_imgPath(), NetConfig.optionsLogoImage);
         viewHolder.tvOrderDetailGoodName.setText(goodsSellRecordChildren.getGoodsSellName());
         viewHolder.tvOrderDetailGoodNum.setText("x" + goodsSellRecordChildren.getNum());
         String spec = "";

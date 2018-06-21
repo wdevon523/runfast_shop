@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 允许程序访问CellID或WiFi热点来获取粗略的位置 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- 手机wifi状态改变 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -69,6 +70,10 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="444f905bcb7010882717cae2a41f0653" />
+
+        <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
+        <service android:name="com.amap.api.location.APSService"></service>
+
         <!--android:value="8ce45bcbc60d5e1a26515c6df303af70" />-->
         <!-- <meta-data -->
         <!-- android:name="com.amap.api.v2.apikey" -->
@@ -159,7 +164,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.usercenter.CouponActivity"
-            android:label="优惠券"
+            android:label="红包"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.usercenter.BankActivity"
@@ -304,7 +309,8 @@
         <activity
             android:name=".activity.purchases.PurchasesActivity"
             android:label="跑腿代购"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <activity
             android:name=".activity.purchases.DeliveryOrderActivity"
@@ -341,6 +347,31 @@
         <activity
             android:name=".activity.SubmitOrderActivity"
             android:label="提交订单"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.BusinessNewActivity"
+            android:label=""
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.ShopCartActivity"
+            android:label="购物车"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.WalkRouteActivity"
+            android:label=""
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.BusinessCouponActivity"
+            android:label="商家代金券"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.BusinessPreferentialActivity"
+            android:label="特惠优选"
             android:screenOrientation="portrait" />
 
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->

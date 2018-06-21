@@ -5,16 +5,22 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
-import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.adapter.shopcaradater.EvaluateAdapter;
+import com.example.supportv1.utils.JsonUtil;
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.BusinessActivity;
-import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
-import com.gxuc.runfast.shop.bean.EvaluateInfo;
+import com.gxuc.runfast.shop.activity.BusinessNewActivity;
+import com.gxuc.runfast.shop.adapter.shopcaradater.EvaluateAdapter;
+import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.BusinessEvaluationInfo;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.shizhefei.fragment.LazyFragment;
 
 import org.json.JSONArray;
@@ -24,6 +30,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -32,15 +40,20 @@ import retrofit2.Response;
  * 评价
  * A simple {@link Fragment} subclass.
  */
-public class EvaluateFragment extends LazyFragment implements LoadMoreAdapter.LoadMoreApi {
+public class EvaluateFragment extends LazyFragment {
 
 
     RecyclerView recycler;
 
+    TextView tvScore;
+    TextView tvUserScore;
+    TextView tvUserNum;
+
     Unbinder unbinder;
 
-    private List<EvaluateInfo> evaluateInfos = new ArrayList<>();
-    private LoadMoreAdapter loadMoreAdapter;
+    private List<BusinessEvaluationInfo> businessEvaluationInfoList = new ArrayList<>();
+    private EvaluateAdapter evaluateAdapter;
+    //    private LoadMoreAdapter loadMoreAdapter;
 
     public EvaluateFragment() {
         // Required empty public constructor
@@ -56,28 +69,43 @@ public class EvaluateFragment extends LazyFragment implements LoadMoreAdapter.Lo
     }
 
     private void initView() {
-        Log.d("initView", "EvaluateFragment");
+//        Log.d("initView", "EvaluateFragment");
         recycler = (RecyclerView) findViewById(R.id.recycler);
+        tvScore = (TextView) findViewById(R.id.tv_score);
+        tvUserScore = (TextView) findViewById(R.id.tv_user_score);
+        tvUserNum = (TextView) findViewById(R.id.tv_user_num);
     }
 
     private void initData() {
-
-        EvaluateAdapter adapter = new EvaluateAdapter(getContext(), evaluateInfos);
-        loadMoreAdapter = new LoadMoreAdapter(getContext(), adapter);
-        loadMoreAdapter.setLoadMoreListener(this);
+        evaluateAdapter = new EvaluateAdapter(getContext(), businessEvaluationInfoList);
         recycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        recycler.setAdapter(loadMoreAdapter);
-        getBusinessEvaluate(((BusinessActivity) getActivity()).getBusinessId());
+        recycler.setAdapter(evaluateAdapter);
+        getBusinessEvaluate(((BusinessNewActivity) getActivity()).getBusiness().id);
     }
 
     /**
      * 获取商家评价
      */
     private void getBusinessEvaluate(int id) {
-        CustomApplication.getRetrofit().getBusinessEvaluate(id, 1).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getBusinessEvaluation(id).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealBusinessEvaluate(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONObject data = jsonObject.optJSONObject("data");
+//                        tvScore.setText(data.optString("satisfactionDegreen"));
+                        tvScore.setText(data.optString("avgScore"));
+//                        tvUserScore.setText("购买此产品的用户满意度为" + data.optString("satisfactionDegreen"));
+                        tvUserNum.setText("已有" + data.optString("commentCount") + "人点评");
+                        dealBusinessEvaluation(data.optJSONArray("commentList"));
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -85,37 +113,55 @@ public class EvaluateFragment extends LazyFragment implements LoadMoreAdapter.Lo
 
             }
         });
+
+//        CustomApplication.getRetrofit().getBusinessEvaluate(id, 1).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                dealBusinessEvaluate(response.body());
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
-    private void dealBusinessEvaluate(String body) {
-        try {
-            JSONObject object = new JSONObject(body);
-            JSONArray rows = object.getJSONArray("rows");
-            JSONObject map = object.getJSONObject("map");
-            int length = rows.length();
-
-            EvaluateInfo evaluateInfo = new EvaluateInfo();
-            evaluateInfo.evaluateNum = map.optInt("total");
-            evaluateInfo.zb = map.optString("zb");
-            evaluateInfos.add(evaluateInfo);
-            if (length <= 0) {
-                return;
-            }
-            for (int i = 0; i < length; i++) {
-                JSONObject jsonObject = rows.getJSONObject(i);
-                if (jsonObject != null) {
-                    EvaluateInfo evaluate = GsonUtil.parseJsonWithGson(jsonObject.toString(), EvaluateInfo.class);
-                    evaluateInfos.add(evaluate);
-                }
-            }
-            loadMoreAdapter.loadAllDataCompleted();
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void dealBusinessEvaluation(JSONArray data) {
+        if (data != null && data.length() > 0) {
+            businessEvaluationInfoList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<BusinessEvaluationInfo>>() {
+            }.getType());
+            evaluateAdapter.setList(businessEvaluationInfoList);
         }
-    }
-
-    @Override
-    public void loadMore() {
 
     }
+
+
+//    private void dealBusinessEvaluate(String body) {
+//        try {
+//            JSONObject object = new JSONObject(body);
+//            JSONArray rows = object.getJSONArray("rows");
+//            JSONObject map = object.getJSONObject("map");
+//            int length = rows.length();
+//
+//            EvaluateInfo evaluateInfo = new EvaluateInfo();
+//            evaluateInfo.evaluateNum = map.optInt("total");
+//            evaluateInfo.zb = map.optString("zb");
+//            evaluateInfos.add(evaluateInfo);
+//            if (length <= 0) {
+//                return;
+//            }
+//            for (int i = 0; i < length; i++) {
+//                JSONObject jsonObject = rows.getJSONObject(i);
+//                if (jsonObject != null) {
+//                    EvaluateInfo evaluate = GsonUtil.parseJsonWithGson(jsonObject.toString(), EvaluateInfo.class);
+//                    evaluateInfos.add(evaluate);
+//                }
+//            }
+//            loadMoreAdapter.loadAllDataCompleted();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
 }

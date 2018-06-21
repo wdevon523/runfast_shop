@@ -1,85 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mcxtzhang.swipemenulib.SwipeMenuLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dimen_75_dp"
-    android:layout_marginTop="@dimen/dimen_10_dp"
-    android:background="@color/white">
-
-    <CheckBox
-        android:id="@+id/cb_shoppingcart_goods"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/dimen_10_dp"
-        android:button="@drawable/selector_choose"
-        android:paddingBottom="@dimen/dimen_10_dp"
-        android:paddingRight="@dimen/dimen_10_dp"
-        android:paddingTop="@dimen/dimen_10_dp" />
-
-    <ImageView
-        android:id="@+id/iv_shopping_cart_good_logo"
-        android:layout_width="@dimen/dimen_75_dp"
-        android:layout_height="@dimen/dimen_75_dp"
-        android:layout_toRightOf="@+id/cb_shoppingcart_goods" />
+    android:layout_height="wrap_content"
+    android:background="@color/bg_f3f4f5"
+    android:clickable="true"
+    app:ios="false">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_toRightOf="@+id/iv_shopping_cart_good_logo"
-        android:background="@color/bg_fbfbfb"
-        android:paddingLeft="@dimen/dimen_10_dp">
+        android:layout_height="@dimen/dimen_95_dp"
+        android:background="@color/white">
 
-        <TextView
-            android:id="@+id/tv_shopping_cart_good_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_8_dp"
-            android:text="鸡肉卷"
-            android:textColor="@color/text_333333"
-            android:textSize="@dimen/dimen_14_dp" />
-
-        <TextView
-            android:id="@+id/tv_shopping_cart_good_spec"
+        <CheckBox
+            android:id="@+id/cb_shoppingcart_goods"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="规格: 微辣"
-            android:textColor="@color/text_666666"
-            android:textSize="@dimen/dimen_12_dp" />
+            android:layout_marginLeft="@dimen/dimen_10_dp"
+            android:button="@drawable/selector_choose"
+            android:paddingBottom="@dimen/dimen_10_dp"
+            android:paddingRight="@dimen/dimen_10_dp"
+            android:paddingTop="@dimen/dimen_10_dp" />
 
-        <TextView
-            android:id="@+id/tv_shopping_cart_good_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="@dimen/dimen_8_dp"
-            android:text="x1"
-            android:textColor="@color/text_999999"
-            android:textSize="@dimen/dimen_12_dp" />
+        <ImageView
+            android:id="@+id/iv_shopping_cart_good_logo"
+            android:layout_width="@dimen/dimen_75_dp"
+            android:layout_height="@dimen/dimen_75_dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/cb_shoppingcart_goods" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/iv_shopping_cart_good_logo"
+            android:background="@color/bg_fbfbfb"
+            android:paddingLeft="@dimen/dimen_10_dp">
+
+            <TextView
+                android:id="@+id/tv_shopping_cart_good_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_8_dp"
+                android:text="鸡肉卷"
+                android:textColor="@color/text_333333"
+                android:textSize="@dimen/dimen_14_dp" />
+
+            <TextView
+                android:id="@+id/tv_shopping_cart_good_spec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="规格: 微辣"
+                android:textColor="@color/text_666666"
+                android:textSize="@dimen/dimen_12_dp" />
+
+            <TextView
+                android:id="@+id/tv_shopping_cart_good_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/dimen_8_dp"
+                android:text="x1"
+                android:textColor="@color/text_999999"
+                android:textSize="@dimen/dimen_12_dp" />
 
 
-        <TextView
-            android:id="@+id/tv_shopping_cart_good_disprice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tv_shopping_cart_good_num"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="@dimen/dimen_10_dp"
-            android:text="¥12.8"
-            android:textColor="@color/text_333333"
-            android:textSize="@dimen/dimen_14_dp" />
+            <TextView
+                android:id="@+id/tv_shopping_cart_good_disprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/tv_shopping_cart_good_num"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dimen_10_dp"
+                android:text="¥12.8"
+                android:textColor="@color/text_333333"
+                android:textSize="@dimen/dimen_14_dp" />
 
-        <TextView
-            android:id="@+id/tv_shopping_cart_good_oldprice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/tv_shopping_cart_good_num"
-            android:layout_marginRight="@dimen/dimen_10_dp"
-            android:layout_toLeftOf="@+id/tv_shopping_cart_good_disprice"
-            android:text="¥12.8"
-            android:textColor="@color/text_333333"
-            android:textSize="@dimen/dimen_12_dp" />
+            <TextView
+                android:id="@+id/tv_shopping_cart_good_oldprice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/tv_shopping_cart_good_num"
+                android:layout_marginRight="@dimen/dimen_10_dp"
+                android:layout_toLeftOf="@+id/tv_shopping_cart_good_disprice"
+                android:text="¥12.8"
+                android:textColor="@color/text_333333"
+                android:textSize="@dimen/dimen_12_dp" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/tv_delete_order"
+        android:layout_width="60dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_fb7d30"
+        android:text="删除"
+        android:textColor="@android:color/white" />
+
+</com.mcxtzhang.swipemenulib.SwipeMenuLayout>

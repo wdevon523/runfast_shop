@@ -51,8 +51,8 @@
             android:gravity="center_vertical"
             android:singleLine="true"
             android:text="收支明细"
-            android:textColor="@color/color_text_gray"
-            android:textSize="14sp" />
+            android:textColor="@color/text_333333"
+            android:textSize="@dimen/dimen_14_dp" />
     </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

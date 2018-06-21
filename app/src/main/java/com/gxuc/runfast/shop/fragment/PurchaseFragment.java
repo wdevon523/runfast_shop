@@ -17,23 +17,27 @@ import android.widget.TextView;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ordercenter.PayChannelActivity;
+import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressManagerActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.Address;
 import com.gxuc.runfast.shop.bean.PurchaseInfo;
 import com.gxuc.runfast.shop.bean.PurchaseOrderInfo;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.TipDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +50,8 @@ import static android.app.Activity.RESULT_OK;
 
 public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClickListener {
 
+    @BindView(R.id.tv_delivery)
+    TextView tvDelivery;
     @BindView(R.id.et_goods)
     EditText etGoods;
     @BindView(R.id.estimate_goods_price)
@@ -103,7 +109,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
     private Address mdestinationAddrLat;
     private String destinationAddr = "";
     private int tip = 0;
-    private AddressInfo addressInfo;
+    private AddressBean addressInfo;
     private String goodsDescription;
     private TipDialog tipDialog;
     private String lat;
@@ -134,9 +140,13 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
         unbinder.unbind();
     }
 
-    @OnClick({R.id.ll_choose_destination, R.id.tv_buy_nearby, R.id.tv_destination, R.id.tv_address, R.id.rl_address, R.id.rl_coupon, R.id.rl_tip, R.id.tv_service_agreement, R.id.tv_confirm_order, R.id.cb_agree_deal, R.id.rl_base_price, R.id.rl_bottom})
+    @OnClick({R.id.tv_delivery, R.id.ll_choose_destination, R.id.tv_buy_nearby, R.id.tv_destination, R.id.tv_address, R.id.rl_address, R.id.rl_coupon, R.id.rl_tip, R.id.tv_service_agreement, R.id.tv_confirm_order, R.id.cb_agree_deal, R.id.rl_base_price, R.id.rl_bottom})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tv_delivery:
+                SystemUtil.hideSoftKeyboard(etGoods);
+                ((PurchasesActivity) getActivity()).setViewPagerCurrentItem(1);
+                break;
             case R.id.ll_choose_destination:
                 fromType = "SPECIFIED";
                 llChooseDestination.setBackgroundResource(R.drawable.round_biankuang_fc9153);
@@ -230,7 +240,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
         }
 
         CustomApplication.getRetrofitNew().getPurchaseOrderInfo(fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0,
-                destinationAddr, goodsDescription, addressInfo.getId(), "DAIGOU", lng, lat).enqueue(new MyCallback<String>() {
+                destinationAddr, goodsDescription, addressInfo.id, "DAIGOU", lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -240,7 +250,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
                         String data = jsonObject.optString("data");
                         purchaseInfo = GsonUtil.fromJson(data, PurchaseInfo.class);
                         tvSendPrice.setText("¥ " + purchaseInfo.baseFee / 100);
-                        tvTotalPrice.setText(purchaseInfo.deliveryFee / 100 + "元");
+                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + "元");
                         tvDistance.setText(purchaseInfo.distance + "米");
                         tvEstimateTime.setText("预计" + purchaseInfo.deliveryDuration + "分钟内送达");
                     } else {
@@ -262,7 +272,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
 
     private void requestConfirmPurchase(boolean iSspecified) {
 
-        CustomApplication.getRetrofitNew().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, "DAIGOU", tip, addressInfo.getId(), lng, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, "DAIGOU", tip, addressInfo.id, lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -275,6 +285,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
                         intent.putExtra("orderId", purchaseOrderInfo.id);
                         intent.putExtra("price", purchaseOrderInfo.amountPayable / 100);
                         intent.putExtra("orderCode", purchaseOrderInfo.orderNo);
+                        intent.putExtra("createTime", purchaseOrderInfo.createTime);
                         intent.putExtra("isPaotui", true);
                         startActivity(intent);
                     } else {
@@ -306,10 +317,10 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
             mdestinationAddrLat = data.getParcelableExtra("addressLat");
             tvDestination.setText(destinationAddr);
         } else if (requestCode == 1002) {
-            addressInfo = data.getParcelableExtra("addressInfo");
-            tvToName.setText(addressInfo.getName());
-            tvToMobile.setText(addressInfo.getMobile());
-            tvToAddress.setText(addressInfo.getUserAddress() + addressInfo.getAddress());
+            addressInfo = (AddressBean) data.getSerializableExtra("addressInfo");
+            tvToName.setText(addressInfo.name);
+            tvToMobile.setText(addressInfo.phone);
+            tvToAddress.setText(addressInfo.userAddress + addressInfo.address);
             tvAddress.setVisibility(View.GONE);
             rlAddress.setVisibility(View.VISIBLE);
         }

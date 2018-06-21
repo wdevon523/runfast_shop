@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.bean.CashBankInfo;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class SelectBankAdapter extends RecyclerView.Adapter<SelectBankAdapter.Se
 
     private View.OnClickListener listener;
 
-    public SelectBankAdapter(List<CashBankInfo> data, Context context,View.OnClickListener listener) {
+    public SelectBankAdapter(ArrayList<CashBankInfo> data, Context context, View.OnClickListener listener) {
         this.data = data;
         this.context = context;
         this.listener = listener;
@@ -45,17 +46,17 @@ public class SelectBankAdapter extends RecyclerView.Adapter<SelectBankAdapter.Se
     public void onBindViewHolder(SelectBankViewHolder holder, int position) {
         CashBankInfo bankSelectInfo = data.get(position);
         if (bankSelectInfo != null) {
-            if (TextUtils.isEmpty(bankSelectInfo.getAccount())){
-                holder.tvBankName.setText(bankSelectInfo.getBanktype());
+            if (TextUtils.isEmpty(bankSelectInfo.account)){
+                holder.tvBankName.setText(bankSelectInfo.banktype);
             }else {
-                String account = bankSelectInfo.getAccount();
+                String account = bankSelectInfo.account;
                 if (account.length() > 4){
                     account = account.substring(account.length()-4);
                 }
-                holder.tvBankName.setText(bankSelectInfo.getBanktype()+"("+account+")");
+                holder.tvBankName.setText(bankSelectInfo.banktype+"("+account+")");
             }
             if (position != (data.size() -1)){
-                if (bankSelectInfo.isSelect()){
+                if (bankSelectInfo.isSelect){
                     holder.ivBankSelect.setVisibility(View.VISIBLE);
                 }else {
                     holder.ivBankSelect.setVisibility(View.GONE);
@@ -69,6 +70,11 @@ public class SelectBankAdapter extends RecyclerView.Adapter<SelectBankAdapter.Se
     @Override
     public int getItemCount() {
         return data == null?0:data.size();
+    }
+
+    public void setList(ArrayList<CashBankInfo> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 
     public class SelectBankViewHolder extends RecyclerView.ViewHolder{

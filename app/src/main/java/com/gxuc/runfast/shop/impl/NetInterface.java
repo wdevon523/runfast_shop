@@ -3,6 +3,7 @@ package com.gxuc.runfast.shop.impl;
 
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -92,54 +93,6 @@ public interface NetInterface {
                                      @Field("page") Integer page,
                                      @Field("version") Integer version);
 
-    /**
-     * 搜索商品
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.SEARCH_GOODS)
-    Call<String> searchGoodsType(@Field("name") String name);
-
-    /**
-     * 分类查询商家
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.SEARCH_GOODS_TYPE)
-    Call<String> searchGoods(@Field("page") Integer page,
-                             @Field("rows") Integer rows,
-                             @Field("longitude") String longitude,
-                             @Field("latitude") String latitude,
-                             @Field("name") String name,
-                             @Field("sorting") Integer sort,
-                             @Field("agentId") String agentId,
-                             @Field("version") Integer version);
-
-    /**
-     * 分类查询商家商品
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_BUSINESS_TYPE)
-    Call<String> getBusinessType(@Field("page") Integer page,
-                                 @Field("rows") Integer rows,
-                                 @Field("longitude") Double longitude,
-                                 @Field("latitude") Double latitude,
-                                 @Field("sorting") Integer sort,
-                                 @Field("typeId") String typeId,
-                                 @Field("version") Integer version);
-
-    /**
-     * 获取商品列表
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_GOODS_LIST)
-    Call<String> getBusinessGoods(@Field("id") Integer id);
 
     /**
      * 获取商品活动过
@@ -178,16 +131,6 @@ public interface NetInterface {
     Call<String> getIsShoucang(@Field("shopId") Integer shopId,
                                @Field("type") Integer type,
                                @Field("uId") Integer uId);
-
-    /**
-     * 获取商家评价
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.BUSINESS_COMMENT)
-    Call<String> getBusinessEvaluate(@Field("id") Integer id,
-                                     @Field("page") Integer page);
 
     /**
      * 获取商家信息
@@ -233,100 +176,6 @@ public interface NetInterface {
                              @Field("agentId") Integer agentId);
 
     /**
-     * 修改密码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.EDIT_PASSWORD)
-    Call<String> updatePassword(@Field("old") String old,
-                                @Field("password") String password,
-                                @Field("codetype") Integer codetype,
-                                @Field("code") String code);
-
-    /**
-     * 修改密码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.FORGOT_PWD)
-    Call<String> updateForgotPwd(@Field("mobile") String mobile,
-                                 @Field("xcode") String xcode,
-                                 @Field("pwd") String pwd);
-
-    /**
-     * 获取修改密码验证码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.QUERY_EDIT_PWD_CODE)
-    Call<String> getEditPwdCode(@Field("mobile") String mobile,
-                                @Field("NECaptchaValidate") String nECaptchaValidate);
-
-    /**
-     * 获取注册验证码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.QUERY_AUTH_CODE)
-    Call<String> getCode(@Field("mobile") String mobile,
-                         @Field("NECaptchaValidate") String nECaptchaValidate);
-
-    /**
-     * 获取快速登录
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.LOGIN_QIUCK_CODE)
-    Call<String> getLoginQuickCode(@Field("mobile") String mobile,
-                                   @Field("NECaptchaValidate") String nECaptchaValidate);
-
-    /**
-     * 获取绑定手机的验证码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.BIND_MOBILE_CODE)
-    Call<String> getBindCode(@Field("mobile") String mobile
-            , @Field("NECaptchaValidate") String nECaptchaValidate
-//            , @Field("thirdLoginId") String thirdLoginId,
-//                             @Field("thirdLoginType") int thirdLoginType,
-//                             @Field("alias") String alias,
-//                             @Field("bpType") int bpType
-    );
-
-    /**
-     * 绑定手机
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.BIND_MOBILE)
-    Call<String> bindMobile(@Field("mobile") String mobile,
-                            @Field("password") String password,
-                            @Field("code") String code,
-                            @Field("thirdLoginId") String thirdLoginId,
-                            @Field("thirdLoginType") int thirdLoginType,
-                            @Field("alias") String alias,
-                            @Field("bpType") int bpType
-    );
-
-    /**
-     * 获取忘记密码验证码
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.FORGET_PASSWORD)
-    Call<String> getForgetCode(@Field("mobile") String mobile,
-                               @Field("NECaptchaValidate") String nECaptchaValidate);
-
-    /**
      * 登录请求
      * 发送post请求的时候，必须要加上@FormUrlEncoded，不然就会报错
      *
@@ -341,80 +190,6 @@ public interface NetInterface {
                            @Field("password") String password,
                            @Field("alias") String alias,
                            @Field("bptype") Integer bptype);
-
-    /**
-     * 快速登录请求
-     * 发送post请求的时候，必须要加上@FormUrlEncoded，不然就会报错
-     *
-     * @param mobile
-     * @return
-     */
-
-    @FormUrlEncoded
-    @POST(UrlConstant.LOGIN_QUICK)
-    Call<String> postLogiQuick(@Field("mobile") String mobile,
-                               @Field("code") String code,
-                               @Field("alias") String alias,
-                               @Field("bptype") Integer bptype);
-
-    /**
-     * 第三方登录请求
-     * 发送post请求的时候，必须要加上@FormUrlEncoded，不然就会报错
-     *
-     * @param thirdLoginId
-     * @param thirdLoginType
-     * @param alias
-     * @param bpType
-     * @return
-     */
-
-    @FormUrlEncoded
-    @POST(UrlConstant.THIRD_LOGIN)
-    Call<String> postThirdLogin(@Field("thirdLoginId") String thirdLoginId,
-                                @Field("thirdLoginType") int thirdLoginType,
-                                @Field("alias") String alias,
-                                @Field("bpType") Integer bpType);
-
-    /**
-     * 登出
-     *
-     * @return
-     */
-
-    @FormUrlEncoded
-    @POST(UrlConstant.LOGOUT)
-    Call<String> Logout(@Field("mobile") String mobile);
-
-    /**
-     * 注册请求
-     *
-     * @param code
-     * @return
-     */
-
-    @FormUrlEncoded
-    @POST(UrlConstant.REGISTER)
-    Call<String> postRegister(@Field("mobile") String mobile,
-                              @Field("password") String password,
-                              @Field("code") String code);
-
-    @FormUrlEncoded
-    @POST(UrlConstant.USER_INFO)
-    Call<String> postUserInfo();
-
-    /**
-     * 用户投诉
-     * <p>
-     * aram businessId
-     *
-     * @param email
-     * @param content
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.MINE_COMPLAINT)
-    Call<String> postMineComplaint(@Field("userEmail") String email,
-                                   @Field("content") String content);
 
     /**
      * 订单投诉
@@ -433,27 +208,6 @@ public interface NetInterface {
                                     @Field("content") String content);
 
     /**
-     * 合作加盟
-     *
-     * @param businessName
-     * @param mobile
-     * @param contacts
-     * @param address
-     * @param remark
-     * @param local
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.JOIN_LEAGUE)
-    Call<String> postJoinLeague(@Field("businessName") String businessName,
-                                @Field("moblie") String mobile,
-                                @Field("contacts") String contacts,
-                                @Field("address") String address,
-                                @Field("remark") String remark,
-                                @Field("local") String local);
-
-
-    /**
      * 收藏
      *
      * @param shopId
@@ -466,82 +220,6 @@ public interface NetInterface {
                               @Field("type") Integer type);
 
     /**
-     * 添加收货地址
-     *
-     * @param name
-     * @param phone
-     * @param userAddress
-     * @param address
-     * @param longitude
-     * @param latitude
-     * @param provinceName
-     * @param cityName
-     * @param countyName
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ADD_USER_ADDRESS)
-    Call<String> postAddAddress(@Field("name") String name,
-                                @Field("phone") String phone,
-                                @Field("userAddress") String userAddress,
-                                @Field("address") String address,
-                                @Field("longitude") String longitude,
-                                @Field("latitude") String latitude,
-                                @Field("provinceName") String provinceName,
-                                @Field("cityName") String cityName,
-                                @Field("countyName") String countyName,
-                                @Field("version") int version);
-
-    /**
-     * 修改地址
-     *
-     * @param id
-     * @param name
-     * @param phone
-     * @param userAddress
-     * @param address
-     * @param longitude
-     * @param latitude
-     * @param provinceName
-     * @param cityName
-     * @param countyName
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.EDIT_USER_ADDRESS)
-    Call<String> postEditAddress(@Field("id") Integer id,
-                                 @Field("name") String name,
-                                 @Field("phone") String phone,
-                                 @Field("userAddress") String userAddress,
-                                 @Field("address") String address,
-                                 @Field("longitude") String longitude,
-                                 @Field("latitude") String latitude,
-                                 @Field("provinceName") String provinceName,
-                                 @Field("cityName") String cityName,
-                                 @Field("countyName") String countyName,
-                                 @Field("version") int version);
-
-    /**
-     * 地址详情
-     *
-     * @param id
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.DETAIL_USER_ADDRESS)
-    Call<String> postDetailAddress(@Field("id") Integer id);
-
-    /**
-     * 删除地址
-     *
-     * @param id
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.DELETE_USER_ADDRESS)
-    Call<String> postDeleteAddress(@Field("id") Integer id);
-
-    /**
      * 地址列表
      *
      * @return
@@ -550,40 +228,6 @@ public interface NetInterface {
     @POST(UrlConstant.USER_ADDRESS_LIST)
     Call<String> postListAddress(@Field("id") int id,
                                  @Field("version") int version);
-
-    /**
-     * 消息列表
-     *
-     * @param page
-     * @param rows
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.MESSAGE_LIST)
-    Call<String> postMessageList(@Field("page") Integer page,
-                                 @Field("rows") Integer rows);
-
-    /**
-     * 订单列表
-     *
-     * @param page
-     * @param rows
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ORDER_LIST)
-    Call<String> postOrderList(@Field("page") Integer page,
-                               @Field("rows") Integer rows);
-
-    /**
-     * 修改昵称
-     *
-     * @param nickname
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.CHANGE_NAME)
-    Call<String> postChangeName(@Field("nickname") String nickname);
 
     /**
      * 修改头像
@@ -596,16 +240,6 @@ public interface NetInterface {
     Call<String> updateHead(@Field("imgpath") String imgpath);
 
     /**
-     * 绑定邮箱
-     *
-     * @param email
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.CHANGE_EMAIL)
-    Call<String> postChangeEmail(@Field("email") String email);
-
-    /**
      * 红包
      *
      * @param businessId
@@ -614,17 +248,6 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.RED_PACKAGE)
     Call<String> postRedPackage(@Field("businessId") Integer businessId);
-
-    /**
-     * 优惠券
-     *
-     * @param agentId
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_COUPON)
-    Call<String> GetCoupan(@Field("businessId") Integer businessId,
-                           @Field("agentId") Integer agentId);
 
     /**
      * 我的优惠券
@@ -636,25 +259,6 @@ public interface NetInterface {
     @POST(UrlConstant.MY_CONPON)
     Call<String> GetMyCoupan(@Field("type") Integer type);
 
-    /**
-     * 优惠券领取中心
-     *
-     * @param type 优惠券类型(1.商城、0.外卖)
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.RECEIVE_CONPON)
-    Call<String> receiveCoupan(@Field("agentId") String agentId,
-                               @Field("type") Integer type);
-
-    /**
-     * 领取优惠券
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_CONPON)
-    Call<String> getCoupan(@Field("couponId") Integer couponId);
 
     /**
      * 我的积分
@@ -664,55 +268,6 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.SCORE_DATA)
     Call<String> getScore();
-
-    /**
-     * 积分明细
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.LIST_SCORE)
-    Call<String> getListScore(@Field("page") Integer page,
-                              @Field("rows") Integer rows);
-
-    /**
-     * 收支明细
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.LIST_CONSUME)
-    Call<String> getListConsume(@Field("page") Integer page,
-                                @Field("type") Integer type);
-
-    /**
-     * 提现
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.CASH_SEND)
-    Call<String> getCashSend(@Field("monetary") Double monetary,
-                             @Field("type") Integer type,
-                             @Field("bankid") Integer bankid);
-
-    /**
-     * 提现账号
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.BANK_INFO)
-    Call<String> getBankUser(@Field("page") Integer page);
-
-    /**
-     * 删除提现账号
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.DELETE_BANK_INFO)
-    Call<String> deleteBankUser(@Field("id") Integer id);
 
     /**
      * 提现银行卡列表
@@ -733,55 +288,6 @@ public interface NetInterface {
     @POST(UrlConstant.GET_BANK_NAME)
     Call<String> getBankName(@Field("cardNo") String cardNo,
                              @Field("cardBinCheck") boolean isCardBinCheck);
-
-    /**
-     * 添加银行卡
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ADD_BANK)
-    Call<String> addBank(@Field("name") String name,
-                         @Field("banktype") String banktype,
-                         @Field("account") String account);
-
-    /**
-     * 提现记录
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.CASH_RECORD)
-    Call<String> getCashRecord(@Field("page") Integer page);
-
-    /**
-     * 订单详情
-     *
-     * @param id
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ORDER_DETAIL)
-    Call<String> getOrderDetail(@Field("id") Integer id);
-
-    /**
-     * 订单详情
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ORDER_DETAIL_INFO)
-    Call<String> getOrderDetailInfo();
-
-    /**
-     * 我的收藏
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.MY_ENSHRINE)
-    Call<String> getEnshrine(@Field("page") int page);
-
 
     /**
      * 确认订单
@@ -873,16 +379,6 @@ public interface NetInterface {
     Call<String> receiveOrder(@Field("id") Integer id);
 
     /**
-     * 取消订单
-     *
-     * @param id
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.ORDER_CANCEL)
-    Call<String> cancelOrder(@Field("id") Integer id);
-
-    /**
      * 确认订单获取商品
      *
      * @param bid
@@ -890,7 +386,6 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_SHOPPING_CART)
-//    Call<String> getShoppingCar(@Field("bid") Integer bid);
     Call<String> getShoppingCar(@Field("businessId") Integer bid);
 
     /**
@@ -901,7 +396,6 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_SHOPPINGS)
-//    Call<String> getShoppingCar(@Field("bid") Integer bid);
     Call<String> getShoppings(@Field("businessId") Integer bid);
 
     /**
@@ -934,21 +428,6 @@ public interface NetInterface {
     );
 
     /**
-     * 评价
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.EVALUATION)
-    Call<String> postEvaluation(@Field("goodsSellRecordId") int goodsSellRecordId,
-                                @Field("score") int Score,
-                                @Field("shangstr") String shangstr,
-                                @Field("delicerScore") int delicerScore,
-                                @Field("delicerContent") String delicerContent,
-                                @Field("content") String content,
-                                @Field("isDeliver") int isDeliver);
-
-    /**
      * 微信充值
      *
      * @return
@@ -971,15 +450,6 @@ public interface NetInterface {
                                 @Field("payType") String payType);
 
     /**
-     * 再来一单
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.BUY_AGAIN)
-    Call<String> buyAgain(@Field("orderId") int orderId);
-
-    /**
      * 获取用户信息
      *
      * @return
@@ -987,28 +457,6 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_USER_INFO)
     Call<String> getUserInfo(@Field("uId") int uId);
-
-    /**
-     * 获取订单状态
-     *
-     * @param id
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_ORDER_STATUS)
-    Call<String> getOrderStatus(@Field("id") int id);
-
-    /**
-     * 获取订单支付状态
-     *
-     * @param orderNo
-     * @param payType
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_ORDER_PAY_STATUS)
-    Call<String> getOrderPayStatus(@Field("orderNo") String orderNo,
-                                   @Field("payType") int payType);
 
     /**
      * 清空购物车
@@ -1021,24 +469,14 @@ public interface NetInterface {
     Call<String> cleanShoppingCart(@Field("businessId") int businessId);
 
     /**
-     * 获取客服电话二维码
-     *
-     * @param agentId
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_SERVICE_INFO)
-    Call<String> getServiceInfo(@Field("agentId") String agentId);
-
-    /**
      * 检查版本
      *
-     * @param vercode
+     * @param version
      * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.CHECK_NEW_VERSION)
-    Call<String> checkNewVersion(@Field("vercode") int vercode);
+    Call<String> checkNewVersion(@Field("version") int version);
 
     /**
      * 获取骑手经纬度
@@ -1215,7 +653,7 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.GET_AGENT)
     Call<String> getAgent(@Field("userLng") double userLng,
-                                   @Field("userLat") double userLat);
+                          @Field("userLat") double userLat);
 
     /**
      * 统一获取获取代理商促销信息
@@ -1237,7 +675,647 @@ public interface NetInterface {
                                    @Field("userLng") double userLng,
                                    @Field("userLat") double userLat,
                                    @Field("sorting") int sorting,
-                                   @Field("activityType") String activityType,
-                                   @Field("catalogId") String catalogId);
+                                   @FieldMap IdentityHashMap<String, Integer> actMap,
+                                   @FieldMap IdentityHashMap<String, Integer> featuretMap,
+                                   @Field("catalogId") String catalogId,
+                                   @Field("page") int page,
+                                   @Field("size") int size);
+
+    /**
+     * 获取商家详情
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_DETAIL)
+    Call<String> getBusinessDetail(@Field("businessId") int businessId,
+                                   @Field("userLng") double userLng,
+                                   @Field("userLat") double userLat);
+
+    /**
+     * 获取商家所有商品
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_GOODS)
+    Call<String> getBusinessGoods(@Field("businessId") int businessId);
+
+    /**
+     * 添加购物车
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ADD_SHOP_CART)
+    Call<String> addShopCart(@Field("businessId") int businessId);
+
+    /**
+     * 删除购物车
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.SUB_SHOP_CART)
+    Call<String> subShopCart(@Field("businessId") int businessId);
+
+    /**
+     * 获取商家购物车列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BUSINESS_SHOP_CART)
+    Call<String> getBusinessShopCart(@Field("businessId") int businessId);
+
+    /**
+     * 清空购物车
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CLEAR_SHOP_CART)
+    Call<String> clearShopCart(@Field("businessId") int businessId);
+
+    /**
+     * 根据商家购物车获取订单结算信息
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.SUBMIT_BUSINESS_SHOP_CART)
+    Call<String> submitBusinessShopCart(@FieldMap Map<String, String> map);
+
+    /**
+     * 生成订单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CREATE_ORDER_NEW)
+    Call<String> creatOrder(@Field("businessId") int businessId,
+                            @Field("remark") String remark);
+
+    /**
+     * 支付订单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.PAY_ORDER)
+    Call<String> payOrder(@Field("orderNo") String orderNo,
+                          @Field("channel") String channel);
+
+    /**
+     * 查询订单状态
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ORDER_QUERY)
+    Call<String> orderQuery(@Field("orderNo") String orderNo);
+
+    /**
+     * 获取商家下的用户评论列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BUSINESS_EVALUATION)
+    Call<String> getBusinessEvaluation(@Field("businessId") int businessId);
+
+    /**
+     * 获取用户订单列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_ORDER_LIST)
+    Call<String> getOrderList(@Field("page") int page,
+                              @Field("size") int size);
+
+    /**
+     * 再来一单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BUY_AGAIN_NEW)
+    Call<String> buyAgainNew(@Field("orderId") int orderId);
+
+    /**
+     * 取消订单
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CANCEL_ORDER)
+    Call<String> cancelorderNew(@Field("orderId") int orderId);
+
+    /**
+     * 获取当前用户的收货地址列表
+     *
+     * @return
+     */
+    @POST(UrlConstant.ADDRESS_LIST)
+    Call<String> getAddressList();
+
+
+    /**
+     * 修改用户地址
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_ADDRESS)
+    Call<String> updateAddress(@Field("id") int id,
+                               @Field("name") String name,
+                               @Field("gender") int gender,
+                               @Field("phone") String phone,
+                               @Field("userAddress") String userAddress,
+                               @Field("address") String address,
+                               @Field("longitude") String longitude,
+                               @Field("latitude") String latitude,
+                               @Field("tag") int tag);
+
+    /**
+     * 删除当前用户所属的收货地址
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELETE_ADDRESS)
+    Call<String> deleteAddress(@Field("id") int id);
+
+    /**
+     * 添加用户地址
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ADD_ADDRESS)
+    Call<String> addAddress(@Field("name") String name,
+                            @Field("gender") int gender,
+                            @Field("phone") String phone,
+                            @Field("userAddress") String userAddress,
+                            @Field("address") String address,
+                            @Field("longitude") String longitude,
+                            @Field("latitude") String latitude,
+                            @Field("tag") int tag);
+
+    /**
+     * 登陆
+     * <p>
+     * loginMode : mobile_pwd, mobile_sms_code,third
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.LOGIN_NEW)
+    Call<String> login(@Field("mobile") String mobile,
+                       @Field("password") String password,
+                       @Field("alias") String alias,
+                       @Field("loginMode") String loginMode);
+
+    /**
+     * 根据原密码修改密码
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_PWD_BY_OLD)
+    Call<String> updatePwdByOld(@Field("oldPwd") String oldPwd,
+                                @Field("newPwd") String newPwd);
+
+    /**
+     * 根据短信验证码修改密码
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_PWD_BY_SMSCODE)
+    Call<String> updatePwdBySmsCode(@Field("mobile") String mobile,
+                                    @Field("smsCode") String smsCode,
+                                    @Field("newPwd") String newPwd);
+
+    /**
+     * 获取当前用户信息
+     *
+     * @return
+     */
+    @POST(UrlConstant.GET_USER_INFORMATION)
+    Call<String> getUserInformation();
+
+    /**
+     * 修改用户信息
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_USER_INFO)
+    Call<String> updateUserInfo(@Field("nickname") String nickname,
+                                @Field("email") String email);
+
+    /**
+     * 商户加盟
+     *
+     * @param businessName
+     * @param mobile
+     * @param contacts
+     * @param address
+     * @param remark
+     * @param local
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BUSINESS_JOIN)
+    Call<String> businessJoin(@Field("businessName") String businessName,
+                              @Field("moblie") String mobile,
+                              @Field("contacts") String contacts,
+                              @Field("address") String address,
+                              @Field("remark") String remark,
+                              @Field("local") String local);
+
+    /**
+     * 用户投诉
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.COMPLAIN)
+    Call<String> complain(@Field("userEmail") String email,
+                          @Field("content") String content);
+
+    /**
+     * 获取代理商客服
+     *
+     * @param agentId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_CUSTOM_INFO)
+    Call<String> getCustomInfo(@Field("agentId") String agentId);
+
+    /**
+     * 获取用户积分明细
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_SCORE_LIST)
+    Call<String> getScoreList(@Field("page") int page,
+                              @Field("size") int size);
+
+    /**
+     * 获取用户消息分页列表
+     *
+     * @return
+     */
+    @POST(UrlConstant.GET_MESSAGE_LIST)
+    Call<String> getMessageList();
+
+    /**
+     * 获取用户银行卡账户列表
+     *
+     * @return
+     */
+    @POST(UrlConstant.GET_BANK_LIST)
+    Call<String> getBankList();
+
+    /**
+     * 删除银行卡账户
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELETE_BANK)
+    Call<String> deleteBank(@Field("id") int id);
+
+    /**
+     * 添加银行卡
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ADD_BANK)
+    Call<String> addBank(@Field("name") String name,
+                         @Field("banktype") String banktype,
+                         @Field("account") String account);
+
+    /**
+     * 获取用户银行卡账户列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_FAVORITE_LIST)
+    Call<String> getFavoriteList(@Field("userLng") String userLng,
+                                 @Field("userLat") String userLat,
+                                 @Field("page") int page,
+                                 @Field("size") int size);
+
+    /**
+     * 收藏商家
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ADD_FAVORITE)
+    Call<String> addFavorite(@Field("businessId") int businessId);
+
+    /**
+     * 取消收藏商家
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELETE_FAVORITE)
+    Call<String> deleteFavorite(@Field("businessId") int businessId);
+
+    /**
+     * 获取当前用户的红包活动分页列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_MY_RED_PACK)
+    Call<String> getMyRedPack(@Field("page") int page,
+                              @Field("size") int size);
+
+    /**
+     * 获取当前用户可用的红包活动分页列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_MY_RED_PACK_VALID)
+    Call<String> getMyRedPackValid(@Field("businessId") int businessId,
+                                   @Field("page") int page,
+                                   @Field("size") int size);
+
+    /**
+     * 提现记录
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CASH_RECORD)
+    Call<String> getCashRecord(@Field("page") int page,
+                               @Field("size") int size);
+
+    /**
+     * 提现
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CASH_SEND)
+    Call<String> getCashSend(@Field("amountWithdraw") Double amountWithdraw,
+                             @Field("bankAccountId") Integer bankAccountId,
+                             @Field("remark") String remark);
+
+    /**
+     * 收支明细
+     *
+     * @return
+     */
+    @POST(UrlConstant.LIST_CONSUME)
+    Call<String> getListConsume();
+
+    /**
+     * 获取当前用户所有的购物车
+     *
+     * @return
+     */
+    @POST(UrlConstant.ALL_SHOP_CART)
+    Call<String> getAllShopCart();
+
+    /**
+     * 订单详情
+     *
+     * @param id
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.ORDER_DETAIL)
+    Call<String> getOrderDetail(@Field("orderId") Integer id);
+
+    /**
+     * 快速登录请求
+     * loginMode : mobile_pwd, mobile_sms_code,third
+     *
+     * @param mobile
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.LOGIN_QUICK)
+    Call<String> postLogiQuick(@Field("mobile") String mobile,
+                               @Field("smsCode") String smsCode,
+                               @Field("alias") String alias,
+                               @Field("loginMode") String loginMode);
+
+    /**
+     * 发送短信
+     *
+     * @param mobile
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.SEND_SMS)
+    Call<String> sendSms(@Field("mobile") String mobile,
+                         @Field("smsType") String smsCode,
+                         @Field("NECaptchaValidate") String nECaptchaValidate);
+
+    /**
+     * 第三方登录请求
+     * loginMode : mobile_pwd, mobile_sms_code,third
+     *
+     * @param thirdLoginId
+     * @param thirdLoginType
+     * @param alias
+     * @param loginMode
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.THIRD_LOGIN)
+    Call<String> postThirdLogin(@Field("thirdLoginId") String thirdLoginId,
+                                @Field("thirdLoginType") String thirdLoginType,
+                                @Field("alias") String alias,
+                                @Field("loginMode") String loginMode);
+
+    /**
+     * 通过短信验证码注册并绑定第三方账户
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.BIND_MOBILE)
+    Call<String> bindMobile(@Field("mobile") String mobile,
+                            @Field("password") String password,
+                            @Field("smsCode") String smsCode,
+                            @Field("thirdLoginId") String thirdLoginId,
+                            @Field("thirdLoginType") String thirdLoginType,
+                            @Field("alias") String alias);
+
+    /**
+     * 登出
+     *
+     * @return
+     */
+
+    @POST(UrlConstant.LOGOUT)
+    Call<String> Logout();
+
+    /**
+     * 注册请求
+     *
+     * @param smsCode
+     * @return
+     */
+
+    @FormUrlEncoded
+    @POST(UrlConstant.REGISTER)
+    Call<String> register(@Field("mobile") String mobile,
+                          @Field("password") String password,
+                          @Field("smsCode") String smsCode,
+                          @Field("alias") String alias);
+
+    /**
+     * 评价
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.EVALUATION)
+    Call<String> postEvaluation(@Field("orderId") int orderId,
+                                @Field("businessScore") int businessScore,
+                                @Field("businessTags") String businessTags,
+                                @Field("driverScore") int driverScore,
+                                @Field("driverTags") String driverTags,
+                                @Field("comment") String comment,
+                                @Field("isDeliver") int isDeliver);
+
+    /**
+     * 分类查询商家
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.SEARCH_GOODS_TYPE)
+    Call<String> searchGoods(@Field("page") Integer page,
+                             @Field("size") Integer size,
+                             @Field("userLng") String longitude,
+                             @Field("userLat") String latitude,
+                             @Field("name") String name,
+                             @Field("sorting") Integer sort,
+                             @Field("agentId") String agentId);
+
+    /**
+     * 商家代金券列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_BUSINESS_COUPON)
+    Call<String> getBusinessCoupon(@Field("businessId") Integer businessId);
+
+    /**
+     * 领取商家代金券
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.RECEICER_BUSINESS_COUPON)
+    Call<String> receiverBusinessCoupon(@Field("redActivityId") int redActivityId);
+
+    /**
+     * 领取红包
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_COUPON)
+    Call<String> getCoupan(@Field("agentId") String agentId);
+
+    /**
+     * 可用商家代金券列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.MY_BUSINESS_CONPON)
+    Call<String> getBusinessCoupan(@Field("businessId") int businessId);
+
+    /**
+     * 根据指定的购物车获取订单结算信息
+     *
+     * @return
+     */
+    @POST(UrlConstant.FILL_IN_DIY)
+    Call<String> fillInDiy();
+
+    /**
+     * 商家分类列表
+     *
+     * @return
+     */
+    @POST(UrlConstant.GET_BUSINES_CATEGOTY)
+    Call<String> getBusinessCategory();
+
+    /**
+     * 获取特惠优选专区更多商家分页列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_PREFERENTIAL_BUSINES)
+    Call<String> getPreferentialBusiness(@Field("agentId") String agentId,
+                                         @Field("userLng") String longitude,
+                                         @Field("userLat") String latitude,
+                                         @Field("page") int page,
+                                         @Field("size") int size);
+
+    /**
+     * 获取订单状态
+     *
+     * @param orderId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_ORDER_STATUS)
+    Call<String> getOrderStatus(@Field("orderId") int orderId);
+
+    /**
+     * 获取最近订单
+     *
+     * @param agentId
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_RECENTLY_ORDER)
+    Call<String> getRecentlyOrder(@Field("agentId") String agentId);
+
+    /**
+     * 判断手机号是否存在
+     *
+     * @param mobile
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.CHECK_MOBILE_EXIST)
+    Call<String> checkMobileExist(@Field("mobile") String mobile);
+
+    /**
+     * 购物车勾选
+     *
+     * @return
+     */
+    @POST(UrlConstant.CHECK_SHOP_CART)
+    Call<String> checkShopCart();
+
 
 }

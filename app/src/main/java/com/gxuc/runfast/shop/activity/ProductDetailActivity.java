@@ -127,17 +127,17 @@ public class ProductDetailActivity extends ToolBarActivity implements AddWidget.
         FoodBean foodBean = (FoodBean) getIntent().getSerializableExtra("food");
         if (foodBean != null) {
             tvFoodName.setText(foodBean.getName());
-            tvFoodSale.setText(foodBean.getSale());
+            tvFoodSale.setText(foodBean.getSalesnum() + "");
             tvFoodPrice.setText(foodBean.getPrice() + "");
             if (foodBean.getSelectCount() > 0) {
                 ivSub.setVisibility(View.VISIBLE);
-                tvProductCount.setText(foodBean.getSelectCount()+"");
+                tvProductCount.setText(foodBean.getSelectCount() + "");
             }
             dealCar(foodBean);
         }
     }
 
-    @OnClick({R.id.iv_back, R.id.iv_collection,R.id.iv_sub, R.id.iv_add})
+    @OnClick({R.id.iv_back, R.id.iv_collection, R.id.iv_sub, R.id.iv_add})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
@@ -203,7 +203,7 @@ public class ProductDetailActivity extends ToolBarActivity implements AddWidget.
     }
 
     private void dealCar(FoodBean foodBean) {
-        HashMap<String, Long> typeSelect = new HashMap<>();
+        HashMap<String, Integer> typeSelect = new HashMap<>();
         BigDecimal amount = new BigDecimal(0.0);
         int total = 0;
         boolean hasFood = false;
@@ -253,7 +253,7 @@ public class ProductDetailActivity extends ToolBarActivity implements AddWidget.
     }
 
     private void updateAmount(BigDecimal amount) {
-        if (amount.compareTo(new BigDecimal(0.0)) == 0) {
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
             car_limit.setText("¥20 起送");
             car_limit.setTextColor(Color.parseColor("#a8a8a8"));
             car_limit.setBackgroundColor(Color.parseColor("#535353"));
@@ -304,7 +304,7 @@ public class ProductDetailActivity extends ToolBarActivity implements AddWidget.
                         carAdapter.setNewData(new ArrayList<FoodBean>());
                         fragment.getFoodAdapter().notifyDataSetChanged();
                         car_badge.setVisibility(View.INVISIBLE);
-                        fragment.getTypeAdapter().updateBadge(new HashMap<String, Long>());
+                        fragment.getTypeAdapter().updateBadge(new HashMap<String, Integer>());
                         updateAmount(new BigDecimal(0.0));
                     }
                 })

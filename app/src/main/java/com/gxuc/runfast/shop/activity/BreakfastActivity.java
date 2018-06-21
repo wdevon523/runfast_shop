@@ -2,7 +2,7 @@ package com.gxuc.runfast.shop.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -11,14 +11,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.adapter.BreakfastAdapter;
+import com.example.supportv1.utils.JsonUtil;
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.adapter.BreakfastSortAdapter;
+import com.gxuc.runfast.shop.adapter.BusinessCategoryAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.BusinessCategoryInfo;
+import com.gxuc.runfast.shop.bean.home.NearByBusinessInfo;
 import com.gxuc.runfast.shop.bean.mainmiddle.ClassTypeInfos;
 import com.gxuc.runfast.shop.adapter.BreakfastClassAdapter;
-import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
-import com.gxuc.runfast.shop.bean.BusinessExercise;
-import com.gxuc.runfast.shop.bean.BusinessInfo;
 import com.gxuc.runfast.shop.bean.SortInfo;
 import com.gxuc.runfast.shop.bean.mainmiddle.ClassTypeInfo;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -28,26 +29,29 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
-import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
 import retrofit2.Response;
 
 /**
  * 早餐
  */
-public class BreakfastActivity extends ToolBarActivity implements View.OnClickListener, LoadMoreAdapter.LoadMoreApi, BGARefreshLayout.BGARefreshLayoutDelegate {
+public class BreakfastActivity extends ToolBarActivity implements View.OnClickListener {
 
     @BindView(R.id.view_class_list)
     RecyclerView recyclerViewClass;
@@ -73,24 +77,25 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     @BindView(R.id.layout_class_back)
     RelativeLayout layoutClassBack;
     @BindView(R.id.rl_refresh)
-    BGARefreshLayout mRefreshLayout;
+    SmartRefreshLayout smartRefreshLayout;
 
     private boolean isClass;
 
     private boolean isSort;
 
-    private List<BusinessInfo> businessInfos = new ArrayList<>();
+    private List<NearByBusinessInfo> businessInfos = new ArrayList<>();
 
-    private List<ClassTypeInfo> typeInfos = new ArrayList<>();
+    private ArrayList<BusinessCategoryInfo> businessCategoryInfoList = new ArrayList<>();
     private List<SortInfo> sortInfos = new ArrayList<>();
 
 
     private BreakfastClassAdapter adapterType;
     private BreakfastSortAdapter adapterSort;
 
-    private int page = 1;
+    private final int FIRST_PAGE = 0;
+    private int currentPage = FIRST_PAGE;
+    private boolean isLastPage = false;
 
-    private LoadMoreAdapter loadMoreAdapter;
     private double lat;
     private double lon;
     private String url;
@@ -101,6 +106,8 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     private int mTotalpage;
     private String typeId;
     private int sortId;
+    private BusinessCategoryAdapter businessCategoryAdapter;
+    private String agentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,7 +115,6 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         setContentView(R.layout.activity_breakfast);
         ButterKnife.bind(this);
         initData();
-        initRefreshLayout();
         setData();
     }
 
@@ -124,7 +130,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         recyclerViewList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerViewClass.setAdapter(adapterType);
         recyclerViewSort.setAdapter(adapterSort);
-        recyclerViewList.setAdapter(loadMoreAdapter);
+        recyclerViewList.setAdapter(businessCategoryAdapter);
     }
 
 
@@ -141,39 +147,90 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
 
         lat = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT));
         lon = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON));
+        agentId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
         if (!TextUtils.isEmpty(mName)) {
             tvClassName.setText(mName);
         }
         getSortInfo();
 
-        adapterType = new BreakfastClassAdapter(typeInfos, this, this);
+        adapterType = new BreakfastClassAdapter(businessCategoryInfoList, this, this);
         adapterSort = new BreakfastSortAdapter(sortInfos, this, this);
-        BreakfastAdapter breakfastAdapert = new BreakfastAdapter(businessInfos, this, this);
-        loadMoreAdapter = new LoadMoreAdapter(this, breakfastAdapert);
-        loadMoreAdapter.setLoadMoreListener(this);
-        //getBusiness(lon, lat, page);
-        searchGoods("黄");
+        businessCategoryAdapter = new BusinessCategoryAdapter(this, businessInfos);
+//        getBusiness(lon, lat, page);
+        getBusinessCategory();
+
+        smartRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
+
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                smartRefreshLayout.getLayout().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        clearRecyclerViewData();
+                        refreshData();
+                        smartRefreshLayout.finishRefresh();
+                        smartRefreshLayout.setEnableLoadMore(true);//恢复上拉状态
+                    }
+                }, 1000);
+            }
+
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
+                refreshLayout.getLayout().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentPage++;
+                        requestBusienss();
+                        smartRefreshLayout.finishLoadMore();
+//                        refreshlayout.setLoadmoreFinished(true);
+                    }
+                }, 1000);
+            }
+
+        });
+
+        businessCategoryAdapter.setOnNearByBusinessClickListener(new BusinessCategoryAdapter.OnNearByBusinessClickListener() {
+            @Override
+            public void onNearByBusinessClickListener(int position, NearByBusinessInfo nearByBusinessInfo) {
+                Intent intent = new Intent(BreakfastActivity.this, BusinessNewActivity.class);
+                intent.putExtra("businessId", nearByBusinessInfo.id);
+                startActivity(intent);
+            }
+        });
     }
 
-    private void initRefreshLayout() {
-        // 为BGARefreshLayout 设置代理
-        mRefreshLayout.setDelegate(this);
-        BGAMeiTuanRefreshViewHolder meiTuanRefreshViewHolder = new BGAMeiTuanRefreshViewHolder(this, true);
-        meiTuanRefreshViewHolder.setPullDownImageResource(R.mipmap.bga_refresh_mt_pull_down);
-        meiTuanRefreshViewHolder.setChangeToReleaseRefreshAnimResId(R.drawable.bga_refresh_mt_change_to_release_refresh);
-        meiTuanRefreshViewHolder.setRefreshingAnimResId(R.drawable.bga_refresh_mt_refreshing);
-        mRefreshLayout.setRefreshViewHolder(meiTuanRefreshViewHolder);
+    private void refreshData() {
+        currentPage = FIRST_PAGE;
+        isLastPage = false;
+        clearRecyclerViewData();
+        requestBusienss();
     }
+
+    private void clearRecyclerViewData() {
+        businessInfos.clear();
+        businessCategoryAdapter.setList(businessInfos);
+    }
+
 
     /**
      * 获取商品分类
      */
-    private void searchGoods(String name) {
-        CustomApplication.getRetrofit().searchGoodsType(name).enqueue(new MyCallback<String>() {
+    private void getBusinessCategory() {
+        CustomApplication.getRetrofitNew().getBusinessCategory().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String data = response.body();
-                dealSearchGoods(data);
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        dealBusinessCategory(jsonObject.optString("data"));
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
 
             @Override
@@ -183,42 +240,72 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         });
     }
 
-    private void dealSearchGoods(String data) {
-        ClassTypeInfos classTypeInfo = GsonUtil.parseJsonWithGson(data, ClassTypeInfos.class);
-        List<ClassTypeInfo> listTypeInfos = classTypeInfo.getBustype();
-        ClassTypeInfo info = new ClassTypeInfo();
-        info.id = "";
-        info.name = "全部分类";
-        info.isSelect = TextUtils.isEmpty(mName);
-        info.imgId = R.drawable.icon_class_all;
-        this.typeInfos.add(info);
-        for (int i = 0; i < listTypeInfos.size(); i++) {
-            info = new ClassTypeInfo();
-            info.id = listTypeInfos.get(i).getId();
-            info.name = listTypeInfos.get(i).getName();
-            if (!TextUtils.isEmpty(mName) && TextUtils.equals(info.name, mName)) {
-                info.isSelect = true;
-                typeId = info.id;
+    private void dealBusinessCategory(String data) {
+        businessCategoryInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<BusinessCategoryInfo>>() {
+        }.getType());
+
+        for (int i = 0; i < businessCategoryInfoList.size(); i++) {
+            if (!TextUtils.isEmpty(mName) && TextUtils.equals(businessCategoryInfoList.get(i).name, mName)) {
+                businessCategoryInfoList.get(i).isSelect = true;
+                typeId = businessCategoryInfoList.get(i).id + "";
+                break;
             }
-            info.imgId = R.drawable.icon_class_all;
-            this.typeInfos.add(info);
         }
-        page = 1;
-        getBusinessType(page, 10, sortId, typeId);
-        adapterType.notifyDataSetChanged();
+
+
+//
+//        ClassTypeInfos classTypeInfo = GsonUtil.parseJsonWithGson(data, ClassTypeInfos.class);
+//        List<ClassTypeInfo> listTypeInfos = classTypeInfo.getBustype();
+//        ClassTypeInfo info = new ClassTypeInfo();
+//        info.id = "";
+//        info.name = "全部分类";
+//        info.isSelect = TextUtils.isEmpty(mName);
+//        info.imgId = R.drawable.icon_class_all;
+//        this.typeInfos.add(info);
+//        for (int i = 0; i < listTypeInfos.size(); i++) {
+//            info = new ClassTypeInfo();
+//            info.id = listTypeInfos.get(i).getId();
+//            info.name = listTypeInfos.get(i).getName();
+//            if (!TextUtils.isEmpty(mName) && TextUtils.equals(info.name, mName)) {
+//                info.isSelect = true;
+//                typeId = info.id;
+//            }
+//            info.imgId = R.drawable.icon_class_all;
+//            this.typeInfos.add(info);
+//        }
+        refreshData();
+        adapterType.setList(businessCategoryInfoList);
     }
 
     /**
      * 分类选择
      */
-    private void getBusinessType(int page, int raw, int sortId, String typeId) {
-        //TODO 经纬度
+    private void requestBusienss() {
 
-        CustomApplication.getRetrofit().getBusinessType(page, raw, lon, lat, sortId, typeId, 1).enqueue(new MyCallback<String>() {
+        if (isLastPage) {
+            ToastUtil.showToast(R.string.load_all_date);
+            return;
+        }
+
+        CustomApplication.getRetrofitNew().getNearByBusiness(agentId, lon, lat, sortId, new IdentityHashMap<String, Integer>(), new IdentityHashMap<String, Integer>(), typeId, currentPage, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String data = response.body();
-                dealSearchGoodsType(data);
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray jsonArray = jsonObject.optJSONArray("data");
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            dealSearchGoodsType(jsonArray.toString());
+                        } else {
+                            isLastPage = true;
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
 
@@ -230,60 +317,16 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     }
 
     private void dealSearchGoodsType(String data) {
-        try {
-            JSONObject jsonObject = new JSONObject(data);
-            JSONArray bus = jsonObject.getJSONArray("bus");
-            mTotalpage = jsonObject.optInt("totalpage");
-            if (bus == null || bus.length() <= 0) {
-                mRefreshLayout.endRefreshing();
-                loadMoreAdapter.loadAllDataCompleted();
-                return;
-            }
-            if (page == 1) {
-                businessInfos.clear();
-                loadMoreAdapter.resetLoadState();
-            }
 
-            int length = bus.length();
-            for (int i = 0; i < length; i++) {
-                JSONObject busObject = bus.getJSONObject(i);
-                BusinessInfo info = new BusinessInfo();
-                info.id = busObject.optInt("id");
-                info.mini_imgPath = busObject.optString("mini_imgPath");
-                info.imgPath = busObject.optString("imgPath");
-                info.name = busObject.optString("name");
-                info.isopen = busObject.optInt("isopen");
-                info.distance = busObject.optDouble("distance");
-                info.levelId = busObject.optInt("levelId");
-                info.salesnum = busObject.optInt("salesnum");
-                info.startPay = busObject.optDouble("startPay");
-                info.busshowps = busObject.optDouble("busshowps");
-                info.baseCharge = busObject.optDouble("baseCharge");
-                info.charge = busObject.optDouble("charge");
-                info.isDeliver = busObject.optInt("isDeliver");
-                info.goldBusiness = busObject.optBoolean("goldBusiness");
-                info.speed = busObject.optString("speed");
-                info.alist = new ArrayList<>();
-                JSONArray alist = busObject.optJSONArray("alist");
-                if (alist != null) {
-                    int length1 = alist.length();
-                    for (int j = 0; j < length1; j++) {
-                        JSONObject alistObject = alist.getJSONObject(j);
-                        BusinessExercise exercise = new BusinessExercise();
-                        exercise.ptype = alistObject.optInt("ptype");
-                        exercise.fulls = alistObject.optDouble("fulls");
-                        exercise.lesss = alistObject.optDouble("lesss");
-                        exercise.showname = alistObject.optString("showname");
-                        info.alist.add(exercise);
-                    }
-                }
-                businessInfos.add(info);
-            }
-            loadMoreAdapter.loadCompleted();
-            mRefreshLayout.endRefreshing();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (TextUtils.isEmpty(data)) {
+            isLastPage = true;
+            return;
         }
+
+        ArrayList<NearByBusinessInfo> nearByBusinessInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<NearByBusinessInfo>>() {
+        }.getType());
+        businessInfos.addAll(nearByBusinessInfoList);
+        businessCategoryAdapter.setList(businessInfos);
     }
 
     @OnClick({R.id.layout_class, R.id.layout_sort, R.id.tv_class_back})
@@ -347,19 +390,19 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                 case R.id.layout_class_select:
                     businessInfos.clear();
                     mPosition = (Integer) v.getTag();
-                    for (int i = 0; i < typeInfos.size(); i++) {
-                        typeInfos.get(i).isSelect = false;
+                    for (int i = 0; i < businessCategoryInfoList.size(); i++) {
+                        businessCategoryInfoList.get(i).isSelect = false;
                     }
-                    typeInfos.get(mPosition).isSelect = true;
+                    businessCategoryInfoList.get(mPosition).isSelect = true;
                     adapterType.notifyDataSetChanged();
 //                    if (mPosition == 0) {
 //                        mName = mSort.getTypename();
 //                    } else {
-                    typeId = typeInfos.get(mPosition).id;
+                    typeId = businessCategoryInfoList.get(mPosition).id + "";
 //                    }
-                    tvClassName.setText(typeInfos.get(mPosition).name);
-                    page = 1;
-                    getBusinessType(page, 10, sortId, typeId);
+                    tvClassName.setText(businessCategoryInfoList.get(mPosition).name);
+                    tvToolbarTitle.setText(businessCategoryInfoList.get(mPosition).name);
+                    refreshData();
                     uiHide();
                     break;
                 case R.id.layout_sort_select:
@@ -371,14 +414,14 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
                     adapterSort.notifyDataSetChanged();
                     sortId = sortInfos.get(mPositionSort).id;
                     tvSortName.setText(sortInfos.get(mPositionSort).name);
-                    getBusinessType(page, 10, sortId, typeId);
+                    refreshData();
                     uiHide();
                     break;
                 case R.id.layout_breakfast_item:
                     Integer positionBusiness = (Integer) v.getTag();
-                    Intent intent = new Intent(this, BusinessActivity.class);
+                    Intent intent = new Intent(this, BusinessNewActivity.class);
                     intent.putExtra(IntentFlag.KEY, IntentFlag.MAIN_BOTTOM_PAGE);
-                    intent.putExtra("business", businessInfos.get(positionBusiness));
+                    intent.putExtra("businessId", businessInfos.get(positionBusiness).id);
                     startActivity(intent);
                     break;
             }
@@ -447,31 +490,4 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         return sortInfos;
     }
 
-    @Override
-    public void loadMore() {
-        if (page < mTotalpage) {
-            page += 1;
-            getBusinessType(page, 10, sortId, typeId);
-        } else {
-            Handler handler = new Handler();
-            final Runnable r = new Runnable() {
-                public void run() {
-                    loadMoreAdapter.loadAllDataCompleted();
-                }
-            };
-            handler.post(r);
-
-        }
-    }
-
-    @Override
-    public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
-        page = 1;
-        getBusinessType(page, 10, sortId, typeId);
-    }
-
-    @Override
-    public boolean onBGARefreshLayoutBeginLoadingMore(BGARefreshLayout refreshLayout) {
-        return false;
-    }
 }

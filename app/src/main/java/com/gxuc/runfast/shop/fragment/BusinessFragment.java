@@ -66,7 +66,7 @@ public class BusinessFragment extends LazyFragment {
     private void initData() {
         RecyclerView recyclerView1 = (RecyclerView) findViewById(R.id.recycler1);
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
-        typeAdapter = new TypeAdapter(types);
+        typeAdapter = new TypeAdapter(getContext(), types);
         View view = new View(getContext());
         view.setMinimumHeight(ViewUtils.dip2px(getContext(), 50));
         typeAdapter.addFooterView(view);

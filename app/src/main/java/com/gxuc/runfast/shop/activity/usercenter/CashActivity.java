@@ -7,15 +7,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.JsonUtil;
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.CashBankInfo;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.GsonUtil;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,11 +45,11 @@ public class CashActivity extends ToolBarActivity {
     @BindView(R.id.tv_wallet_money)
     TextView tvWalletMoney;
 
-    private User userInfo;
+    private UserInfo userInfo;
 
-    private List<CashBankInfo> bankInfoList = new ArrayList<>();
+    private ArrayList<CashBankInfo> bankInfoList = new ArrayList<>();
 
-    private Integer bankId;
+    private CashBankInfo bankInfoSelect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,7 @@ public class CashActivity extends ToolBarActivity {
         if (userInfo == null) {
             return;
         }
-        tvWalletMoney.setText(String.valueOf(userInfo.getRemainder()));
+        tvWalletMoney.setText(String.valueOf(userInfo.remainder));
         getBankInfo();
     }
 
@@ -69,10 +72,11 @@ public class CashActivity extends ToolBarActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_bank_mode:
-                startActivityForResult(new Intent(this, SelectBankActivity.class).putExtra("bankInfo", (ArrayList) bankInfoList), 1001);
+                startActivityForResult(new Intent(this, SelectBankActivity.class).putExtra("bankInfo", bankInfoSelect), 1001);
                 break;
             case R.id.tv_cash_all:
-                etAccountMoney.setText(String.valueOf(userInfo.getRemainder()));
+                etAccountMoney.setText(String.valueOf(userInfo.remainder));
+                etAccountMoney.setSelection(etAccountMoney.getText().length());
                 break;
             case R.id.btn_cash_mode:
                 sendCash();
@@ -86,10 +90,20 @@ public class CashActivity extends ToolBarActivity {
      * @param
      */
     private void getBankInfo() {
-        CustomApplication.getRetrofit().getWathdrawallList(userInfo.getId()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getBankList().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealWathdrawalllList(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        dealBankUser(jsonObject.optString("data"));
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -99,34 +113,23 @@ public class CashActivity extends ToolBarActivity {
         });
     }
 
-    private void dealWathdrawalllList(String body) {
-        try {
-            JSONObject object = new JSONObject(body);
-            JSONArray banks = object.getJSONArray("banks");
-            int length = banks.length();
-            if (length <= 0) {
-                tvBankMode.setText("请添加银行卡");
-                return;
-            }
-            for (int i = 0; i < length; i++) {
-                JSONObject jsonObject = banks.getJSONObject(i);
-                CashBankInfo bankInfo = GsonUtil.parseJsonWithGson(jsonObject.toString(), CashBankInfo.class);
-                if (i == 0) {
-                    bankInfo.setSelect(true);
-                }
-                bankInfoList.add(bankInfo);
-            }
-            String account = bankInfoList.get(0).getAccount();
-            if (account.length() > 4) {
-                account = account.substring(account.length() - 4);
-            }
-            tvBankMode.setText(bankInfoList.get(0).getBanktype() + "(" + account + ")");
-            bankId = bankInfoList.get(0).getId();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void dealBankUser(String data) {
+        bankInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<CashBankInfo>>() {
+        }.getType());
+        if (bankInfoList.size() <= 0) {
+            tvBankMode.setText("请添加银行卡");
+            return;
         }
+
+        String account = bankInfoList.get(0).account;
+        if (account.length() > 4) {
+            account = account.substring(account.length() - 4);
+        }
+        tvBankMode.setText(bankInfoList.get(0).banktype + "(" + account + ")");
+        bankInfoSelect = bankInfoList.get(0);
+
     }
+
 
     /**
      * 提现
@@ -136,17 +139,28 @@ public class CashActivity extends ToolBarActivity {
     private void sendCash() {
         String money = etAccountMoney.getText().toString().trim();
         if (TextUtils.isEmpty(money)) {
-            CustomToast.INSTANCE.showToast(this, "请输入提现金额");
+            ToastUtil.showToast("请输入提现金额");
             return;
         }
-        if (bankId == null) {
-            CustomToast.INSTANCE.showToast(this, "请选择提现银行卡");
+        if (bankInfoSelect == null) {
+            ToastUtil.showToast("请选择提现银行卡");
             return;
         }
-        CustomApplication.getRetrofit().getCashSend(Double.parseDouble(money), 2, bankId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getCashSend(Double.parseDouble(money), bankInfoSelect.id, "").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealCashSend(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("申请已提交，2个工作日内审核处理请耐心等待");
+                        finish();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -156,44 +170,20 @@ public class CashActivity extends ToolBarActivity {
         });
     }
 
-    private void dealCashSend(String body) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            CustomToast.INSTANCE.showToast(this, msg);
-
-            if (success) {
-                finish();
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != RESULT_OK) {
             return;
         }
-        CashBankInfo bankInfo = (CashBankInfo) data.getSerializableExtra("bank");
-        if (bankInfo != null) {
-            int size = bankInfoList.size();
-            for (int i = 0; i < size; i++) {
-                if (bankInfoList.get(i).getId().equals(bankInfo.getId())) {
-                    bankInfoList.get(i).setSelect(true);
-                } else {
-                    bankInfoList.get(i).setSelect(false);
-                }
-            }
-            String account = bankInfo.getAccount();
+        bankInfoSelect = (CashBankInfo) data.getSerializableExtra("bankInfo");
+        if (bankInfoSelect != null) {
+
+            String account = bankInfoSelect.account;
             if (account.length() > 4) {
                 account = account.substring(account.length() - 4);
             }
-            tvBankMode.setText(bankInfo.getBanktype() + "(" + account + ")");
-            bankId = bankInfo.getId();
+            tvBankMode.setText(bankInfoSelect.banktype + "(" + account + ")");
         }
     }
 }

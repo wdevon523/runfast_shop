@@ -3,7 +3,10 @@ package com.gxuc.runfast.shop.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -13,16 +16,20 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.JsonUtil;
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.adapter.MessageAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
-import com.gxuc.runfast.shop.bean.message.MessageInfos;
-import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
-import com.gxuc.runfast.shop.util.CustomToast;
-import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +60,9 @@ public class MessageFragment extends Fragment {
     @BindView(R.id.tv_login)
     TextView tvLogin;
     private Integer page = 1;
-    private List<MessageInfo> mInfoList;
+    private ArrayList<MessageInfo> messageInfoList;
     private MessageAdapter mAdapter;
-    private User userInfo;
+    private UserInfo userInfo;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -76,28 +83,33 @@ public class MessageFragment extends Fragment {
     private void initData() {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRvMessageList.setLayoutManager(manager);
-        mInfoList = new ArrayList<>();
-        mAdapter = new MessageAdapter(getActivity(), mInfoList);
+        messageInfoList = new ArrayList<>();
+        mAdapter = new MessageAdapter(getActivity(), messageInfoList);
         mRvMessageList.setAdapter(mAdapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        userInfo = UserService.getUserInfo(getActivity());
-        getNetData();
+        if (!isHidden()) {
+            userInfo = UserService.getUserInfo(getActivity());
+            getNetData();
+        }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
+
         if (!hidden) {
-//            if (userInfo == null) {
-//                mInfoList.clear();
-//                mAdapter.notifyDataSetChanged();
-//                startActivity(new Intent(getActivity(), LoginActivity.class));
-//                return;
-//            }
+            userInfo = UserService.getUserInfo(getActivity());
+            if (userInfo == null) {
+                messageInfoList.clear();
+                mAdapter.notifyDataSetChanged();
+                llNotLogin.setVisibility(View.VISIBLE);
+                llEmptyMessage.setVisibility(View.GONE);
+                return;
+            }
             getNetData();
         }
     }
@@ -106,27 +118,36 @@ public class MessageFragment extends Fragment {
      * 获取消息
      */
     private void getNetData() {
+        if (userInfo == null) {
+            return;
+        }
 
-        CustomApplication.getRetrofit().postMessageList(page, 10).enqueue(new Callback<String>() {
+        CustomApplication.getRetrofitNew().getMessageList().enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 
                 String body = response.body().toString();
-                if (!body.contains("{\"relogin\":1}")) {
-                    if (!TextUtils.isEmpty(body)) {
-                        dealMessageList(body);
-                        llNotLogin.setVisibility(View.GONE);
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (!body.contains("{\"relogin\":1}") && jsonObject.optBoolean("success")) {
+                        if (!TextUtils.isEmpty(body)) {
+                            dealMessageList(jsonObject.optJSONArray("data"));
+                            llNotLogin.setVisibility(View.GONE);
+                        }
+                    } else {
+                        messageInfoList.clear();
+                        mAdapter.notifyDataSetChanged();
+                        llNotLogin.setVisibility(View.VISIBLE);
+                        llEmptyMessage.setVisibility(View.GONE);
                     }
-                } else {
-                    mInfoList.clear();
-                    mAdapter.notifyDataSetChanged();
-                    llNotLogin.setVisibility(View.VISIBLE);
-                    llEmptyMessage.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
             }
 
             @Override
@@ -137,13 +158,12 @@ public class MessageFragment extends Fragment {
         });
     }
 
-    private void dealMessageList(String body) {
-        if (!TextUtils.isEmpty(body)) {
-            mInfoList.clear();
-            MessageInfos messageInfos = GsonUtil.parseJsonWithGson(body, MessageInfos.class);
-            mInfoList.addAll(messageInfos.getMessge());
-            mAdapter.notifyDataSetChanged();
-            llEmptyMessage.setVisibility(mInfoList.size() > 0 ? View.GONE : View.VISIBLE);
+    private void dealMessageList(JSONArray data) {
+        if (data != null && data.length() > 0) {
+            messageInfoList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<MessageInfo>>() {
+            }.getType());
+            mAdapter.setList(messageInfoList);
+            llEmptyMessage.setVisibility(messageInfoList.size() > 0 ? View.GONE : View.VISIBLE);
         }
     }
 

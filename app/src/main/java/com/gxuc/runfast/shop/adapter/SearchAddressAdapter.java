@@ -8,14 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.amap.api.maps.AMapUtils;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.maps2d.AMapUtils;
+import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.help.Tip;
 import com.gxuc.runfast.shop.R;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;

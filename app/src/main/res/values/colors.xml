@@ -409,12 +409,12 @@
     <color name="text_fb4e44">#fb4e44</color>
     <color name="text_4d89e6">#4d89e6</color>
     <color name="text_e85b4d">#e85b4d</color>
-
-    <color name="bg_80ffffff">#80ffffff</color>
-    <color name="bg_60000000">#60000000</color>
-    <!--<color name="text_fb7d30">#fb7d30</color>-->
+    <color name="text_eb532f">#eb532f</color>
+    <color name="text_b8b8b8">#b8b8b8</color>
     <color name="text_ff9f14">#ff9f14</color>
     <color name="text_fc9153">#fc9153</color>
+
+    <!--<color name="text_fb7d30">#fb7d30</color>-->
     <color name="view_e5e5e5">#e5e5e5</color>
     <color name="view_c4c4c4">#c4c4c4</color>
     <color name="bg_fff4ed">#fff4ed</color>
@@ -432,5 +432,8 @@
     <color name="bg_f3f2f2">#f3f2f2</color>
     <color name="bg_fdf2d5">#fdf2d5</color>
     <color name="bg_3b3b3b">#3b3b3b</color>
+    <color name="bg_f8f8f8">#f8f8f8</color>
+    <color name="bg_80ffffff">#80ffffff</color>
+    <color name="bg_60000000">#60000000</color>
 
 </resources>

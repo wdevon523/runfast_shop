@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -33,11 +34,11 @@ public class WalletActivity extends ToolBarActivity {
     }
 
     private void initView() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        tvWalletMoney.setText(String.valueOf(userInfo.getRemainder()));
+        tvWalletMoney.setText(String.valueOf(userInfo.remainder));
     }
 
     @OnClick({R.id.tv_right_title, R.id.btn_wallet_recharge, R.id.btn_wallet_withdrawals, R.id.layout_withdrawals_record, R.id.layout_withdrawals_account})

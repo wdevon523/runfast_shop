@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="请输入手机号"
-                android:inputType="phone"
+                android:inputType="number"
                 android:maxLength="11"
                 android:singleLine="true"
                 android:textColor="@color/color_address_black"

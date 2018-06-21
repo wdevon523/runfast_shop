@@ -9,12 +9,13 @@ import android.widget.RelativeLayout;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.example.supportv1.utils.ValidateUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 
 import org.json.JSONException;
@@ -55,7 +56,7 @@ public class ComplaintActivity extends ToolBarActivity {
                 break;
             case R.id.btn_commit_info:
                 if (!TextUtils.isEmpty(mEtComplaintCount.getText()) &&
-                        mEtComplaintCount.getText().toString().length() > 5) {
+                        mEtComplaintCount.getText().toString().length() >= 5) {
                     if (ValidateUtil.isEmail(mEtComplaintEmail.getText().toString())) {
                         toCommitComments();
                     } else {
@@ -72,14 +73,15 @@ public class ComplaintActivity extends ToolBarActivity {
      * 提交投诉
      */
     private void toCommitComments() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
         String email = mEtComplaintEmail.getText().toString();
         String content = mEtComplaintCount.getText().toString();
-        CustomApplication.getRetrofit().postMineComplaint(content,
-                email).enqueue(new MyCallback<String>() {
+
+
+        CustomApplication.getRetrofitNew().complain(content, email).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealMineComplaint(response.body());
@@ -94,10 +96,13 @@ public class ComplaintActivity extends ToolBarActivity {
 
     private void dealMineComplaint(String body) {
         try {
-            JSONObject object = new JSONObject(body);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            CustomToast.INSTANCE.showToast(this, msg);
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast("投诉已提交");
+                finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

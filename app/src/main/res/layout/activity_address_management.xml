@@ -131,7 +131,8 @@
                         android:id="@+id/ll_contain_my_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/dimen_25_dp" />
 
                     <LinearLayout
                         android:id="@+id/ll_show_hide_more_address"
@@ -167,7 +168,8 @@
                     android:id="@+id/ll_contain_nearby_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/dimen_25_dp" />
 
             </LinearLayout>
 
@@ -184,8 +186,7 @@
             android:id="@+id/search_recycleview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
     </FrameLayout>
 

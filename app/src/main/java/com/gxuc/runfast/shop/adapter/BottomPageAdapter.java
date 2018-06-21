@@ -15,12 +15,12 @@ import com.gxuc.runfast.shop.activity.BreakfastActivity;
 import com.gxuc.runfast.shop.activity.WebActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.maintop.TopImage1;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,7 +75,7 @@ public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.Bo
                         mContext.startActivity(webIntent);
                         break;
                     case 2:
-                        CustomToast.INSTANCE.showToast(mContext, "2链接");
+                        ToastUtil.showToast("2链接");
                         break;
                     case 3:
                         Intent data = new Intent(mContext, BreakfastActivity.class);
@@ -134,7 +134,7 @@ public class BottomPageAdapter extends RecyclerView.Adapter<BottomPageAdapter.Bo
             public void onResponse(Call<String> call, Response<String> response) {
 
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 

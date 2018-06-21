@@ -14,7 +14,7 @@ public class UrlConstant {
     public static final String HOST = ApiServiceFactory.HOST;
     public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
-//    public static final String ImageBaseUrl = "http://image.gxptkc.com";
+    //    public static final String ImageBaseUrl = "http://image.gxptkc.com";
     public static final String ImageBaseUrl = "http://192.168.2.221:8080";
 
     public static final String ImageHeadBaseUrl = "http://image.gxptkc.com/";
@@ -49,24 +49,6 @@ public class UrlConstant {
      * 登录
      */
     public static final String LOGIN = "login.do";
-    /**
-     * 快速登录
-     */
-    public static final String LOGIN_QUICK = "loginBySms.do";
-    /**
-     * 第三方登录
-     */
-    public static final String THIRD_LOGIN = "thirdLogin.do";
-
-    /**
-     * 登出
-     */
-    public static final String LOGOUT = "logout.do";
-
-    /**
-     * 注册
-     */
-    public static final String REGISTER = "register.do";
 
     /**
      * 个人中心
@@ -109,11 +91,6 @@ public class UrlConstant {
     public static final String BIND_MOBILE_CODE = "getThirdSmsCode.do";
 
     /***
-     * 绑定手机
-     */
-    public static final String BIND_MOBILE = "registerAndBind.do";
-
-    /***
      * 获取修改密码验证码
      */
     public static final String QUERY_EDIT_PWD_CODE = "user/getcode.do";
@@ -141,10 +118,6 @@ public class UrlConstant {
      *  分类商家
      */
     public static final String BUSINESS_LIST = "business/list.do";
-    /***
-     * 优惠券
-     */
-    public static final String GET_COUPON = "getCoupon.do";
 
     /***
      * 商家商品列表
@@ -182,20 +155,6 @@ public class UrlConstant {
      */
     public static final String BUSINESS_INFO = "business/showBusiness.do";
 
-    /**
-     * 商品搜索
-     */
-    public static final String SEARCH_GOODS = "search/lists.do";
-
-    /**
-     * 商品分类搜索
-     */
-    public static final String SEARCH_GOODS_TYPE = "search/list.do";
-
-    /**
-     * 商品分类搜索
-     */
-    public static final String GET_BUSINESS_TYPE = "business/list.do";
 
     /**
      * 忘记密码
@@ -319,10 +278,7 @@ public class UrlConstant {
      * 我的优惠券
      */
     public static final String MY_CONPON = "coupon/mycoupon.do";
-    /**
-     * 优惠券领取中心列表
-     */
-    public static final String RECEIVE_CONPON = "coupon/index.do";
+
     /**
      * 领取优惠券
      */
@@ -335,14 +291,7 @@ public class UrlConstant {
      * 我的积分
      */
     public static final String SCORE_DATA = "userScore/list.do";
-    /**
-     * 收支明细
-     */
-    public static final String LIST_CONSUME = "wallet/record.do";
-    /**
-     * 提现
-     */
-    public static final String CASH_SEND = "wallet/withdrawal.do";
+
     /**
      * 提现账号
      */
@@ -360,18 +309,7 @@ public class UrlConstant {
      * 获取银行卡开户行
      */
     public static final String GET_BANK_NAME = "validateAndCacheCardInfo.json?_input_charset=utf-8";
-    /**
-     * 添加银行卡
-     */
-    public static final String ADD_BANK = "wallet/addAccount.do";
-    /**
-     * 提现记录
-     */
-    public static final String CASH_RECORD = "wallet/walletrecord.do";
-    /**
-     * 订单详情
-     */
-    public static final String ORDER_DETAIL = "userOrder/getGoodsSellRecord.do";
+
     /**
      * 订单详情
      */
@@ -459,10 +397,6 @@ public class UrlConstant {
      */
     public static final String GET_USER_INFO = "user/userinfo.do";
 
-    /**
-     * 获取订单状态
-     */
-    public static final String GET_ORDER_STATUS = "userOrder/outStatuslist.do";
 
     /**
      * 获取订单支付状态
@@ -482,7 +416,7 @@ public class UrlConstant {
     /**
      * 检查版本
      */
-    public static final String CHECK_NEW_VERSION = "checkAndroidVersion.do";
+    public static final String CHECK_NEW_VERSION = "user/wm/my/checkVersion";
 
     /**
      * 检查版本
@@ -555,4 +489,302 @@ public class UrlConstant {
      * 获取附近商家列表
      */
     public static final String GET_NEAR_BY_BUSINESS = "user/wm/home/businessNearBy";
+
+    /**
+     * 获取附近商家列表
+     */
+    public static final String GET_BUSINESS_DETAIL = "user/wm/business/detail";
+
+    /**
+     * 获取商家所有商品
+     */
+    public static final String GET_BUSINESS_GOODS = "user/wm/goods/catalogs";
+
+    /**
+     * 添加购物车
+     */
+    public static final String ADD_SHOP_CART = "user/wm/cart/add";
+
+    /**
+     * 删除购物车
+     */
+    public static final String SUB_SHOP_CART = "user/wm/cart/delete";
+
+    /**
+     * 获取商家购物车列表
+     */
+    public static final String BUSINESS_SHOP_CART = "user/wm/cart/list";
+
+    /**
+     * 清空购物车
+     */
+    public static final String CLEAR_SHOP_CART = "user/wm/cart/clear";
+
+    /**
+     * 根据商家购物车获取订单结算信息
+     */
+    public static final String SUBMIT_BUSINESS_SHOP_CART = "user/wm/cart/fillIn";
+
+    /**
+     * 生成订单
+     */
+    public static final String CREATE_ORDER_NEW = "user/wm/order/confirm";
+
+    /**
+     * 生成订单
+     */
+    public static final String PAY_ORDER = "user/wm/pay/prepay";
+
+    /**
+     * 查询订单状态
+     */
+    public static final String ORDER_QUERY = "user/wm/pay/orderQuery";
+
+    /**
+     * 获取商家下的用户评论列表
+     */
+    public static final String BUSINESS_EVALUATION = "user/wm/business/listComment";
+
+    /**
+     * 获取用户订单列表
+     */
+    public static final String GET_ORDER_LIST = "user/wm/order/list";
+
+    /**
+     * 再来一单
+     */
+    public static final String BUY_AGAIN_NEW = "user/wm/order/recur";
+
+    /**
+     * 取消订单
+     */
+    public static final String CANCEL_ORDER = "user/wm/order/cancel";
+
+    /**
+     * 获取当前用户的收货地址列表
+     */
+    public static final String ADDRESS_LIST = "user/wm/address/list";
+
+    /**
+     * 修改收货地址
+     */
+    public static final String UPDATE_ADDRESS = "user/wm/address/update";
+
+    /**
+     * 删除当前用户所属的收货地址
+     */
+    public static final String DELETE_ADDRESS = "user/wm/address/delete";
+
+    /**
+     * 添加用户地址
+     */
+    public static final String ADD_ADDRESS = "user/wm/address/add";
+
+    /**
+     * 登陆
+     */
+    public static final String LOGIN_NEW = "user/account/login";
+
+    /**
+     * 根据原密码修改密码
+     */
+    public static final String UPDATE_PWD_BY_OLD = "user/wm/my/updatePwdByOld";
+
+    /**
+     * 根据短信验证码修改密码
+     */
+    public static final String UPDATE_PWD_BY_SMSCODE = "user/wm/my/updatePwdBySmsCode";
+
+    /**
+     * 获取当前用户信息
+     */
+    public static final String GET_USER_INFORMATION = "user/wm/my/info";
+
+    /**
+     * 修改用户信息
+     */
+    public static final String UPDATE_USER_INFO = "user/wm/my/update";
+
+    /**
+     * 商户加盟
+     */
+    public static final String BUSINESS_JOIN = "user/wm/my/businessJoin";
+
+    /**
+     * 用户投诉
+     */
+    public static final String COMPLAIN = "user/wm/my/complain";
+
+    /**
+     * 获取代理商客服
+     */
+    public static final String GET_CUSTOM_INFO = "user/wm/my/custom";
+
+    /**
+     * 获取用户积分明细
+     */
+    public static final String GET_SCORE_LIST = "user/wm/my/scoreRecord";
+
+    /**
+     * 获取用户消息分页列表
+     */
+    public static final String GET_MESSAGE_LIST = "user/wm/message/list";
+
+    /**
+     * 获取用户银行卡账户列表
+     */
+    public static final String GET_BANK_LIST = "user/wm/bankAccount/list";
+
+    /**
+     * 删除银行卡账户
+     */
+    public static final String DELETE_BANK = "user/wm/bankAccount/delete";
+
+    /**
+     * 添加银行卡
+     */
+    public static final String ADD_BANK = "user/wm/bankAccount/add";
+
+    /**
+     * 获取用户收藏列表
+     */
+    public static final String GET_FAVORITE_LIST = "user/wm/enshrine/list";
+
+    /**
+     * 收藏商家
+     */
+    public static final String ADD_FAVORITE = "user/wm/enshrine/add";
+
+    /**
+     * 取消收藏商家
+     */
+    public static final String DELETE_FAVORITE = "user/wm/enshrine/delete";
+
+    /**
+     * 获取当前用户的红包活动分页列表
+     */
+    public static final String GET_MY_RED_PACK = "user/wm/redPacket/list";
+
+    /**
+     * 获取当前用户可用的红包活动分页列表
+     */
+    public static final String GET_MY_RED_PACK_VALID = "user/wm/redPacket/listValid";
+
+    /**
+     * 提现
+     */
+    public static final String CASH_SEND = "user/wm/wallet/withdraw";
+
+    /**
+     * 提现记录
+     */
+    public static final String CASH_RECORD = "user/wm/wallet/withdrawRecord";
+
+    /**
+     * 收支明细
+     */
+    public static final String LIST_CONSUME = "user/wm/wallet/inOutDetail";
+
+    /**
+     * 获取当前用户所有的购物车
+     */
+    public static final String ALL_SHOP_CART = "user/wm/cart/all";
+
+    /**
+     * 订单详情
+     */
+    public static final String ORDER_DETAIL = "user/wm/order/detail";
+
+    /**
+     * 快速登录
+     */
+    public static final String LOGIN_QUICK = "user/account/login";
+
+    /**
+     * 发送短信
+     */
+    public static final String SEND_SMS = "user/wm/my/sendSms";
+
+    /**
+     * 第三方登录
+     */
+    public static final String THIRD_LOGIN = "api/user/account/login";
+
+    /***
+     * 通过短信验证码注册并绑定第三方账户
+     */
+    public static final String BIND_MOBILE = "user/account/registerAndBind";
+
+    /**
+     * 登出
+     */
+    public static final String LOGOUT = "user/account/logout";
+
+    /**
+     * 注册
+     */
+    public static final String REGISTER = "user/account/register ";
+
+    /**
+     * 商品分类搜索
+     */
+    public static final String SEARCH_GOODS_TYPE = "user/wm/home/search";
+
+    /**
+     * 商家代金券列表
+     */
+    public static final String GET_BUSINESS_COUPON = "user/wm/business/redActivityForPick";
+
+    /**
+     * 领取商家代金券或者红包
+     */
+    public static final String RECEICER_BUSINESS_COUPON = "user/wm/redPacket/pick";
+
+    /***
+     * 优惠券领取中心列表
+     */
+    public static final String GET_COUPON = "user/wm/home/redActivityForPick";
+
+    /**
+     * 优惠券领取中心列表
+     */
+    public static final String MY_BUSINESS_CONPON = "user/wm/redPacket/listValidCoupon";
+
+    /**
+     * 根据指定的购物车获取订单结算信息
+     */
+    public static final String FILL_IN_DIY = "user/wm/cart/fillInDiy";
+
+    /**
+     * 商家分类列表
+     */
+    public static final String GET_BUSINES_CATEGOTY = "user/wm/home/businessType";
+
+    /**
+     * 获取特惠优选专区更多商家分页列表
+     */
+    public static final String GET_PREFERENTIAL_BUSINES = "user/wm/home/offZoneMoreBusiness";
+
+    /**
+     * 获取订单状态
+     */
+    public static final String GET_ORDER_STATUS = "user/wm/order/status";
+
+    /**
+     * 获取最近订单
+     */
+    public static final String GET_RECENTLY_ORDER = "user/wm/home/latestOrder";
+
+    /**
+     * 判断手机号是否存在
+     */
+    public static final String CHECK_MOBILE_EXIST = "user/account/mobileExist";
+
+    /**
+     * 根据指定的购物车获取订单结算信息
+     */
+    public static final String CHECK_SHOP_CART = "user/wm/cart/chooseCartItem";
+
+
+
 }

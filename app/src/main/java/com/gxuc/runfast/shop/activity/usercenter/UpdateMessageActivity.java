@@ -16,14 +16,15 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.UserCaptchaTask;
+import com.gxuc.runfast.shop.util.MD5Util;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.netease.nis.captcha.Captcha;
 import com.netease.nis.captcha.CaptchaListener;
@@ -245,12 +246,12 @@ public class UpdateMessageActivity extends ToolBarActivity {
      */
     private void getAuthCode(String validate) {
         if (mFlags != 1) {
-            User userInfo = UserService.getUserInfo(this);
+            UserInfo userInfo = UserService.getUserInfo(this);
             if (userInfo == null) {
                 return;
             }
 
-            CustomApplication.getRetrofit().getEditPwdCode(userInfo.getMobile(), validate).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofitNew().sendSms(userInfo.mobile, "sms_pwd_update", validate).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealCode(response.body());
@@ -266,10 +267,10 @@ public class UpdateMessageActivity extends ToolBarActivity {
             if (TextUtils.isEmpty(mPhone) ||
                     mPhone.length() != 11) {
 //                !VaUtils.isMobileNo(mPhone)){
-                CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
+                ToastUtil.showToast(getString(R.string.please_input_correct_phone));
                 return;
             }
-            CustomApplication.getRetrofit().getForgetCode(mPhone, validate).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofitNew().sendSms(mPhone, "sms_pwd_update", validate).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealCode(response.body());
@@ -286,13 +287,15 @@ public class UpdateMessageActivity extends ToolBarActivity {
     private void dealCode(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            ToastUtil.showToast(msg);
-            Message message = handler.obtainMessage();
-            message.what = 1002;
-            message.arg1 = 59;
-            message.sendToTarget();
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                Message message = handler.obtainMessage();
+                message.what = 1002;
+                message.arg1 = 59;
+                message.sendToTarget();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -307,19 +310,19 @@ public class UpdateMessageActivity extends ToolBarActivity {
         String newPwdAgain = etNewPasswordAgain.getText().toString().trim();
 
         if (TextUtils.isEmpty(code)) {
-            CustomToast.INSTANCE.showToast(this, "验证码不能为空");
+            ToastUtil.showToast("验证码不能为空");
             return;
         }
         if (TextUtils.isEmpty(newPwd)) {
-            CustomToast.INSTANCE.showToast(this, "新密码不能为空");
+            ToastUtil.showToast("新密码不能为空");
             return;
         }
         if (!TextUtils.equals(newPwd, newPwdAgain)) {
-            CustomToast.INSTANCE.showToast(this, "两次新密码输入不一致");
+            ToastUtil.showToast("两次新密码输入不一致");
             return;
         }
         if (mFlags == 1) {
-            CustomApplication.getRetrofit().updateForgotPwd(mPhone, code, newPwd).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofitNew().updatePwdBySmsCode(mPhone, code, MD5Util.MD5(newPwd)).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealPwd(response.body());
@@ -331,11 +334,11 @@ public class UpdateMessageActivity extends ToolBarActivity {
                 }
             });
         } else {
-            User userInfo = UserService.getUserInfo(this);
+            UserInfo userInfo = UserService.getUserInfo(this);
             if (userInfo == null) {
                 return;
             }
-            CustomApplication.getRetrofit().updatePassword("", newPwd, 1, code).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofitNew().updatePwdBySmsCode(userInfo.mobile, code, MD5Util.MD5(newPwd)).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     dealPwd(response.body());
@@ -351,13 +354,12 @@ public class UpdateMessageActivity extends ToolBarActivity {
 
     private void dealPwd(String body) {
         try {
-            JSONObject object = new JSONObject(body);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            CustomToast.INSTANCE.showToast(this, msg);
-            if (success) {
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
                 setResult(RESULT_OK);
                 finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,12 +1,14 @@
 package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,17 +17,27 @@ import com.amap.api.location.AMapLocation;
 import com.example.supportv1.utils.DeviceUtil;
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.BreakfastActivity;
+import com.gxuc.runfast.shop.activity.BusinessNewActivity;
+import com.gxuc.runfast.shop.activity.BusinessPreferentialActivity;
+import com.gxuc.runfast.shop.activity.WebActivity;
+import com.gxuc.runfast.shop.bean.home.AdvertInfo;
+import com.gxuc.runfast.shop.bean.home.BusinessEvent;
 import com.gxuc.runfast.shop.bean.home.HomeDataInfo;
 import com.gxuc.runfast.shop.bean.home.NearByBusinessInfo;
+import com.gxuc.runfast.shop.bean.home.OffZoneGoodsInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
+import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.GlideImageLoader;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.FilterView;
 import com.gxuc.runfast.shop.view.IndicatorView;
 import com.gxuc.runfast.shop.view.MyGridView;
 import com.willy.ratingbar.BaseRatingBar;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
+import com.youth.banner.listener.OnBannerListener;
 
 import org.xutils.x;
 
@@ -44,6 +56,8 @@ public class HomeAdapter extends RecyclerView.Adapter {
     private ArrayList<HomeDataInfo> homeDataInfoList;
 
     private OnFilterListener mOnFilterListener;
+    private OnNearByBusinessClickListener mOnNearByBusinessClickListener;
+
     private BigDecimal bigDecimal = new BigDecimal("1000");
 
     public static final int HOME_ENTRANCE_PAGE_SIZE = 10;//首页菜单单页显示数量
@@ -100,13 +114,64 @@ public class HomeAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void initImages(HomeDataViewHolder homeDataViewHolder, HomeDataInfo homeDataInfo) {
+    private void initImages(HomeDataViewHolder homeDataViewHolder, final HomeDataInfo homeDataInfo) {
         homeDataViewHolder.banner.setImageLoader(new GlideImageLoader());
         homeDataViewHolder.banner.setImages(homeDataInfo.advertInfoList);
         homeDataViewHolder.banner.isAutoPlay(true);
         homeDataViewHolder.banner.setDelayTime(3000);
         homeDataViewHolder.banner.setIndicatorGravity(BannerConfig.CENTER);
-        homeDataViewHolder.banner.start();
+        if (homeDataInfo.advertInfoList != null && homeDataInfo.advertInfoList.size() > 0) {
+            homeDataViewHolder.banner.start();
+        }
+        homeDataViewHolder.banner.setOnBannerListener(new OnBannerListener() {
+            @Override
+            public void OnBannerClick(int position) {
+                AdvertInfo advertInfo = homeDataInfo.advertInfoList.get(position);
+                switch (advertInfo.adType) {
+                    case 1://内容
+                        Intent webIntent = new Intent(context, WebActivity.class);
+                        if (advertInfo.linkAddr.contains("http")) {
+                            webIntent.putExtra("url", advertInfo.linkAddr);
+                        } else {
+                            webIntent.putExtra("url", ApiServiceFactory.WEB_HOST + advertInfo.linkAddr);
+                        }
+                        context.startActivity(webIntent);
+                        break;
+                    case 2://链接
+                        ToastUtil.showToast("2链接");
+                        break;
+                    case 3://商家分类类型
+//                        String[] split = topImage.getLinkAddr().split("=");
+//                        int typeId = Integer.parseInt(split[1]);
+                        Intent data = new Intent(context, BreakfastActivity.class);
+                        data.putExtra("typeName", advertInfo.typename);
+                        data.putExtra("typeId", advertInfo.type);
+                        context.startActivity(data);
+                        break;
+                    case 4://商家
+                        String[] split = advertInfo.linkAddr.split("=");
+                        int businessId = Integer.parseInt(split[1]);
+                        Intent intent = new Intent(context, BusinessNewActivity.class);
+                        intent.putExtra("businessId", businessId);
+                        context.startActivity(intent);
+                        break;
+                    case 5:
+//                        String[] splitGood = advertInfo.linkAddr.split("=");
+//                        int goodId = Integer.parseInt(splitGood[1]);
+
+                        break;
+                    case 6:
+                        Intent webData = new Intent(context, WebActivity.class);
+                        if (advertInfo.linkAddr.contains("http")) {
+                            webData.putExtra("url", advertInfo.linkAddr);
+                        } else {
+                            webData.putExtra("url", ApiServiceFactory.WEB_HOST + advertInfo.linkAddr);
+                        }
+                        context.startActivity(webData);
+                        break;
+                }
+            }
+        });
     }
 
     private void initHomePage(final HomeDataViewHolder homeDataViewHolder, HomeDataInfo homeDataInfo) {
@@ -151,25 +216,58 @@ public class HomeAdapter extends RecyclerView.Adapter {
     }
 
 
-    private void initAgentZoneBusiness(HomeDataViewHolder homeDataViewHolder, HomeDataInfo homeDataInfo) {
+    private void initAgentZoneBusiness(HomeDataViewHolder homeDataViewHolder, final HomeDataInfo homeDataInfo) {
         if (homeDataInfo.agentZoneBusinessList.size() < 2) {
             return;
         }
         x.image().bind(homeDataViewHolder.ivPreferentialBuisnessOne, UrlConstant.ImageBaseUrl + homeDataInfo.agentZoneBusinessList.get(0).special_img);
         x.image().bind(homeDataViewHolder.ivPreferentialBuisnessTwo, UrlConstant.ImageBaseUrl + homeDataInfo.agentZoneBusinessList.get(1).special_img);
 
+        homeDataViewHolder.ivPreferentialBuisnessOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, BusinessNewActivity.class);
+                intent.putExtra("businessId", homeDataInfo.agentZoneBusinessList.get(0).busId);
+                context.startActivity(intent);
+            }
+        });
+
+        homeDataViewHolder.ivPreferentialBuisnessTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, BusinessNewActivity.class);
+                intent.putExtra("businessId", homeDataInfo.agentZoneBusinessList.get(1).busId);
+                context.startActivity(intent);
+            }
+        });
     }
 
-    private void initOffZoneGoods(HomeDataViewHolder homeDataViewHolder, HomeDataInfo homeDataInfo) {
+    private void initOffZoneGoods(HomeDataViewHolder homeDataViewHolder, final HomeDataInfo homeDataInfo) {
         OffZoneGoodAdapter offZoneGoodAdapter = new OffZoneGoodAdapter(context, homeDataInfo.offZoneGoodsList);
         homeDataViewHolder.preferentialGridview.setAdapter(offZoneGoodAdapter);
 //        homeDataViewHolder.preferentialGridview.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        homeDataViewHolder.preferentialGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                OffZoneGoodsInfo offZoneGoodsInfo = homeDataInfo.offZoneGoodsList.get(position);
+                Intent intent = new Intent(context, BusinessNewActivity.class);
+                intent.putExtra("businessId", offZoneGoodsInfo.a_businessId);
+                context.startActivity(intent);
+            }
+        });
+
+        homeDataViewHolder.tvPreferentialMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, BusinessPreferentialActivity.class));
+            }
+        });
 
     }
 
-    private void initNearByBusiness(NearByBusinessViewHolder nearByBusinessViewHolder, HomeDataInfo homeDataInfo, int position) {
-        NearByBusinessInfo nearByBusinessInfo = homeDataInfo.nearByBusinessInfo;
+    private void initNearByBusiness(final NearByBusinessViewHolder nearByBusinessViewHolder, HomeDataInfo homeDataInfo, final int position) {
+        final NearByBusinessInfo nearByBusinessInfo = homeDataInfo.nearByBusinessInfo;
         BigDecimal distanceM = new BigDecimal(nearByBusinessInfo.distance);
         BigDecimal distanceKM = distanceM.divide(bigDecimal).setScale(2, RoundingMode.HALF_UP);
 
@@ -184,12 +282,94 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
 //        nearByBusinessViewHolder.tvHomeBusinessStartPriceAndShippingPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay + " | 配送费 ¥ " + nearByBusinessInfo.deliveryFee);
         nearByBusinessViewHolder.tvHomeBusinessStartPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay);
-        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥ " + nearByBusinessInfo.deliveryFee);
+        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥ " + (nearByBusinessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
         nearByBusinessViewHolder.ivHomeBusinessGold.setVisibility(nearByBusinessInfo.goldBusiness ? View.VISIBLE : View.GONE);
-        nearByBusinessViewHolder.ivHomeBusinessIsCharge.setVisibility(nearByBusinessInfo.isDeliver == 0 ? View.VISIBLE : View.GONE);
-        nearByBusinessViewHolder.ivHomeBusinessToTake.setVisibility(nearByBusinessInfo.autoTaking ? View.VISIBLE : View.GONE);
-//        nearByBusinessViewHolder.rbHomeBusinessEvaluate.setRating(nearByBusinessInfo.levelId);
-        nearByBusinessViewHolder.rbHomeBusinessEvaluate.setRating(2.7f);
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setText(nearByBusinessInfo.isDeliver == 0 ? "快车转送" : "商家配送");
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setTextColor(nearByBusinessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.bg_44be99));
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setBackgroundResource(nearByBusinessInfo.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_44be99);
+        nearByBusinessViewHolder.tvHomeBusinessToTake.setVisibility(nearByBusinessInfo.suportSelf ? View.VISIBLE : View.GONE);
+        nearByBusinessViewHolder.rbHomeBusinessEvaluate.setRating(nearByBusinessInfo.levelId);
+
+        nearByBusinessViewHolder.viewClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+        nearByBusinessViewHolder.tvHomeBusinessClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+
+        nearByBusinessViewHolder.llHomeBusinessContainAct.removeAllViews();
+        nearByBusinessViewHolder.llHomeBusinessContainAct.setTag(false);
+        if (nearByBusinessInfo.activityList != null && nearByBusinessInfo.activityList.size() > 0) {
+            for (int i = 0; i < nearByBusinessInfo.activityList.size(); i++) {
+                View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
+                ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
+                TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
+                tvAct.setText(nearByBusinessInfo.activityList.get(i).name);
+                showActImage(ivAct, nearByBusinessInfo.activityList.get(i));
+                if (i > 1) {
+                    view.setVisibility(View.GONE);
+                }
+                nearByBusinessViewHolder.llHomeBusinessContainAct.addView(view);
+            }
+
+            if (nearByBusinessInfo.activityList.size() > 2) {
+                nearByBusinessViewHolder.llHomeBusinessContainAct.getChildAt(0).findViewById(R.id.tv_act_all).setVisibility(View.VISIBLE);
+            }
+
+        }
+
+
+        nearByBusinessViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnNearByBusinessClickListener != null) {
+                    mOnNearByBusinessClickListener.onNearByBusinessClickListener(position, nearByBusinessInfo);
+                }
+            }
+        });
+
+        nearByBusinessViewHolder.llHomeBusinessContainAct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (nearByBusinessInfo.activityList.size() > 2) {
+                    boolean showStatus = false;
+                    for (int i = 0; i < nearByBusinessInfo.activityList.size(); i++) {
+                        nearByBusinessViewHolder.llHomeBusinessContainAct.getChildAt(i).setVisibility(View.VISIBLE);
+                        if (i > 1) {
+                            if ((boolean) nearByBusinessViewHolder.llHomeBusinessContainAct.getTag()) {
+                                nearByBusinessViewHolder.llHomeBusinessContainAct.getChildAt(i).setVisibility(View.GONE);
+                                showStatus = false;
+                            } else {
+                                nearByBusinessViewHolder.llHomeBusinessContainAct.getChildAt(i).setVisibility(View.VISIBLE);
+                                showStatus = true;
+                            }
+                        }
+                    }
+                    nearByBusinessViewHolder.llHomeBusinessContainAct.setTag(showStatus);
+                }
+
+            }
+        });
+    }
+
+    private void showActImage(ImageView ivAct, BusinessEvent businessEvent) {
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        switch (businessEvent.ptype) {
+            case 1:
+                ivAct.setImageResource(R.drawable.icon_reduce);
+                break;
+            case 2:
+                ivAct.setImageResource(R.drawable.icon_fracture);
+                break;
+            case 3:
+                ivAct.setImageResource(R.drawable.icon_give);
+                break;
+            case 4:
+                ivAct.setImageResource(R.drawable.icon_special);
+                break;
+            case 5:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 6:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+        }
     }
 
 
@@ -269,10 +449,10 @@ public class HomeAdapter extends RecyclerView.Adapter {
         RoundedImageView ivHomeBusinessLogo;
         @BindView(R.id.iv_home_business_gold)
         ImageView ivHomeBusinessGold;
-        @BindView(R.id.iv_home_business_is_charge)
-        ImageView ivHomeBusinessIsCharge;
-        @BindView(R.id.iv_home_business_to_take)
-        ImageView ivHomeBusinessToTake;
+        @BindView(R.id.tv_home_business_is_charge)
+        TextView tvHomeBusinessIsCharge;
+        @BindView(R.id.tv_home_business_to_take)
+        TextView tvHomeBusinessToTake;
         @BindView(R.id.tv_home_business_label)
         TextView tvHomeBusinessLabel;
         @BindView(R.id.tv_home_business_name)
@@ -299,6 +479,10 @@ public class HomeAdapter extends RecyclerView.Adapter {
         BaseRatingBar rbHomeBusinessEvaluate;
         @BindView(R.id.ll_home_business_contain_act)
         LinearLayout llHomeBusinessContainAct;
+        @BindView(R.id.view_close)
+        View viewClose;
+        @BindView(R.id.tv_home_business_close)
+        TextView tvHomeBusinessClose;
 
         NearByBusinessViewHolder(View view) {
             super(view);
@@ -313,6 +497,14 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     public void setOnFilteristener(OnFilterListener mOnFilterListener) {
         this.mOnFilterListener = mOnFilterListener;
+    }
+
+    public interface OnNearByBusinessClickListener {
+        void onNearByBusinessClickListener(int position, NearByBusinessInfo nearByBusinessInfo);
+    }
+
+    public void setOnNearByBusinessClickListener(OnNearByBusinessClickListener mOnNearByBusinessClickListener) {
+        this.mOnNearByBusinessClickListener = mOnNearByBusinessClickListener;
     }
 
 }

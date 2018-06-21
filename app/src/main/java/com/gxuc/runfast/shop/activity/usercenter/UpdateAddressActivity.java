@@ -5,23 +5,28 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.amap.api.services.geocoder.RegeocodeAddress;
+import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.Address;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
-import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.ToolBarActivity;
-import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +49,18 @@ public class UpdateAddressActivity extends ToolBarActivity {
     EditText etHouseNumber;
     @BindView(R.id.btn_delete_address)
     Button mBtnDeleteAddress;
+    @BindView(R.id.rb_home)
+    RadioButton rbHome;
+    @BindView(R.id.rb_company)
+    RadioButton rbCompany;
+    @BindView(R.id.rb_school)
+    RadioButton rbSchool;
+    @BindView(R.id.rg_tag)
+    RadioGroup rgTag;
+    @BindView(R.id.cb_man)
+    CheckBox cbMan;
+    @BindView(R.id.cb_woman)
+    CheckBox cbWoman;
     private String mUserName;
     private String mUserPhone;
     private String mHouseNumber;
@@ -51,8 +68,10 @@ public class UpdateAddressActivity extends ToolBarActivity {
     private Address mAddressLat;
     private String mAddress;
     private int mFlags;
-    private AddressInfo mAddressInfo;
+    private AddressBean mAddressInfo;
     private String mTvAddress;
+    private int tag;
+    private int gender = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +79,41 @@ public class UpdateAddressActivity extends ToolBarActivity {
         setContentView(R.layout.activity_update_address);
         ButterKnife.bind(this);
         mFlags = getIntent().getIntExtra(IntentFlag.KEY, -1);
+        initData();
+
         if (mFlags == 1) {
-            mAddressInfo = getIntent().getParcelableExtra("addressInfo");
-            etUserName.setText(mAddressInfo.getName());
-            etUserPhone.setText(mAddressInfo.getPhone());
-            etHouseNumber.setText(mAddressInfo.getAddress());
-            tvAddress.setText(mAddressInfo.getUserAddress());
+            mAddressInfo = (AddressBean) getIntent().getSerializableExtra("addressInfo");
+
+            etUserName.setText(mAddressInfo.name);
+            etUserPhone.setText(mAddressInfo.phone);
+            etHouseNumber.setText(mAddressInfo.address);
+            tvAddress.setText(mAddressInfo.userAddress);
+            if (mAddressInfo.tag != null) {
+                switch (mAddressInfo.tag) {
+                    case 1:
+                        rgTag.check(R.id.rb_home);
+                        break;
+                    case 2:
+                        rgTag.check(R.id.rb_company);
+                        break;
+                    case 3:
+                        rgTag.check(R.id.rb_school);
+                        break;
+                }
+            }
+
+            if (mAddressInfo.gender != null) {
+                cbMan.setChecked(mAddressInfo.gender == 1);
+                cbWoman.setChecked(mAddressInfo.gender == 0);
+                gender = mAddressInfo.gender;
+            }
         } else {
             mBtnDeleteAddress.setVisibility(View.GONE);
         }
+    }
+
+    private void initData() {
+        HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
     }
 
     @Override
@@ -79,7 +124,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
         }
     }
 
-    @OnClick({R.id.layout_select_address, R.id.btn_save_address, R.id.btn_delete_address})
+    @OnClick({R.id.layout_select_address, R.id.btn_save_address, R.id.btn_delete_address, R.id.rb_home, R.id.rb_company, R.id.rb_school, R.id.cb_man, R.id.cb_woman})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_select_address:
@@ -102,6 +147,25 @@ public class UpdateAddressActivity extends ToolBarActivity {
             case R.id.btn_delete_address:
                 deleteAddress();
                 break;
+            case R.id.rb_home:
+                tag = 1;
+                break;
+            case R.id.rb_company:
+                tag = 2;
+                break;
+            case R.id.rb_school:
+                tag = 3;
+                break;
+            case R.id.cb_man:
+                gender = 1;
+                cbWoman.setChecked(false);
+                cbMan.setChecked(true);
+                break;
+            case R.id.cb_woman:
+                gender = 0;
+                cbMan.setChecked(false);
+                cbWoman.setChecked(true);
+                break;
         }
     }
 
@@ -111,19 +175,19 @@ public class UpdateAddressActivity extends ToolBarActivity {
         mHouseNumber = etHouseNumber.getText().toString();
         mTvAddress = tvAddress.getText().toString();
         if (TextUtils.isEmpty(mUserName)) {
-            CustomToast.INSTANCE.showToast(this, "请填入收货人名称");
+            ToastUtil.showToast("请填入收货人名称");
             return true;
         } else if (TextUtils.isEmpty(mUserPhone)) {
-            CustomToast.INSTANCE.showToast(this, "请填入手机号");
+            ToastUtil.showToast("请填入手机号");
             return true;
         } else if (mUserPhone.length() != 11) {
-            CustomToast.INSTANCE.showToast(this, "请填入正确的手机号");
+            ToastUtil.showToast("请填入正确的手机号");
             return true;
         } else if (TextUtils.isEmpty(mHouseNumber)) {
-            CustomToast.INSTANCE.showToast(this, "请填入门牌号");
+            ToastUtil.showToast("请填入门牌号");
             return true;
         } else if (TextUtils.isEmpty(mTvAddress)) {
-            CustomToast.INSTANCE.showToast(this, "请选择地址");
+            ToastUtil.showToast("请选择地址");
             return true;
         }
         return false;
@@ -133,42 +197,91 @@ public class UpdateAddressActivity extends ToolBarActivity {
      * 修改地址
      */
     private void editAddress() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
         if (mAddressLat != null) {
-            CustomApplication.getRetrofit().postEditAddress(mAddressInfo.getId(),
-                    mUserName, mUserPhone, mTvAddress,
-                    mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
-                    mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
-                    .enqueue(new MyCallback<String>() {
-                        @Override
-                        public void onSuccessResponse(Call<String> call, Response<String> response) {
-                            dealAddress(response.body());
-                        }
+//            CustomApplication.getRetrofit().postEditAddress(mAddressInfo.id,
+//                    mUserName, mUserPhone, mTvAddress,
+//                    mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
+//                    mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
+//                    .enqueue(new MyCallback<String>() {
+//                        @Override
+//                        public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                            dealAddress(response.body());
+//                        }
+//
+//                        @Override
+//                        public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//                        }
+//                    });
 
-                        @Override
-                        public void onFailureResponse(Call<String> call, Throwable t) {
-
+            CustomApplication.getRetrofitNew().updateAddress(mAddressInfo.id, mUserName, gender, mUserPhone, mTvAddress, mHouseNumber,
+                    String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude), tag).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        if (jsonObject.optBoolean("success")) {
+                            ToastUtil.showToast("保存成功");
+                            finish();
+                        } else {
+                            ToastUtil.showToast(jsonObject.optString("errorMsg"));
                         }
-                    });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
         } else {
-            CustomApplication.getRetrofit().postEditAddress(mAddressInfo.getId(),
-                    mUserName, mUserPhone, mTvAddress,
-                    mHouseNumber, String.valueOf(mAddressInfo.getLongitude()), String.valueOf(mAddressInfo.getLatitude()),
-                    mAddressInfo.getProvinceName(), mAddressInfo.getCityName(), mAddressInfo.getCountyName(), 1)
-                    .enqueue(new MyCallback<String>() {
-                        @Override
-                        public void onSuccessResponse(Call<String> call, Response<String> response) {
-                            dealAddress(response.body());
-                        }
+//            CustomApplication.getRetrofit().postEditAddress(mAddressInfo.id,
+//                    mUserName, mUserPhone, mTvAddress,
+//                    mHouseNumber, mAddressInfo.longitude, mAddressInfo.latitude,
+//                    mAddressInfo.provinceName, mAddressInfo.cityName, mAddressInfo.countyName, 1)
+//                    .enqueue(new MyCallback<String>() {
+//                        @Override
+//                        public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                            dealAddress(response.body());
+//                        }
+//
+//                        @Override
+//                        public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//                        }
+//                    });
 
-                        @Override
-                        public void onFailureResponse(Call<String> call, Throwable t) {
-
+            CustomApplication.getRetrofitNew().updateAddress(mAddressInfo.id, mUserName, gender, mUserPhone, mTvAddress, mHouseNumber,
+                    mAddressInfo.longitude, mAddressInfo.latitude, tag).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        if (jsonObject.optBoolean("success")) {
+                            ToastUtil.showToast("保存成功");
+                            finish();
+                        } else {
+                            ToastUtil.showToast(jsonObject.optString("errorMsg"));
                         }
-                    });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+
         }
     }
 
@@ -178,7 +291,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
                 JSONObject object = new JSONObject(body);
                 boolean success = object.optBoolean("success");
                 String msg = object.optString("msg");
-                CustomToast.INSTANCE.showToast(this, "保存成功");
+                ToastUtil.showToast("保存成功");
                 if (success) {
                     finish();
                 }
@@ -193,14 +306,26 @@ public class UpdateAddressActivity extends ToolBarActivity {
      * 删除地址
      */
     private void deleteAddress() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postDeleteAddress(mAddressInfo.getId()).enqueue(new MyCallback<String>() {
+
+        CustomApplication.getRetrofitNew().deleteAddress(mAddressInfo.id).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealDeleteAddress(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("删除成功");
+                        finish();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -208,11 +333,23 @@ public class UpdateAddressActivity extends ToolBarActivity {
 
             }
         });
+
+//        CustomApplication.getRetrofit().postDeleteAddress(mAddressInfo.id).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                dealDeleteAddress(response.body());
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void dealDeleteAddress(String body) {
         if (!TextUtils.isEmpty(body)) {
-            CustomToast.INSTANCE.showToast(this, "删除成功");
+            ToastUtil.showToast("删除成功");
             finish();
         }
     }
@@ -221,25 +358,50 @@ public class UpdateAddressActivity extends ToolBarActivity {
      * 新增地址
      */
     private void toAddAddress() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
+
+        CustomApplication.getRetrofitNew().addAddress(mUserName, gender, mUserPhone, mAddress, mHouseNumber,
+                String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude), tag).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("添加成功");
+                        finish();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
 //        Integer id = UserService.getUserInfo().getId();
-        CustomApplication.getRetrofit().postAddAddress(mUserName, mUserPhone, mAddress,
-                mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
-                mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
-                .enqueue(new MyCallback<String>() {
-                    @Override
-                    public void onSuccessResponse(Call<String> call, Response<String> response) {
-                        dealAddress(response.body());
-                    }
-
-                    @Override
-                    public void onFailureResponse(Call<String> call, Throwable t) {
-
-                    }
-                });
+//        CustomApplication.getRetrofit().postAddAddress(mUserName, mUserPhone, mAddress,
+//                mHouseNumber, String.valueOf(mAddressLat.latLng.longitude), String.valueOf(mAddressLat.latLng.latitude),
+//                mRegeocodeAddress.getProvince(), mRegeocodeAddress.getCity(), mRegeocodeAddress.getDistrict(), 1)
+//                .enqueue(new MyCallback<String>() {
+//                    @Override
+//                    public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                        dealAddress(response.body());
+//                    }
+//
+//                    @Override
+//                    public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//                    }
+//                });
 //        CustomToast.INSTANCE.showToast(this,"添加成功");
     }
 

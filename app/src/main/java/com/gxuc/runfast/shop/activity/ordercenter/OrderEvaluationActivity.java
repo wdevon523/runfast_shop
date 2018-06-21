@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -94,7 +95,7 @@ public class OrderEvaluationActivity extends ToolBarActivity {
         oid = getIntent().getIntExtra("oid", 0);
         logo = getIntent().getStringExtra("logo");
         businessName = getIntent().getStringExtra("businessName");
-        x.image().bind(ivOrderEvaluationBusinessImg, UrlConstant.ImageBaseUrl +logo);
+        x.image().bind(ivOrderEvaluationBusinessImg, UrlConstant.ImageBaseUrl +logo, NetConfig.optionsLogoImage);
         tvOrderEvaluationBusinessName.setText(businessName);
         isDeliver = getIntent().getIntExtra("isDeliver", 0);
         flOrderEvaluationOptions.setAdapter(new TagAdapter<String>(orderOptions) {
@@ -204,7 +205,7 @@ public class OrderEvaluationActivity extends ToolBarActivity {
     }
 
     private void requestEvaluation(int oid, int orderRate, String orderStr, int driverRate, String driverStr, String content, int isDeliver) {
-        CustomApplication.getRetrofit().postEvaluation(oid, orderRate, orderStr, driverRate, driverStr, content, isDeliver).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().postEvaluation(oid, orderRate, orderStr, driverRate, driverStr, content, isDeliver).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 try {

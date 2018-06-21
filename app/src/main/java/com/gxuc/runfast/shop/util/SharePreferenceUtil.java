@@ -2,9 +2,7 @@ package com.gxuc.runfast.shop.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.gxuc.runfast.shop.application.CustomApplication;
-
 
 //@AUTHOR: CiCi
 public class SharePreferenceUtil {
@@ -56,7 +54,6 @@ public class SharePreferenceUtil {
     public Boolean getBooleanValue(String key, boolean def) {
         return mSharedPreferences.getBoolean(key, def);
     }
-
 
     public void cancel() {
         mEditor.clear();

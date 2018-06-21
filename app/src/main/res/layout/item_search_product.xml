@@ -20,13 +20,13 @@
 
             <ImageView
                 android:id="@+id/iv_food"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/dimen_75_dp"
+                android:layout_height="@dimen/dimen_75_dp"
                 android:cropToPadding="true" />
 
             <TextView
                 android:id="@+id/tv_no_food_store"
-                android:layout_width="@dimen/dimen_85_dp"
+                android:layout_width="@dimen/dimen_75_dp"
                 android:layout_height="@dimen/dimen_20_dp"
                 android:layout_alignBottom="@+id/iv_food"
                 android:background="@color/bg_7f000000"
@@ -46,7 +46,7 @@
                 android:maxLines="2"
                 android:text="劲辣鸡腿堡"
                 android:textColor="@color/color_address_black"
-                android:textSize="14sp"
+                android:textSize="14dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -58,7 +58,7 @@
                 android:maxLines="1"
                 android:text="销量4"
                 android:textColor="@color/color_text_gray"
-                android:textSize="12dp" />
+                android:textSize="@dimen/dimen_12_dp" />
 
             <TextView
                 android:id="@+id/tv_price"
@@ -70,7 +70,7 @@
                 android:includeFontPadding="false"
                 android:text="123"
                 android:textColor="@color/color_price_red"
-                android:textSize="16sp"
+                android:textSize="@dimen/dimen_14_dp"
                 android:textStyle="bold" />
 
         </RelativeLayout>

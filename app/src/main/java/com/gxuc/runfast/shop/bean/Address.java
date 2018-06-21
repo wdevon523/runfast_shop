@@ -3,7 +3,7 @@ package com.gxuc.runfast.shop.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps2d.model.LatLng;
 
 /**
  * 地址匹配管理

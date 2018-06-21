@@ -5,14 +5,14 @@
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
     android:background="@drawable/address_background"
-    android:orientation="vertical"
-    android:paddingLeft="15dp"
-    android:paddingRight="15dp">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/rl_business_name"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <ImageView
             android:id="@+id/iv_order_detail_business_img"
@@ -44,18 +44,23 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginBottom="@dimen/dimen_10_dp"
-        android:background="@color/color_line_gray" />
+        android:background="@color/color_line_gray"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp" />
 
     <LinearLayout
         android:id="@+id/ll_contain_product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
+        android:background="@color/bg_f8f8f8"
         android:orientation="vertical" />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_30_dp">
+        android:layout_height="@dimen/dimen_30_dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -88,7 +93,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_30_dp">
+        android:layout_height="@dimen/dimen_30_dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -111,7 +118,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_30_dp">
+        android:layout_height="@dimen/dimen_30_dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -143,13 +152,17 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="@dimen/dp_10"
-        android:background="@color/color_line_gray" />
+        android:background="@color/color_line_gray"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center_vertical|right"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -210,6 +223,8 @@
         android:id="@+id/rl_contact_business"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_55_dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:visibility="gone">
 
         <View

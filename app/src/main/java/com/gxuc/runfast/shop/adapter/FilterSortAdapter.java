@@ -20,6 +20,7 @@ import butterknife.ButterKnife;
 public class FilterSortAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<FilterInfo> filterInfoList;
+    private ArrayList<FilterInfo> list;
 
     public FilterSortAdapter(Context mContext, ArrayList<FilterInfo> filterInfoList) {
         this.mContext = mContext;
@@ -56,6 +57,11 @@ public class FilterSortAdapter extends BaseAdapter {
         viewHolder.tvFilterSortName.setText(filterInfo.name);
         viewHolder.tvFilterSortName.setTextColor(filterInfo.isCheck ? ContextCompat.getColor(mContext, R.color.text_ff9f14) : ContextCompat.getColor(mContext, R.color.text_666666));
         return convertView;
+    }
+
+    public void setList(ArrayList<FilterInfo> filterInfoList) {
+        this.filterInfoList = filterInfoList;
+        notifyDataSetChanged();
     }
 
     static class ViewHolder {

@@ -11,10 +11,12 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.bean.FoodBean;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.bean.SubOptionInfo;
 import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 天上白玉京 on 2017/8/23.
@@ -50,8 +52,8 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
     @Override
     public void onBindViewHolder(SpecCarViewHolder holder, final int position) {
         final FoodBean foodBean = carFoods.get(position);
-        BigDecimal foodPayPrice = new BigDecimal(0.0);
-        BigDecimal foodTotalPrice = new BigDecimal(0.0);
+//        BigDecimal foodPayPrice = new BigDecimal(0.0);
+//        BigDecimal foodTotalPrice = new BigDecimal(0.0);
         if (foodBean != null) {
             holder.tvCarName.setText(foodBean.getName());
 //            if (foodBean.getDisprice() == null || TextUtils.equals("0", foodBean.getDisprice())) {
@@ -60,47 +62,54 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
 //                holder.tvCarPrice.setText("¥" + new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount())));
 //            }
 
-            if (foodBean.getIslimited() == 0) {
-                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
-                    foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                } else {
-                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                    foodPayPrice = foodTotalPrice;
-                }
-            } else {
-                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
-                    if (foodBean.getSelectCount() <= foodBean.getLimitNum()) {
-                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                    } else {
-                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getLimitNum())).add(
-                                foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount() - foodBean.getLimitNum())));
-                    }
-                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                } else {
-                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
-                    foodPayPrice = foodTotalPrice;
-                }
-            }
+//            if (foodBean.getIslimited() == 0) {
+//                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
+//                    foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                } else {
+//                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                    foodPayPrice = foodTotalPrice;
+//                }
+//            } else {
+//                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
+//                    if (foodBean.getSelectCount() <= foodBean.getLimitNum()) {
+//                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                    } else {
+//                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getLimitNum())).add(
+//                                foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount() - foodBean.getLimitNum())));
+//                    }
+//                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                } else {
+//                    foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+//                    foodPayPrice = foodTotalPrice;
+//                }
+//            }
 
-            holder.tvCarPrice.setText("¥" + foodPayPrice);
+            holder.tvCarPrice.setText("¥" + foodBean.getSpecInfo().totalPrice);
 
-            holder.tvCount.setText(foodBean.getSelectCount() + "");
-            holder.tvSpec.setText(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? "" : foodBean.getGoodsSpec());
-            holder.tvSpec.setVisibility(TextUtils.isEmpty(foodBean.getGoodsSpec()) ? View.GONE : View.VISIBLE);
+            holder.tvCount.setText(foodBean.getSpecInfo().num + "");
 
-            holder.tvType.setText(TextUtils.isEmpty(foodBean.getGoodsSellOptionName()) ? "" : foodBean.getGoodsSellOptionName());
-            holder.tvType.setVisibility(TextUtils.isEmpty(foodBean.getGoodsSellOptionName()) ? View.GONE : View.VISIBLE);
+//            String specStr = "";
+//            if (foodBean.getGoodsSellStandardList().size() > 1 || foodBean.getGoodsSellOptionList().size() > 0) {
+//                specStr = foodBean.getSpecInfo().standardName;
+//            }
+//
+//            if (foodBean.getSpecInfo().optionIdMap != null && foodBean.getSpecInfo().optionIdMap.size() > 0) {
+//
+//                for (Map.Entry<Integer, SubOptionInfo> entry : foodBean.getSpecInfo().optionIdMap.entrySet()) {
+//                    specStr += "," + entry.getValue().name;
+//                }
+//            }
+            holder.tvSpec.setText(foodBean.getSpecInfo().standarOptionName);
+            holder.tvSpec.setVisibility(TextUtils.isEmpty(foodBean.getSpecInfo().standarOptionName) ? View.GONE : View.VISIBLE);
 
-            holder.tvTypeTwo.setText(TextUtils.isEmpty(foodBean.getGoodsTypeTwo()) ? "" : foodBean.getGoodsTypeTwo());
-            holder.tvTypeTwo.setVisibility(TextUtils.isEmpty(foodBean.getGoodsTypeTwo()) ? View.GONE : View.VISIBLE);
 
             holder.ivAdd.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    long selectCount = foodBean.getSelectCount();
+                    int selectCount = foodBean.getSelectCount();
 
-                    if (selectCount >= foodBean.getNum()){
+                    if (selectCount >= foodBean.getNum()) {
                         ToastUtil.showToast("库存不足");
                         return;
                     }
@@ -123,18 +132,20 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
                         selectCount++;
                     }
                     foodBean.setSelectCount(selectCount);
+                    foodBean.getSpecInfo().num = selectCount;
                     specCountImp.add(v, foodBean, position);
                 }
             });
             holder.ivSub.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    long selectCount = foodBean.getSelectCount();
+                    int selectCount = foodBean.getSelectCount();
                     if (selectCount == 0) {
                         return;
                     }
                     selectCount--;
                     foodBean.setSelectCount(selectCount);
+                    foodBean.getSpecInfo().num = selectCount;
                     specCountImp.sub(foodBean, position);
                 }
             });
@@ -149,7 +160,7 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
     public class SpecCarViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvCarName, tvCarPrice, tvCount;
-        public TextView tvSpec, tvType, tvTypeTwo;
+        public TextView tvSpec;
 
         public ImageView ivSub, ivAdd;
 
@@ -161,8 +172,6 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
             tvCount = (TextView) itemView.findViewById(R.id.tv_count_spec);
 
             tvSpec = (TextView) itemView.findViewById(R.id.tv_spec);
-            tvType = (TextView) itemView.findViewById(R.id.tv_goods_type);
-            tvTypeTwo = (TextView) itemView.findViewById(R.id.tv_goods_type_two);
 
             ivSub = (ImageView) itemView.findViewById(R.id.iv_sub_spec);
             ivAdd = (ImageView) itemView.findViewById(R.id.iv_add_spec);

@@ -50,7 +50,7 @@ public class AgentZoneBusinessInfo {
      */
 
     public String id;
-    public String busId;
+    public int busId;
     public String busname;
     public String createTime;
     public Object discount;

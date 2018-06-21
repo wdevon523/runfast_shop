@@ -29,6 +29,7 @@ import butterknife.OnClick;
 import static android.support.design.widget.TabLayout.MODE_FIXED;
 
 import com.gxuc.runfast.shop.util.ViewUtils;
+import com.gxuc.runfast.shop.view.NoScrollViewPager;
 
 /**
  * Created by Devon on 2018/2/7.
@@ -41,10 +42,10 @@ public class PurchasesActivity extends ToolBarActivity {
     FrameLayout flBackBut;
     @BindView(R.id.fl_right)
     FrameLayout flRight;
-    @BindView(R.id.tabLayout)
-    TabLayout tabLayout;
+    //    @BindView(R.id.tabLayout)
+//    TabLayout tabLayout;
     @BindView(R.id.viewpager_order)
-    ViewPager viewpagerOrder;
+    NoScrollViewPager viewpagerOrder;
     private String[] mTitles = {"代购", "取送件"};
 
     @Override
@@ -57,23 +58,27 @@ public class PurchasesActivity extends ToolBarActivity {
     }
 
     private void initView() {
-        tabLayout.post(new Runnable() {
-            @Override
-            public void run() {
-//                setIndicator(tabLayout, (int) getResources().getDimension(R.dimen.dimen_70_dp), (int) getResources().getDimension(R.dimen.dimen_70_dp));
-                ViewUtils.setIndicator(tabLayout, 60, 60);
-            }
-        });
+//        tabLayout.post(new Runnable() {
+//            @Override
+//            public void run() {
+////                setIndicator(tabLayout, (int) getResources().getDimension(R.dimen.dimen_70_dp), (int) getResources().getDimension(R.dimen.dimen_70_dp));
+//                ViewUtils.setIndicator(tabLayout, 60, 60);
+//            }
+//        });
 
         viewpagerOrder.setAdapter(new FragmentViewPagerAdapter(getSupportFragmentManager(), mTitles));
-        tabLayout.setupWithViewPager(viewpagerOrder);
-        tabLayout.setTabMode(MODE_FIXED);
+//        tabLayout.setupWithViewPager(viewpagerOrder);
+//        tabLayout.setTabMode(MODE_FIXED);
         viewpagerOrder.setOffscreenPageLimit(mTitles.length);
+        viewpagerOrder.setNoScroll(true);
     }
 
     private void initData() {
 
+    }
 
+    public void setViewPagerCurrentItem(int index) {
+        viewpagerOrder.setCurrentItem(index);
     }
 
     @OnClick({R.id.fl_back_but, R.id.fl_right})

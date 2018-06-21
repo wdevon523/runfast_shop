@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.gxuc.runfast.shop.bean.BusinessNewDetail;
 import com.gxuc.runfast.shop.bean.enshrien.Enshrine;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.R;
@@ -17,6 +18,8 @@ import com.willy.ratingbar.BaseRatingBar;
 
 import org.xutils.x;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Double.NaN;
@@ -29,17 +32,13 @@ import static java.lang.Double.NaN;
  */
 public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.EnshrineViewHolder> implements View.OnClickListener {
 
-    private List<Enshrine> data;
+    private List<BusinessNewDetail> data;
     private Context context;
     private OnItemClickListener mOnItemClickListener = null;
 
-    public EnshrineAdapter(List<Enshrine> data, Context context) {
+    public EnshrineAdapter(List<BusinessNewDetail> data, Context context) {
         this.data = data;
         this.context = context;
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mOnItemClickListener = listener;
     }
 
     @Override
@@ -52,17 +51,17 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
 
     @Override
     public void onBindViewHolder(EnshrineViewHolder holder, int position) {
-        Enshrine enshrine = data.get(position);
-        if (enshrine != null) {
-            x.image().bind(holder.ivBusinessLogo, UrlConstant.ImageBaseUrl + enshrine.imgPath, NetConfig.optionsPagerCache);
-            holder.tvBusinessName.setText(enshrine.shopname);
+        BusinessNewDetail businessNewDetail = data.get(position);
+        if (businessNewDetail != null) {
+            x.image().bind(holder.ivBusinessLogo, UrlConstant.ImageBaseUrl + businessNewDetail.imgPath, NetConfig.optionsPagerCache);
+            holder.tvBusinessName.setText(businessNewDetail.name);
 //            holder.tvSaleDistance.setText(String.valueOf(new DecimalFormat("#0.0").format(enshrine.distance)) + "km");
-            holder.tvBusinessLevel.setText(String.valueOf(enshrine.levelId));
-            holder.tvBusinessSaleNum.setText("月售" + String.valueOf(enshrine.salesnum) + "单");
-            holder.tvSaleStartPay.setText(enshrine.startPay == null ? "¥ 0元起送" : "¥ " + String.valueOf(enshrine.startPay) + "起送");
+            holder.tvBusinessLevel.setText(String.valueOf(businessNewDetail.levelId));
+            holder.tvBusinessSaleNum.setText("月售" + (businessNewDetail.salesnum == null ? 0 : businessNewDetail.salesnum) + "单");
+            holder.tvSaleStartPay.setText(businessNewDetail.startPay == null ? "¥ 0元起送" : "¥ " + String.valueOf(businessNewDetail.startPay) + "起送");
 //            holder.tvSalePrice.setText(enshrine.baseCharge == NaN ? "配送费¥0" : "配送费¥" + String.valueOf(enshrine.baseCharge));
-            holder.tvSalePrice.setText("配送费¥" + enshrine.startPay);
-            holder.rbOrderEvaluate.setRating(enshrine.levelId);
+            holder.tvSalePrice.setText("配送费¥ " + businessNewDetail.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
+            holder.rbOrderEvaluate.setRating(businessNewDetail.levelId);
             holder.rbOrderEvaluate.setClickable(false);
 //            holder.tvSaleTime.setText(enshrine.speed);
 //            if (enshrine.isDeliver == 0) {
@@ -96,13 +95,18 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
 //                }
 //            }
 
-            holder.layoutItem.setTag(enshrine);
+            holder.layoutItem.setTag(businessNewDetail);
         }
     }
 
     @Override
     public int getItemCount() {
         return data == null ? 0 : data.size();
+    }
+
+    public void setList(ArrayList<BusinessNewDetail> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 
     public class EnshrineViewHolder extends RecyclerView.ViewHolder {
@@ -140,14 +144,19 @@ public class EnshrineAdapter extends RecyclerView.Adapter<EnshrineAdapter.Enshri
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, Enshrine enshrine);
+        void onItemClick(View view, BusinessNewDetail enshrine);
     }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.mOnItemClickListener = listener;
+    }
+
 
     @Override
     public void onClick(View v) {
         if (mOnItemClickListener != null) {
             //注意这里使用getTag方法获取position
-            mOnItemClickListener.onItemClick(v, (Enshrine) v.getTag());
+            mOnItemClickListener.onItemClick(v, (BusinessNewDetail) v.getTag());
         }
     }
 }

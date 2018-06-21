@@ -28,12 +28,7 @@
                 android:maxLines="1"
                 android:text="123344"
                 android:textColor="#757575"
-                android:textSize="16sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:textSize="@dimen/dimen_15_dp" />
 
                 <TextView
                     android:id="@+id/tv_spec"
@@ -41,29 +36,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:text="三两"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/dimen_12_dp"
                     android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/tv_goods_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:text="中辣"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/tv_goods_type_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginTop="5dp"
-                    android:text="不冰"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -84,12 +59,11 @@
 
         <TextView
             android:id="@+id/tv_count_spec"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/dimen_25_dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:gravity="center"
             android:text="1"
-            android:textSize="16sp" />
+            android:textSize="@dimen/dimen_15_dp" />
 
         <ImageView
             android:id="@+id/iv_add_spec"

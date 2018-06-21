@@ -34,6 +34,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
@@ -42,7 +43,6 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.PhotoUtils;
 import com.gxuc.runfast.shop.R;
 import com.example.supportv1.utils.FileUtil;
@@ -97,7 +97,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
     RelativeLayout mRlUpdatePassword;
     @BindView(R.id.iv_head)
     CircleImageView ivHead;
-    private User userInfo;
+    private UserInfo userInfo;
     //更新头像所用
     private AlertDialog dialogImage;
     private File fileUri = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator
@@ -129,12 +129,12 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
     }
 
     private void updateUi() {
-        if (!TextUtils.isEmpty(userInfo.getPic())) {
-            x.image().bind(ivHead, UrlConstant.ImageBaseUrl + userInfo.getPic(), NetConfig.optionsHeadImage);
+        if (!TextUtils.isEmpty(userInfo.pic)) {
+            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.pic, NetConfig.optionsHeadImage);
         }
-        tvUserNickname.setText(TextUtils.isEmpty(userInfo.getNickname()) ? userInfo.getMobile() : userInfo.getNickname());
-        tvUserPhone.setText(TextUtils.isEmpty(userInfo.getMobile()) ? "添加" : userInfo.getMobile());
-        tvUserEmail.setText(TextUtils.isEmpty(userInfo.getEmail()) ? "添加" : userInfo.getEmail());
+        tvUserNickname.setText(TextUtils.isEmpty(userInfo.nickname) ? userInfo.mobile : userInfo.nickname);
+        tvUserPhone.setText(TextUtils.isEmpty(userInfo.mobile) ? "添加" : userInfo.mobile);
+        tvUserEmail.setText(TextUtils.isEmpty(userInfo.email) ? "添加" : userInfo.email);
     }
 
     /**
@@ -236,7 +236,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     if (PermissionUtils.checkCameraScanPermission(this)) {
                         autoObtainCameraPermission();
                     } else {
-                        CustomToast.INSTANCE.showToast(this, "未开启拍照权限");
+                        ToastUtil.showToast("未开启拍照权限");
                     }
                     break;
                 case R.id.tv_select_photo:
@@ -245,7 +245,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                         intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                         startActivityForResult(intent, PHOTO);
                     } else {
-                        CustomToast.INSTANCE.showToast(this, "未开启文件访问权限");
+                        ToastUtil.showToast("未开启文件访问权限");
                     }
                     break;
             }
@@ -264,7 +264,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
             }
             PhotoUtils.takePicture(this, imageUri, CAMERA);
         } else {
-            CustomToast.INSTANCE.showToast(this, "设备没有SD卡！");
+            ToastUtil.showToast("设备没有SD卡！");
         }
     }
 
@@ -280,19 +280,19 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
     }
 
     private void requestLogout() {
-        CustomApplication.getRetrofit().Logout(userInfo.getMobile()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().Logout().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
-                        UserService.setAutoLogin("0");
+//                        UserService.setAutoLogin("0");
                         UserService.clearUserInfo();
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, "");
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_ID, "");
                         SharePreferenceUtil.getInstance().putStringValue("token", "");
-                        SharePreferenceUtil.getInstance().putIntValue(CustomConstant.THIRD_LOGIN_TYPR, -1);
+                        SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_TYPR, "");
                         finish();
                     } else {
                         ToastUtil.showToast("退出失败");
@@ -331,7 +331,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 }
                 if (!Environment.getExternalStorageState().equals(
                         Environment.MEDIA_MOUNTED)) {
-                    CustomToast.INSTANCE.showToast(this, "SD不可用");
+                    ToastUtil.showToast("SD不可用");
                     return;
                 }
                 //File file = new File(mImagePath);
@@ -351,7 +351,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 if (resultCode == RESULT_OK) {
                     if (!Environment.getExternalStorageState().equals(
                             Environment.MEDIA_MOUNTED)) {
-                        CustomToast.INSTANCE.showToast(this, "SD不可用");
+                        ToastUtil.showToast("SD不可用");
                         return;
                     }
                     if (data.getData() == null) {
@@ -362,7 +362,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                     Log.d("filePath", "avatar - uriPhoto = " + uriPhoto);
                     startImageAction(uriPhoto, 200, 200, 3, true);
                 } else {
-                    CustomToast.INSTANCE.showToast(this, "照片获取失败");
+                    ToastUtil.showToast("照片获取失败");
                 }
                 break;
             case 3:
@@ -465,10 +465,10 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
         Log.d("params", "path = " + path);
         File file = new File(path);
         if (!file.exists()) {
-            CustomToast.INSTANCE.showToast(this, "文件不存在");
+            ToastUtil.showToast("文件不存在");
             return;
         }
-        CustomToast.INSTANCE.showToast(this, "文件正在上传");
+        ToastUtil.showToast("文件正在上传");
         RequestParams uploadParams = new RequestParams(UrlConstant.UPLOAD_PIC);
         uploadParams.setAsJsonContent(true);
         List<KeyValue> list = new ArrayList<>();
@@ -484,7 +484,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     String imagePath = jsonObject.optString("filePath");
-                    userInfo.setPic(imagePath);
+                    userInfo.pic = imagePath;
                     updateUserInfo(imagePath);
                     UserService.saveUserInfo(userInfo);
                     x.image().bind(ivHead, UrlConstant.ImageBaseUrl + imagePath, NetConfig.optionsHeadImage);
@@ -495,7 +495,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                CustomToast.INSTANCE.showToast(UserInfoActivity.this, "上传失败 ");
+                ToastUtil.showToast("上传失败 ");
             }
 
             @Override
@@ -535,9 +535,9 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
             JSONObject object = new JSONObject(body);
             boolean success = object.optBoolean("success");
             if (success) {
-                CustomToast.INSTANCE.showToast(this, "更换成功");
+                ToastUtil.showToast("更换成功");
             } else {
-                CustomToast.INSTANCE.showToast(this, "保存失败");
+                ToastUtil.showToast("保存失败");
             }
         } catch (JSONException e) {
             e.printStackTrace();

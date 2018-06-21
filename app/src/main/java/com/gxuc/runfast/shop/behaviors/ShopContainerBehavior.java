@@ -9,12 +9,12 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.gxuc.runfast.shop.util.ViewUtils;
-import com.gxuc.runfast.shop.view.ShopInfoContainer;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.view.ShopInfoNewContainer;
 
 import java.lang.ref.WeakReference;
 
-public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoContainer> {
+public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoNewContainer> {
 
 	private Context mContext;
 	private int iconHeight, iconWidth;
@@ -22,7 +22,7 @@ public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoCo
 	private float startX, startY, bgRange;
 	private float dx, dy;
 	private View name_container, iv_shop;
-	private WeakReference<ShopInfoContainer> mContainer;
+	private WeakReference<ShopInfoNewContainer> mContainer;
 	private View iv_shop_bg;
 
 	public ShopContainerBehavior() {
@@ -35,7 +35,7 @@ public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoCo
 	}
 
 	@Override
-	public boolean onLayoutChild(CoordinatorLayout parent, ShopInfoContainer child, int layoutDirection) {
+	public boolean onLayoutChild(CoordinatorLayout parent, ShopInfoNewContainer child, int layoutDirection) {
 		boolean handled = super.onLayoutChild(parent, child, layoutDirection);
 		if (mContainer == null) {
 			mContainer = new WeakReference<>(child);
@@ -47,11 +47,11 @@ public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoCo
 	}
 
 	@Override
-	public boolean layoutDependsOn(CoordinatorLayout parent, ShopInfoContainer child, View dependency) {
+	public boolean layoutDependsOn(CoordinatorLayout parent, ShopInfoNewContainer child, View dependency) {
 		return dependency instanceof AppBarLayout;
 	}
 
-	public boolean onDependentViewChanged(CoordinatorLayout parent, ShopInfoContainer child, View dependency) {
+	public boolean onDependentViewChanged(CoordinatorLayout parent, ShopInfoNewContainer child, View dependency) {
 		if (dependency instanceof AppBarLayout) {
 			AppBarLayout appBarLayout = (AppBarLayout) dependency;
 			if (iconHeight > 0) {
@@ -94,7 +94,7 @@ public class ShopContainerBehavior extends CoordinatorLayout.Behavior<ShopInfoCo
 		bgRange = (totalRange - acBarHeight) / (float) totalRange;
 	}
 
-	private ShopInfoContainer getContainer() {
+	private ShopInfoNewContainer getContainer() {
 		return mContainer.get();
 	}
 

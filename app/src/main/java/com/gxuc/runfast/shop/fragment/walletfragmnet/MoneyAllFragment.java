@@ -9,13 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gxuc.runfast.shop.adapter.CashRecordAdapter;
-import com.gxuc.runfast.shop.bean.spend.AccountRecords;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.adapter.PaymentDetailAdapter;
 import com.gxuc.runfast.shop.bean.spend.AccountRecord;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,8 +30,7 @@ public class MoneyAllFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView;
     Unbinder unbinder;
 
-    private List<AccountRecord> data;
-    private AccountRecords mRecords;
+    private ArrayList<AccountRecord> data;
 
     public MoneyAllFragment() {
         // Required empty public constructor
@@ -54,14 +51,14 @@ public class MoneyAllFragment extends Fragment implements View.OnClickListener {
         data = new ArrayList<>();
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mRecords = arguments.getParcelable("record");
-            if (mRecords.getRows() != null) {
-                data.addAll(mRecords.getRows());
-            }
+            data = (ArrayList<AccountRecord>) arguments.getSerializable("record");
+//            if (data != null) {
+//                data.addAll(mRecords.getRows());
+//            }
         } else {
             recyclerView.setVisibility(View.GONE);
         }
-        CashRecordAdapter allAdapter = new CashRecordAdapter(data, getActivity(), this);
+        PaymentDetailAdapter allAdapter = new PaymentDetailAdapter(data, getActivity(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(allAdapter);
     }

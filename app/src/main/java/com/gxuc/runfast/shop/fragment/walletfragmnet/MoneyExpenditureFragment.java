@@ -9,13 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.gxuc.runfast.shop.adapter.CashRecordAdapter;
+import com.gxuc.runfast.shop.adapter.PaymentDetailAdapter;
 import com.gxuc.runfast.shop.bean.spend.AccountRecord;
-import com.gxuc.runfast.shop.bean.spend.AccountRecords;
 import com.gxuc.runfast.shop.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,8 +30,7 @@ public class MoneyExpenditureFragment extends Fragment implements View.OnClickLi
     RecyclerView recyclerView;
     Unbinder unbinder;
 
-    private List<AccountRecord> data;
-    private AccountRecords mRecords;
+    private ArrayList<AccountRecord> data;
 
     public MoneyExpenditureFragment() {
         // Required empty public constructor
@@ -54,23 +51,20 @@ public class MoneyExpenditureFragment extends Fragment implements View.OnClickLi
         data = new ArrayList<>();
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mRecords = arguments.getParcelable("record");
-            if (mRecords != null) {
-                if (mRecords.getRows() != null && mRecords.getRows().size()>0) {
-                    int size = mRecords.getRows().size();
-                    for (int i = 0; i < size; i++) {
-                        if (mRecords.getRows().get(i).getShowtype()==1){
-                            data.add(mRecords.getRows().get(i));
-                        }
+            ArrayList<AccountRecord> accountRecordList = (ArrayList<AccountRecord>) arguments.getSerializable("record");
+            if (accountRecordList != null && accountRecordList.size() > 0) {
+                for (int i = 0; i < accountRecordList.size(); i++) {
+                    if (accountRecordList.get(i).showtype == 1) {
+                        data.add(accountRecordList.get(i));
                     }
-                }else {
-                    recyclerView.setVisibility(View.GONE);
                 }
+            } else {
+                recyclerView.setVisibility(View.GONE);
             }
         } else {
             recyclerView.setVisibility(View.GONE);
         }
-        CashRecordAdapter allAdapter = new CashRecordAdapter(data, getActivity(), this);
+        PaymentDetailAdapter allAdapter = new PaymentDetailAdapter(data, getActivity(), this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(allAdapter);
     }

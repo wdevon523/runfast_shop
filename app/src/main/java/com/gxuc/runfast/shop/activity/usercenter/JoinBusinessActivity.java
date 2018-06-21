@@ -8,9 +8,9 @@ import android.widget.EditText;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.lljjcoder.citylist.Toast.ToastUtils;
 
 import org.json.JSONException;
@@ -51,23 +51,23 @@ public class JoinBusinessActivity extends ToolBarActivity {
 
     @OnClick(R.id.btn_commit_info)
     public void onViewClicked(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btn_commit_info:
-            if (TextUtils.isEmpty(mEtBusinessName.getText().toString())){
-                ToastUtils.showShortToast(this,"请填入商家名称");
-                return;
-            }else if (TextUtils.isEmpty(mEtBusinessPhone.getText().toString())){
-                ToastUtils.showShortToast(this,"请填入商家电话");
-                return;
-            }else if (TextUtils.isEmpty(mEtBusinessUsrAddress.getText().toString())){
-                ToastUtils.showShortToast(this,"请填入商家地址");
-                return;
-            }else if (TextUtils.isEmpty(mEtBusinessJoinAddress.getText().toString())){
-                ToastUtils.showShortToast(this,"请填入加盟地");
-                return;
-            }else {
-                toJoinLeague();
-            }
+                if (TextUtils.isEmpty(mEtBusinessName.getText().toString())) {
+                    ToastUtils.showShortToast(this, "请填入商家名称");
+                    return;
+                } else if (TextUtils.isEmpty(mEtBusinessPhone.getText().toString())) {
+                    ToastUtils.showShortToast(this, "请填入商家电话");
+                    return;
+                } else if (TextUtils.isEmpty(mEtBusinessUsrAddress.getText().toString())) {
+                    ToastUtils.showShortToast(this, "请填入商家地址");
+                    return;
+                } else if (TextUtils.isEmpty(mEtBusinessJoinAddress.getText().toString())) {
+                    ToastUtils.showShortToast(this, "请填入加盟地");
+                    return;
+                } else {
+                    toJoinLeague();
+                }
                 break;
         }
     }
@@ -76,14 +76,14 @@ public class JoinBusinessActivity extends ToolBarActivity {
      * 加盟
      */
     private void toJoinLeague() {
-        CustomApplication.getRetrofit().postJoinLeague(
+        CustomApplication.getRetrofitNew().businessJoin(
                 mEtBusinessName.getText().toString(),
                 mEtBusinessPhone.getText().toString(),
-                TextUtils.isEmpty(mEtBusinessUsrName.getText().toString())?"":mEtBusinessUsrName.getText().toString(),
+                TextUtils.isEmpty(mEtBusinessUsrName.getText().toString()) ? "" : mEtBusinessUsrName.getText().toString(),
                 mEtBusinessUsrAddress.getText().toString(),
-                TextUtils.isEmpty(mEtBusinessRemarks.getText().toString())?"":mEtBusinessRemarks.getText().toString(),
+                TextUtils.isEmpty(mEtBusinessRemarks.getText().toString()) ? "" : mEtBusinessRemarks.getText().toString(),
                 mEtBusinessJoinAddress.getText().toString()
-                ).enqueue(new MyCallback<String>() {
+        ).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealJoinLeague(response.body());
@@ -98,10 +98,13 @@ public class JoinBusinessActivity extends ToolBarActivity {
 
     private void dealJoinLeague(String body) {
         try {
-            JSONObject object = new JSONObject(body);
-            String succ = object.optString("succ");
-            CustomToast.INSTANCE.showToast(this,succ);
-            finish();
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast("申请提交成功");
+                finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

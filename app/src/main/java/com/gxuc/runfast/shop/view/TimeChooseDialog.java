@@ -140,6 +140,8 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         hourMinuteChooseAdapter.notifyDataSetChanged();
         String nowDateFormat = SystemUtil.getNowDateFormat();
 
+        timesList.add("立即配送");
+
         int mHour = Integer.valueOf(nowDateFormat.substring(11, 13));
         int mMinuts = Integer.valueOf(nowDateFormat.substring(14, 16));
 

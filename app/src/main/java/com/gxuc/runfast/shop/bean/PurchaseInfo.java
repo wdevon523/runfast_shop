@@ -1,5 +1,7 @@
 package com.gxuc.runfast.shop.bean;
 
+import java.math.BigDecimal;
+
 public class PurchaseInfo {
 
     /**
@@ -11,7 +13,7 @@ public class PurchaseInfo {
      * exceedFee : 149
      */
 
-    public double deliveryFee;
+    public BigDecimal deliveryFee;
     public String distance;
     public double baseFee;
     public double weightFee;

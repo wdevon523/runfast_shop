@@ -14,6 +14,7 @@ import com.gxuc.runfast.shop.activity.DiscountActivity;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,11 +26,11 @@ import java.util.List;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private Context mContext;
-    private List<MessageInfo> mMessageInfos;
+    private ArrayList<MessageInfo> messageInfoList;
 
-    public MessageAdapter(Context context, List<MessageInfo> messageInfos) {
-        mContext = context;
-        mMessageInfos = messageInfos;
+    public MessageAdapter(Context context, ArrayList<MessageInfo> messageInfoList) {
+        this.mContext = context;
+        this.messageInfoList = messageInfoList;
     }
 
     @Override
@@ -41,10 +42,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(MessageViewHolder holder, int position) {
-        MessageInfo messageInfo = mMessageInfos.get(position);
+        MessageInfo messageInfo = messageInfoList.get(position);
         //TODO 消息图片在哪里获取
         //1系统消息2商家消息3骑手消息4用户消息5确认订单提示消息
-        switch (messageInfo.getType()) {
+        switch (messageInfo.type) {
             case 1:
                 holder.iv_message_notice.setImageResource(R.drawable.icon_promotion);
                 break;
@@ -62,15 +63,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 });
                 break;
         }
-        holder.tv_message_name.setText(messageInfo.getTitle());
-        holder.tv_message_date.setText(messageInfo.getCreateTime().substring(5, 16));
-        holder.tv_message_content.setText(messageInfo.getContent());
+        holder.tv_message_name.setText(messageInfo.title);
+        holder.tv_message_date.setText(messageInfo.createTime.substring(5, 16));
+        holder.tv_message_content.setText(messageInfo.content);
 
     }
 
     @Override
     public int getItemCount() {
-        return mMessageInfos.size() <= 0 ? 0 : mMessageInfos.size();
+        return messageInfoList.size() <= 0 ? 0 : messageInfoList.size();
+    }
+
+    public void setList(ArrayList<MessageInfo> messageInfoList) {
+        this.messageInfoList = messageInfoList;
+        notifyDataSetChanged();
     }
 
     class MessageViewHolder extends RecyclerView.ViewHolder {

@@ -19,7 +19,6 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.UserCaptchaTask;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.VaUtils;
@@ -177,10 +176,10 @@ public class ForgotPasswordActivity extends ToolBarActivity {
         if (TextUtils.isEmpty(accountName) ||
                 accountName.length() != 11) {
 //                !VaUtils.isMobileNo(accountName)) {
-            CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
+            ToastUtil.showToast(getString(R.string.please_input_correct_phone));
             return;
         }
-        CustomApplication.getRetrofit().getForgetCode(accountName, validate).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().sendSms(accountName, "sms_pwd_update", validate).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealForgetCode(response.body());
@@ -196,11 +195,11 @@ public class ForgotPasswordActivity extends ToolBarActivity {
     private void dealForgetCode(String body) {
         //验证码
         try {
-            JSONObject object = new JSONObject(body);
-            boolean success = object.getBoolean("success");
-            String msg = object.getString("msg");
-            if (success) {
-                CustomToast.INSTANCE.showToast(this, msg);
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.getBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -211,7 +210,7 @@ public class ForgotPasswordActivity extends ToolBarActivity {
      * 重置密码
      */
     private void resetPassword() {
-        String phone = mEtUserName.getText().toString().trim();
+        final String phone = mEtUserName.getText().toString().trim();
         String code = mEtCode.getText().toString().trim();
 
 //        if (TextUtils.isEmpty(phone)) {
@@ -222,10 +221,32 @@ public class ForgotPasswordActivity extends ToolBarActivity {
 //            CustomToast.INSTANCE.showToast(this, "请输入验证码");
 //            return;
 //        }
-        mIntent = new Intent(this, UpdateMessageActivity.class);
-        mIntent.putExtra(IntentFlag.KEY, IntentFlag.FORGOT_PWD);
-        mIntent.putExtra("phone", phone);
-        startActivityForResult(mIntent, UPDATE_PASSWORD);
+        CustomApplication.getRetrofitNew().checkMobileExist(phone).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        mIntent = new Intent(ForgotPasswordActivity.this, UpdateMessageActivity.class);
+                        mIntent.putExtra(IntentFlag.KEY, IntentFlag.FORGOT_PWD);
+                        mIntent.putExtra("phone", phone);
+                        startActivityForResult(mIntent, UPDATE_PASSWORD);
+                    } else {
+                        ToastUtil.showToast("该账号未注册");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
+
     }
 
     @Override

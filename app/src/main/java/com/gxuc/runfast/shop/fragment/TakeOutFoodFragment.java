@@ -49,17 +49,9 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
-import com.gxuc.runfast.shop.util.ToastUtil;
-import com.gxuc.runfast.shop.view.CustomScrollView;
-import com.gxuc.runfast.shop.view.EasyLoadMoreView;
-import com.gxuc.runfast.shop.view.MaxHeightRecyclerView;
-import com.gxuc.runfast.shop.view.recyclerview.HorizontalPageLayoutManager;
 import com.gxuc.runfast.shop.view.recyclerview.PagingScrollHelper;
-import com.example.supportv1.utils.LogUtil;
-import com.jude.rollviewpager.RollPagerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -8,8 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
-import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
 
 import java.util.ArrayList;
 
@@ -18,10 +17,10 @@ import butterknife.ButterKnife;
 
 public class MyAddressAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<AddressInfo> addressInfoList;
+    private ArrayList<AddressBean> addressInfoList;
     private OnMyAddressClickLstener mOnMyAddressClickLstener;
 
-    public MyAddressAdapter(Context context, ArrayList<AddressInfo> addressInfoList) {
+    public MyAddressAdapter(Context context, ArrayList<AddressBean> addressInfoList) {
         this.context = context;
         this.addressInfoList = addressInfoList;
     }
@@ -44,7 +43,7 @@ public class MyAddressAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
-        AddressInfo addressInfo = addressInfoList.get(position);
+        AddressBean addressInfo = addressInfoList.get(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.item_home_my_address, null);
             viewHolder = new ViewHolder(convertView);
@@ -53,9 +52,9 @@ public class MyAddressAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvMyName.setText(addressInfo.getName());
-        viewHolder.tvMyMobile.setText(addressInfo.getMobile());
-        viewHolder.tvMyAddressDetail.setText(addressInfo.getUserAddress() + addressInfo.getAddress());
+        viewHolder.tvMyName.setText(addressInfo.name);
+        viewHolder.tvMyMobile.setText(addressInfo.phone);
+        viewHolder.tvMyAddressDetail.setText(addressInfo.userAddress + addressInfo.address);
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

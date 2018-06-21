@@ -1,5 +1,7 @@
 package com.gxuc.runfast.shop.bean.order;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Devon on 2017/10/17.
  */
@@ -57,7 +59,7 @@ public class ShoppingCartGoodsInfo {
     public String packing;
     public int ptype;
     public String pricedis;
-    public String disprice;
+    public BigDecimal disprice;
     public String islimited;
     public int limitNum;
     public String total;

@@ -17,18 +17,12 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.bean.maintop.MapInfo;
-import com.gxuc.runfast.shop.bean.maintop.MapInfos;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.UserCaptchaTask;
-import com.gxuc.runfast.shop.impl.constant.CustomConstant;
-import com.gxuc.runfast.shop.util.CustomProgressDialog;
-import com.gxuc.runfast.shop.util.GsonUtil;
-import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.MD5Util;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
-import com.gxuc.runfast.shop.util.VaUtils;
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.netease.nis.captcha.Captcha;
 import com.netease.nis.captcha.CaptchaListener;
 
@@ -38,10 +32,9 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.jpush.android.api.JPushInterface;
 import retrofit2.Call;
 import retrofit2.Response;
-
-import static com.gxuc.runfast.shop.config.IntentConfig.AGENT_ID;
 
 public class RegisterActivity extends ToolBarActivity {
 
@@ -163,7 +156,7 @@ public class RegisterActivity extends ToolBarActivity {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     if (aMapLocation.getLatitude() != 0.0 && aMapLocation.getLongitude() != 0.0) {
-                        netPostAddress(aMapLocation.getLongitude(), aMapLocation.getLatitude());
+//                        netPostAddress(aMapLocation.getLongitude(), aMapLocation.getLatitude());
                         if (mLocationClient != null) {
                             mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
                         }
@@ -207,15 +200,15 @@ public class RegisterActivity extends ToolBarActivity {
         if (TextUtils.isEmpty(accountName) ||
                 accountName.length() != 11) {
 //            !VaUtils.isMobileNo(accountName)){
-            CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
+            ToastUtil.showToast(getString(R.string.please_input_correct_phone));
 //            tvGetCode.setEnabled(true);
             return;
         }
-        CustomApplication.getRetrofit().getCode(accountName, validate).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().sendSms(accountName, "sms_register", validate).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String data = response.body();
-                dealCode(data);
+                String body = response.body();
+                dealCode(body);
             }
 
             @Override
@@ -226,23 +219,21 @@ public class RegisterActivity extends ToolBarActivity {
 
     }
 
-    private void dealCode(String data) {
+    private void dealCode(String body) {
         try {
-            JSONObject jsonObject = new JSONObject(data);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            if (!success) {
-                CustomToast.INSTANCE.showToast(this, msg);
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                Message message = handler.obtainMessage();
+                message.what = 1002;
+                message.arg1 = 59;
+                message.sendToTarget();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
                 tvGetCode.setText("获取验证码");
                 //tvGetCode.setBackgroundResource(R.drawable.shape_button_orange);
                 tvGetCode.setEnabled(true);
-                return;
             }
-            CustomToast.INSTANCE.showToast(this, "发送成功");
-            Message message = handler.obtainMessage();
-            message.what = 1002;
-            message.arg1 = 59;
-            message.sendToTarget();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -259,27 +250,33 @@ public class RegisterActivity extends ToolBarActivity {
         String code = etCode.getText().toString().trim();
 
         if (TextUtils.isEmpty(phone)) {
-            CustomToast.INSTANCE.showToast(this, "请输入手机号");
+            ToastUtil.showToast("请输入手机号");
             return;
         }
         if (TextUtils.isEmpty(code)) {
-            CustomToast.INSTANCE.showToast(this, "请输入验证码");
+            ToastUtil.showToast("请输入验证码");
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            CustomToast.INSTANCE.showToast(this, "请输入密码");
-            return;
-        }
-        if (!TextUtils.equals(password, passwordAgain)) {
-            CustomToast.INSTANCE.showToast(this, "两次密码输入不相同");
+            ToastUtil.showToast("请输入密码");
             return;
         }
 
-        CustomApplication.getRetrofit().postRegister(phone, password, code).enqueue(new MyCallback<String>() {
+        if (password.length() <6 || password.length() > 16) {
+            ToastUtil.showToast("请输入6-16位密码");
+            return;
+        }
+
+        if (!TextUtils.equals(password, passwordAgain)) {
+            ToastUtil.showToast("两次密码输入不相同");
+            return;
+        }
+
+        CustomApplication.getRetrofitNew().register(phone, MD5Util.MD5(password), code, CustomApplication.alias).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String data = response.body();
-                dealRegister(data);
+                String body = response.body();
+                dealRegister(body);
             }
 
             @Override
@@ -289,24 +286,22 @@ public class RegisterActivity extends ToolBarActivity {
         });
     }
 
-    private void dealRegister(String data) {
+    private void dealRegister(String body) {
         try {
-            JSONObject jsonObject = new JSONObject(data);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            if (!success) {
-                CustomToast.INSTANCE.showToast(this, msg);
-                return;
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                String phone = etUserName.getText().toString().trim();
+                String password = etUserPassword.getText().toString().trim();
+                Intent intent = new Intent();
+                intent.putExtra("mobile", phone);
+                intent.putExtra("password", password);
+                setResult(RESULT_OK, intent);
+                finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
             }
 
-            CustomToast.INSTANCE.showToast(this, msg);
-            String phone = etUserName.getText().toString().trim();
-            String password = etUserPassword.getText().toString().trim();
-            Intent intent = new Intent();
-            intent.putExtra("mobile", phone);
-            intent.putExtra("password", password);
-            setResult(RESULT_OK, intent);
-            finish();
 
         } catch (JSONException e) {
             e.printStackTrace();

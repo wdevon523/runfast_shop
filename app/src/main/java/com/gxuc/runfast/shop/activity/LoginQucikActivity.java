@@ -11,17 +11,18 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.JsonUtil;
 import com.example.supportv1.utils.LogUtil;
 import com.example.supportv1.utils.ValidateUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.BindMobileActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.UserCaptchaTask;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.MD5Util;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
@@ -61,7 +62,7 @@ public class LoginQucikActivity extends ToolBarActivity {
     private String phone;
     private String code;
     private String uid;
-    private int thirdLoginType = -1;
+    private String thirdLoginType;
     /*验证码SDK,该Demo采用异步获取方式*/
     private UserCaptchaTask mUserCaptchaTask = null;
     private Captcha mCaptcha;
@@ -216,17 +217,17 @@ public class LoginQucikActivity extends ToolBarActivity {
         // 手机号正则验证
         //|| !ValidateUtil.isMobileNo(accountName)
         if (TextUtils.isEmpty(accountName) ||
-                accountName.length() != 11 ) {
-            CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
+                accountName.length() != 11) {
+            ToastUtil.showToast(getString(R.string.please_input_correct_phone));
 //            tvGetCode.setEnabled(true);
             return;
         }
 
-        CustomApplication.getRetrofit().getLoginQuickCode(accountName, validate).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().sendSms(accountName, "sms_login", validate).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String data = response.body();
-                dealCode(data);
+                String body = response.body();
+                dealCode(body);
             }
 
             @Override
@@ -236,23 +237,21 @@ public class LoginQucikActivity extends ToolBarActivity {
         });
     }
 
-    private void dealCode(String data) {
+    private void dealCode(String body) {
         try {
-            JSONObject jsonObject = new JSONObject(data);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            if (!success) {
-                CustomToast.INSTANCE.showToast(this, msg);
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                Message message = handler.obtainMessage();
+                message.what = 1002;
+                message.arg1 = 59;
+                message.sendToTarget();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
                 tvGetCode.setText("获取验证码");
                 //tvGetCode.setBackgroundResource(R.drawable.shape_button_orange);
                 tvGetCode.setEnabled(true);
-                return;
             }
-            CustomToast.INSTANCE.showToast(this, "发送成功");
-            Message message = handler.obtainMessage();
-            message.what = 1002;
-            message.arg1 = 59;
-            message.sendToTarget();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -267,15 +266,15 @@ public class LoginQucikActivity extends ToolBarActivity {
         code = etUserCode.getText().toString().trim();
 
         if (TextUtils.isEmpty(phone)) {
-            CustomToast.INSTANCE.showToast(this, "请输入手机号");
+            ToastUtil.showToast("请输入手机号");
             return;
         }
         if (TextUtils.isEmpty(code)) {
-            CustomToast.INSTANCE.showToast(this, "请输入验证码");
+            ToastUtil.showToast("请输入验证码");
             return;
         }
 
-        CustomApplication.getRetrofit().postLogiQuick(phone, code, CustomApplication.alias, 0).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().postLogiQuick(phone, code, CustomApplication.alias, "mobile_sms_code").enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealLogin(response.body());
@@ -290,27 +289,20 @@ public class LoginQucikActivity extends ToolBarActivity {
 
     private void dealLogin(String body) {
         try {
-            JSONObject object = new JSONObject(body);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-//            CustomToast.INSTANCE.showToast(this, msg);
-            ToastUtil.showToast(msg);
-            CustomApplication.isRelogining = false;
-            if (!success) {
-                return;
-            }
-//            CustomApplication.isRelogining = false;
-            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, phone);
-//            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, password);
-            JSONObject app_cuser = object.getJSONObject("app_cuser");
-            User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
-//            user.setPassword(etUserCode.getText().toString().trim());
-            UserService.saveUserInfo(user);
-            UserService.setAutoLogin("1");
-            if (!isRelogin) {
+            JSONObject jsonObject = new JSONObject(body);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                JSONObject object = jsonObject.optJSONObject("data");
+                UserInfo userInfo = JsonUtil.fromJson(object.optString("user"), UserInfo.class);
+                UserService.saveUserInfo(userInfo);
+                String token = object.optString("token");
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, phone);
+                SharePreferenceUtil.getInstance().putStringValue("token", token);
                 startActivity(new Intent(this, MainActivity.class));
+                finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
             }
-            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -354,9 +346,9 @@ public class LoginQucikActivity extends ToolBarActivity {
         @Override
         public void onComplete(SHARE_MEDIA platform, int action, Map<String, String> data) {
             if (platform.compareTo(SHARE_MEDIA.QQ) == 0) {
-                thirdLoginType = 0;
+                thirdLoginType = "QQ";
             } else if (platform.compareTo(SHARE_MEDIA.WEIXIN) == 0) {
-                thirdLoginType = 1;
+                thirdLoginType = "WEIXIN";
             }
             ToastUtil.showToast("授权成功");
             uid = data.get("uid");
@@ -404,10 +396,14 @@ public class LoginQucikActivity extends ToolBarActivity {
         }
     };
 
-    private void requestThirdLogin(String uid, int thirdLoginType) {
-        CustomApplication.getRetrofit().postThirdLogin(uid, thirdLoginType, CustomApplication.alias, 0).enqueue(new Callback<String>() {
+    private void requestThirdLogin(String uid, String thirdLoginType) {
+        CustomApplication.getRetrofitNew().postThirdLogin(uid, thirdLoginType, CustomApplication.alias, "third").enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    ToastUtil.showToast("网络数据异常");
+                    return;
+                }
                 dealThirdLogin(response.body());
             }
 
@@ -422,20 +418,18 @@ public class LoginQucikActivity extends ToolBarActivity {
         try {
             JSONObject jsonObject = new JSONObject(body);
             if (jsonObject.optBoolean("success")) {
-//            CustomToast.INSTANCE.showToast(this, msg);
                 ToastUtil.showToast(jsonObject.optString("msg"));
-                CustomApplication.isRelogining = false;
-//            CustomApplication.isRelogining = false;
+
+                JSONObject object = jsonObject.optJSONObject("data");
+                UserInfo userInfo = JsonUtil.fromJson(object.optString("user"), UserInfo.class);
+                UserService.saveUserInfo(userInfo);
+                String token = object.optString("token");
+
                 SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_ID, uid);
-                SharePreferenceUtil.getInstance().putIntValue(CustomConstant.THIRD_LOGIN_TYPR, thirdLoginType);
-                JSONObject app_cuser = jsonObject.getJSONObject("app_cuser");
-                User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_TYPR, thirdLoginType);
+                SharePreferenceUtil.getInstance().putStringValue("token", token);
 //                user.setPassword(user.getPassword());
-                UserService.saveUserInfo(user);
-                UserService.setAutoLogin("1");
-                if (!isRelogin) {
-                    startActivity(new Intent(this, MainActivity.class));
-                }
+                startActivity(new Intent(this, MainActivity.class));
                 finish();
             } else {
                 Intent intent = new Intent(this, BindMobileActivity.class);

@@ -18,16 +18,20 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.example.supportv1.utils.JsonUtil;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.LoginActivity;
 import com.gxuc.runfast.shop.activity.MainActivity;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.UserCaptchaTask;
-import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.netease.nis.captcha.Captcha;
 import com.netease.nis.captcha.CaptchaListener;
@@ -61,7 +65,7 @@ public class BindMobileActivity extends ToolBarActivity {
     @BindView(R.id.btn_bind_mobile)
     Button btnBindMobile;
     private String thirdLoginId;
-    private int thirdLoginType;
+    private String thirdLoginType;
 
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -69,6 +73,8 @@ public class BindMobileActivity extends ToolBarActivity {
     private Captcha mCaptcha;
     /*验证码SDK,该Demo采用异步获取方式*/
     private UserCaptchaTask mUserCaptchaTask = null;
+    private String mobile;
+    private String password;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,7 +150,7 @@ public class BindMobileActivity extends ToolBarActivity {
 
     private void initView() {
         thirdLoginId = getIntent().getStringExtra("thirdLoginId");
-        thirdLoginType = getIntent().getIntExtra("thirdLoginType", -1);
+        thirdLoginType = getIntent().getStringExtra("thirdLoginType");
     }
 
     private void initMap() {
@@ -174,7 +180,7 @@ public class BindMobileActivity extends ToolBarActivity {
             if (aMapLocation != null) {
                 if (aMapLocation.getErrorCode() == 0) {
                     if (aMapLocation.getLatitude() != 0.0 && aMapLocation.getLongitude() != 0.0) {
-                        netPostAddress(aMapLocation.getLongitude(), aMapLocation.getLatitude());
+//                        netPostAddress(aMapLocation.getLongitude(), aMapLocation.getLatitude());
                         if (mLocationClient != null) {
                             mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
                         }
@@ -209,30 +215,34 @@ public class BindMobileActivity extends ToolBarActivity {
     }
 
     private void bindMobile() {
-        String mobile = etMobile.getText().toString().trim();
+        mobile = etMobile.getText().toString().trim();
         String code = etCode.getText().toString().trim();
-        String password = "";
+        password = "";
 
         if (llPassword.getVisibility() == View.VISIBLE) {
             password = etPassword.getText().toString().trim();
         }
 
         if (TextUtils.isEmpty(mobile)) {
-            CustomToast.INSTANCE.showToast(this, "请输入手机号");
+            ToastUtil.showToast("请输入手机号");
             return;
         }
         if (TextUtils.isEmpty(code)) {
-            CustomToast.INSTANCE.showToast(this, "请输入验证码");
+            ToastUtil.showToast("请输入验证码");
             return;
         }
         if (TextUtils.isEmpty(password) && llPassword.getVisibility() == View.VISIBLE) {
-            CustomToast.INSTANCE.showToast(this, "请输入密码");
+            ToastUtil.showToast("请输入密码");
             return;
         }
 
-        CustomApplication.getRetrofit().bindMobile(mobile, password, code, thirdLoginId, thirdLoginType, CustomApplication.alias, 0).enqueue(new Callback<String>() {
+        CustomApplication.getRetrofitNew().bindMobile(mobile, password, code, thirdLoginId, thirdLoginType, CustomApplication.alias).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    ToastUtil.showToast("网络数据异常");
+                    return;
+                }
                 dealBind(response.body());
             }
 
@@ -247,15 +257,19 @@ public class BindMobileActivity extends ToolBarActivity {
     private void dealBind(String body) {
         try {
             JSONObject jsonObject = new JSONObject(body);
-            ToastUtil.showToast(jsonObject.optString("msg"));
             if (jsonObject.optBoolean("success")) {
-                JSONObject app_cuser = jsonObject.getJSONObject("app_cuser");
-                User user = GsonUtil.parseJsonWithGson(app_cuser.toString(), User.class);
-//                user.setPassword(etUserPassword.getText().toString().trim());
-                UserService.saveUserInfo(user);
-                UserService.setAutoLogin("1");
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                JSONObject object = jsonObject.optJSONObject("data");
+                UserInfo userInfo = JsonUtil.fromJson(object.optString("user"), UserInfo.class);
+                UserService.saveUserInfo(userInfo);
+                String token = object.optString("token");
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, mobile);
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, password);
+                SharePreferenceUtil.getInstance().putStringValue("token", token);
                 startActivity(new Intent(this, MainActivity.class));
                 finish();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -267,12 +281,12 @@ public class BindMobileActivity extends ToolBarActivity {
         if (TextUtils.isEmpty(mobile) ||
                 mobile.length() != 11) {
 //            !VaUtils.isMobileNo(accountName)){
-            CustomToast.INSTANCE.showToast(this, getString(R.string.please_input_correct_phone));
+            ToastUtil.showToast(getString(R.string.please_input_correct_phone));
 //            tvCode.setEnabled(true);
             return;
         }
 
-        CustomApplication.getRetrofit().getBindCode(mobile, validate).enqueue(new Callback<String>() {
+        CustomApplication.getRetrofitNew().sendSms(mobile, "sms_bind", validate).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
@@ -295,23 +309,23 @@ public class BindMobileActivity extends ToolBarActivity {
     private void dealBindCode(String data) {
         try {
             JSONObject jsonObject = new JSONObject(data);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            if (!success) {
-                CustomToast.INSTANCE.showToast(this, msg);
+            if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast(jsonObject.optString("msg"));
+                Message message = handler.obtainMessage();
+                message.what = 1002;
+                message.arg1 = 59;
+                message.sendToTarget();
+            } else {
+                ToastUtil.showToast(jsonObject.optString("errorMsg"));
                 tvCode.setText("获取验证码");
                 //tvGetCode.setBackgroundResource(R.drawable.shape_button_orange);
                 tvCode.setEnabled(true);
-                return;
             }
-            CustomToast.INSTANCE.showToast(this, "发送成功");
-            Message message = handler.obtainMessage();
-            message.what = 1002;
-            message.arg1 = 59;
-            message.sendToTarget();
 
-            if (jsonObject.optBoolean("requirePassword")) {
+            if (!jsonObject.optJSONObject("data").optBoolean("mobileExist")) {
                 llPassword.setVisibility(View.VISIBLE);
+            } else {
+                llPassword.setVisibility(View.GONE);
             }
 
         } catch (JSONException e) {

@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.supportv1.utils.DeviceUtil;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.BreakfastActivity;
 import com.gxuc.runfast.shop.bean.home.HomeCategory;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
@@ -76,6 +78,9 @@ public class EntranceAdapter extends RecyclerView.Adapter<EntranceAdapter.Entran
             public void onClick(View v) {
                 HomeCategory homeCategory = homeEntrances.get(pos);
                 // TODO: 2017/5/24 点击事件
+                Intent intent = new Intent(mContext, BreakfastActivity.class);
+                intent.putExtra("typeName", homeCategory.typename);
+                mContext.startActivity(intent);
             }
         });
     }

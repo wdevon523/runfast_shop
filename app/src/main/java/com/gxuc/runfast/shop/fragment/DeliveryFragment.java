@@ -17,11 +17,12 @@ import android.widget.TextView;
 import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ordercenter.PayChannelActivity;
+import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.PurchaseInfo;
 import com.gxuc.runfast.shop.bean.PurchaseOrderInfo;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
@@ -35,6 +36,8 @@ import com.gxuc.runfast.shop.view.TipDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +55,8 @@ import static android.app.Activity.RESULT_OK;
 public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClickListener, TimeChooseDialog.OnTimeDialogClickListener, GoodsTypeDialog.OnTypeDialogClickListener {
 
 
+    @BindView(R.id.tv_purchase)
+    TextView tvPurchase;
     @BindView(R.id.tv_nearly_driver)
     TextView tvNearlyDriver;
     @BindView(R.id.tv_where_from)
@@ -120,8 +125,8 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
 
     private TipDialog tipDialog;
     private int tip = 0;
-    private AddressInfo addressInfoFrom;
-    private AddressInfo addressInfoTo;
+    private AddressBean addressInfoFrom;
+    private AddressBean addressInfoTo;
     private TimeChooseDialog timeChooseDialog;
     private GoodsTypeDialog goodsTypeDialog;
     private String goodsType = "";
@@ -156,9 +161,13 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
         unbinder.unbind();
     }
 
-    @OnClick({R.id.tv_where_from, R.id.rl_where_from, R.id.tv_where_to, R.id.rl_where_to, R.id.rl_choose_time, R.id.rl_choose_cargo, R.id.rl_coupon, R.id.rl_more_service, R.id.rl_cargo_damage, R.id.rl_tip, R.id.cb_agree_deal, R.id.tv_submit_order, R.id.rl_base_price, R.id.rl_bottom})
+    @OnClick({R.id.tv_purchase, R.id.tv_where_from, R.id.rl_where_from, R.id.tv_where_to, R.id.rl_where_to, R.id.rl_choose_time, R.id.rl_choose_cargo, R.id.rl_coupon, R.id.rl_more_service, R.id.rl_cargo_damage, R.id.rl_tip, R.id.cb_agree_deal, R.id.tv_submit_order, R.id.rl_base_price, R.id.rl_bottom})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tv_purchase:
+                SystemUtil.hideSoftKeyboard(etRemark);
+                ((PurchasesActivity) getActivity()).setViewPagerCurrentItem(0);
+                break;
             case R.id.tv_where_from:
                 Intent intent = new Intent(getContext(), AddressSelectActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
@@ -232,7 +241,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
     private void requestsubmitOrder() {
         String remark = etRemark.getText().toString();
         CustomApplication.getRetrofitNew().submitOrder(goodsType, goodsWeight, pickTime,
-                addressInfoFrom.getId(), addressInfoTo.getId(), "QUSONGJIAN", tip, lng, lat, remark).enqueue(new MyCallback<String>() {
+                addressInfoFrom.id, addressInfoTo.id, "QUSONGJIAN", tip, lng, lat, remark).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -245,6 +254,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
                         intent.putExtra("orderId", purchaseOrderInfo.id);
                         intent.putExtra("price", purchaseOrderInfo.amountPayable / 100);
                         intent.putExtra("orderCode", purchaseOrderInfo.orderNo);
+                        intent.putExtra("createTime", purchaseOrderInfo.createTime);
                         intent.putExtra("isPaotui", true);
                         startActivity(intent);
                     } else {
@@ -269,7 +279,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
 
-        CustomApplication.getRetrofitNew().getDeliveryOrderInfo(goodsType, goodsWeight, pickTime, addressInfoFrom.getId(), addressInfoTo.getId(), "QUSONGJIAN", lng, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDeliveryOrderInfo(goodsType, goodsWeight, pickTime, addressInfoFrom.id, addressInfoTo.id, "QUSONGJIAN", lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -279,7 +289,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
                         String data = jsonObject.optString("data");
                         PurchaseInfo purchaseInfo = GsonUtil.fromJson(data, PurchaseInfo.class);
                         tvSendPrice.setText("¥ " + purchaseInfo.baseFee / 100);
-                        tvTotalPrice.setText(purchaseInfo.deliveryFee / 100 + "元");
+                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + "元");
                         tvDistance.setText(purchaseInfo.distance + "米");
                         tvSendTime.setText("预计" + purchaseInfo.deliveryDuration + "分钟内送达");
                     } else {
@@ -305,19 +315,19 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
         if (requestCode == 1001) {
-            addressInfoFrom = data.getParcelableExtra("addressInfo");
+            addressInfoFrom = (AddressBean) data.getSerializableExtra("addressInfo");
             tvWhereFrom.setVisibility(View.GONE);
             rlWhereFrom.setVisibility(View.VISIBLE);
-            tvFromName.setText(addressInfoFrom.getName());
-            tvFromMobile.setText(addressInfoFrom.getMobile());
-            tvFromAddress.setText(addressInfoFrom.getUserAddress() + addressInfoFrom.getAddress());
+            tvFromName.setText(addressInfoFrom.name);
+            tvFromMobile.setText(addressInfoFrom.phone);
+            tvFromAddress.setText(addressInfoFrom.userAddress + addressInfoFrom.address);
         } else if (requestCode == 1002) {
             tvWhereTo.setVisibility(View.GONE);
             rlWhereTo.setVisibility(View.VISIBLE);
-            addressInfoTo = data.getParcelableExtra("addressInfo");
-            tvToName.setText(addressInfoTo.getName());
-            tvToMobile.setText(addressInfoTo.getMobile());
-            tvToAddress.setText(addressInfoTo.getUserAddress() + addressInfoTo.getAddress());
+            addressInfoTo = (AddressBean) data.getSerializableExtra("addressInfo");
+            tvToName.setText(addressInfoTo.name);
+            tvToMobile.setText(addressInfoTo.phone);
+            tvToAddress.setText(addressInfoTo.userAddress + addressInfoTo.address);
         }
         requestDeliverInfo();
     }
@@ -340,10 +350,15 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
         if (TextUtils.equals("TODAY", day)) {
-            String nowDateFormat = SystemUtil.getNowDateFormat();
-            String data = nowDateFormat.substring(0, 11);
-            pickTime = data + hourMinute + ":00";
-            tvChooseTime.setText(pickTime);
+            if (TextUtils.equals("立即配送", hourMinute)) {
+                pickTime = SystemUtil.getNowDateFormat();
+                tvChooseTime.setText("立即取件");
+            } else {
+                String nowDateFormat = SystemUtil.getNowDateFormat();
+                String data = nowDateFormat.substring(0, 11);
+                pickTime = data + hourMinute + ":00";
+                tvChooseTime.setText(pickTime);
+            }
         } else {
             long l = System.currentTimeMillis() + 86400000;
             String time = SystemUtil.getTime(l);
@@ -362,4 +377,6 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
         tvGoodsType.setText(TextUtils.isEmpty(goodsType) ? getString(R.string.get_default) : goodsType + " " + goodsWeight + "公斤");
         requestDeliverInfo();
     }
+
+
 }

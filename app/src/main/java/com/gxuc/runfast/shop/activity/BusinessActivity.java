@@ -52,6 +52,7 @@ import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.bean.business.BusinessDetails;
 import com.gxuc.runfast.shop.bean.maintop.TopImage;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartInfo;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
@@ -74,7 +75,6 @@ import com.gxuc.runfast.shop.bean.order.ShoppingTrolley;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.fragment.BusinessFragment;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.util.CustomUtils;
 import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.R;
@@ -239,7 +239,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     private TextView tvProductDiscount;
     private TextView tvProductLimit;
     private AlertDialog alertDialog;
-    private User userInfo;
+    private UserInfo userInfo;
     private int specNum = 1;
     private RelativeLayout rlPacking;
     private TextView tvPackingPrice;
@@ -826,8 +826,8 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         foodBean.setShowprice(jsonObject.optString("showprice"));
                         foodBean.setIsonly(jsonObject.optInt("isonly"));
                         foodBean.setPrice(new BigDecimal(TextUtils.equals("null", jsonObject.optString("price")) ? "0" : jsonObject.optString("price")));
-                        foodBean.setDisprice(jsonObject.optString("disprice"));
-                        foodBean.setSale(String.valueOf(jsonObject.optInt("salesnum")));
+                        foodBean.setDisprice(foodBean.getPrice());
+                        foodBean.setSalesnum(jsonObject.optInt("salesnum"));
                         foodBean.setBusinessId(jsonObject.optInt("businessId"));
                         foodBean.setBusinessName(jsonObject.optString("businessName"));
                         foodBean.setAgentId(jsonObject.optInt("agentId"));
@@ -863,7 +863,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 
@@ -872,7 +872,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (!jsonObject.optBoolean("sucess")) {
-                        CustomToast.INSTANCE.showToast(CustomApplication.getContext(), jsonObject.optString("message"));
+                        ToastUtil.showToast(jsonObject.optString("message"));
                         return;
                     }
                 } catch (JSONException e) {
@@ -923,13 +923,13 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 //                        foodBeens.get(i).setGoodsSellOptionId(shoppingCartInfo.shoppings.get(j).goodsSellOptionId);
 //                        foodBeens.get(i).setGoodsSellOptionName(shoppingCartInfo.shoppings.get(j).goodsSellOptionName);
                         FoodBean foodSpecBean = new FoodBean();
-                        foodSpecBean.setSelectCount(Long.valueOf(shoppingCartInfo.shoppings.get(j).num));
+                        foodSpecBean.setSelectCount(Integer.valueOf(shoppingCartInfo.shoppings.get(j).num));
                         foodSpecBean.setId(foodBeens.get(i).getId());
                         foodSpecBean.setName(foodBeens.get(i).getName());
-                        foodSpecBean.setSale(foodBeens.get(i).getSale());
+                        foodSpecBean.setSalesnum(foodBeens.get(i).getSalesnum());
                         foodSpecBean.setIsCommand(foodBeens.get(i).getIsCommand());
                         foodSpecBean.setPrice(new BigDecimal(shoppingCartInfo.shoppings.get(j).price));
-                        foodSpecBean.setDisprice(shoppingCartInfo.shoppings.get(j).disprice != null ? shoppingCartInfo.shoppings.get(j).disprice : "0");
+                        foodSpecBean.setDisprice(shoppingCartInfo.shoppings.get(j).disprice != null ? shoppingCartInfo.shoppings.get(j).disprice : BigDecimal.ZERO);
 //                        foodSpecBean.setDisprice(foodBeens.get(j).getDisprice() != null ? foodBeens.get(j).getDisprice() : "0");
                         foodSpecBean.setIcon(foodBeens.get(i).getIcon());
                         foodSpecBean.setCut(foodBeens.get(i).getCut());
@@ -960,7 +960,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         }
                         carFoods.add(foodSpecBean);
                     } else {
-                        foodBeens.get(i).setSelectCount(Long.valueOf(shoppingCartInfo.shoppings.get(j).num));
+                        foodBeens.get(i).setSelectCount(Integer.valueOf(shoppingCartInfo.shoppings.get(j).num));
                         carFoods.add(foodBeens.get(i));
                     }
                 }
@@ -979,7 +979,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
     }
 
     private void updateTyprSelect() {
-        HashMap<String, Long> typeSelect = new HashMap<>();
+        HashMap<String, Integer> typeSelect = new HashMap<>();
         for (int i = 0; i < carFoods.size(); i++) {
             FoodBean fb = carFoods.get(i);
             if (typeSelect.containsKey(fb.getType())) {
@@ -1015,7 +1015,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().getIsShoucang(businessId, 1, userInfo.getId()).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().getIsShoucang(businessId, 1, userInfo.id).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String data = response.body();
@@ -1140,7 +1140,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             } else if (jsonObject.optString("succ").equals("已取消收藏！")) {
                 mIvCollection.setImageResource(R.drawable.icon_collection_no);
             }
-            CustomToast.INSTANCE.showToast(this, jsonObject.getString("succ"));
+            ToastUtil.showToast(jsonObject.getString("succ"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1190,8 +1190,8 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         ShoppingCarBean carBean = new ShoppingCarBean();
         carBean.setBusinessId(businessId);
 //        carBean.setBusinessId(1);
-        carBean.setCid(userInfo.getId());
-        carBean.setCname(userInfo.getName());
+        carBean.setCid(userInfo.id);
+        carBean.setCname(userInfo.name);
         carBean.setList(trolleys);
 
         String goodJson = new Gson().toJson(carBean);
@@ -1200,7 +1200,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
                 String body = response.body().toString();
@@ -1234,7 +1234,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         .putExtra("salePrice", salePrice)
                         .putExtra("businessId", businessId));
             } else {
-                CustomToast.INSTANCE.showToast(this, jsonObject.optString("msg"));
+                ToastUtil.showToast(jsonObject.optString("msg"));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1273,7 +1273,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * @param foodBean
      */
     private void dealCar(FoodBean foodBean) {
-        HashMap<String, Long> typeSelect = new HashMap<>();
+        HashMap<String, Integer> typeSelect = new HashMap<>();
         BigDecimal amount = new BigDecimal(0.0);
         int total = 0;
         boolean hasFood = false;
@@ -1334,19 +1334,19 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             BigDecimal foodPayPrice = new BigDecimal(0.0);
             BigDecimal foodTotalPrice = new BigDecimal(0.0);
             if (foodBean.getIslimited() == 0) {
-                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
-                    foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                if (foodBean.getDisprice() != null && foodBean.getDisprice().compareTo(BigDecimal.ZERO) != 0) {
+                    foodPayPrice = foodBean.getDisprice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
                     foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
                 } else {
                     foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
                     foodPayPrice = foodTotalPrice;
                 }
             } else {
-                if (foodBean.getDisprice() != null && !TextUtils.equals("0", foodBean.getDisprice())) {
+                if (foodBean.getDisprice() != null && foodBean.getDisprice().compareTo(BigDecimal.ZERO) != 0) {
                     if (foodBean.getSelectCount() <= foodBean.getLimitNum()) {
-                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
+                        foodPayPrice = foodBean.getDisprice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
                     } else {
-                        foodPayPrice = new BigDecimal(foodBean.getDisprice()).multiply(BigDecimal.valueOf(foodBean.getLimitNum())).add(
+                        foodPayPrice = foodBean.getDisprice().multiply(BigDecimal.valueOf(foodBean.getLimitNum())).add(
                                 foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount() - foodBean.getLimitNum())));
                     }
                     foodTotalPrice = foodBean.getPrice().multiply(BigDecimal.valueOf(foodBean.getSelectCount()));
@@ -1365,7 +1365,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         amount = payPrice;
 //        amount = totalPrice;
 
-        if (amount.compareTo(new BigDecimal(0.0)) == 0) {
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
             car_limit.setText(startPay.isNaN() ? "¥ 0元起送" : "¥ " + String.valueOf(startPay) + "起送");
             car_limit.setTextColor(Color.parseColor("#a8a8a8"));
             car_limit.setBackgroundColor(Color.parseColor("#99464646"));
@@ -1423,12 +1423,12 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         }
                         carFoods.clear();
                         if (positionSpec != null) {
-                            addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, BusinessActivity.this);
+//                            addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, BusinessActivity.this);
                         }
                         tvSpecNum.setText("0");
                         tvSpecNum.setVisibility(View.GONE);
                         car_badge.setVisibility(View.INVISIBLE);
-                        fragment.getTypeAdapter().updateBadge(new HashMap<String, Long>());
+                        fragment.getTypeAdapter().updateBadge(new HashMap<String, Integer>());
                         updateAmount(new BigDecimal(0.0));
                     }
                 })
@@ -1550,7 +1550,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
      * @param foodBean
      */
     private void dealCarSpec(FoodBean foodBean) {
-        HashMap<String, Long> typeSelect = new HashMap<>();
+        HashMap<String, Integer> typeSelect = new HashMap<>();
         BigDecimal amount = new BigDecimal(0.0);
         int total = 0;
         boolean hasFood = false;
@@ -1651,7 +1651,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 
                     tvSpecTitle.setText(foodBeanSpec.getName());
 
-                    if (foodBeanSpec.getDiscount() != null && foodBeanSpec.getDiscount().compareTo(new BigDecimal(0.00)) == 1) {
+                    if (foodBeanSpec.getDiscount() != null && foodBeanSpec.getDiscount().compareTo(BigDecimal.ZERO) == 1) {
                         tvSpecPrice.setText(foodBeanSpec.getDiscount() + "");
                         tvSpecOldPrice.setText("¥ " + foodBeanSpec.getPrice() + "");
                         tvSpecOldPrice.setVisibility(View.VISIBLE);
@@ -1668,7 +1668,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         return;
                     }
                     tvSpecTitle.setText(foodBeanDetail.getName());
-                    if (foodBeanDetail.getDiscount() != null && foodBeanDetail.getDiscount().compareTo(new BigDecimal(0.00)) == 1) {
+                    if (foodBeanDetail.getDiscount() != null && foodBeanDetail.getDiscount().compareTo(BigDecimal.ZERO) == 1) {
                         tvSpecPrice.setText(foodBeanDetail.getDiscount() + "");
                         tvSpecOldPrice.setText("¥ " + foodBeanDetail.getPrice() + "");
                         tvSpecOldPrice.setVisibility(View.VISIBLE);
@@ -1717,10 +1717,10 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                         }
                         foodBeanTwo.setId(fbSpec.getId());
                         foodBeanTwo.setName(fbSpec.getName());
-                        foodBeanTwo.setSale(fbSpec.getSale());
+                        foodBeanTwo.setSalesnum(fbSpec.getSalesnum());
                         foodBeanTwo.setIsCommand(fbSpec.getIsCommand());
                         foodBeanTwo.setPrice(specBeanList.get(point).getPrice());
-                        foodBeanTwo.setDisprice(specBeanList.get(point).getDiscount() != null ? String.valueOf(specBeanList.get(point).getDiscount()) : "0");
+                        foodBeanTwo.setDisprice(specBeanList.get(point).getDiscount() != null ? specBeanList.get(point).getDiscount() : BigDecimal.ZERO);
                         foodBeanTwo.setIcon(fbSpec.getIcon());
                         foodBeanTwo.setCut(fbSpec.getCut());
                         foodBeanTwo.setType(fbSpec.getType());
@@ -1778,7 +1778,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         }
 //        if (((BusinessFragment) mFragments.get(0)).getFoodAdapter() != null) {
 //        addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
-        addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
+//        addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), positionSpec, this);
 //        }
         layoutProductDetail.setVisibility(View.VISIBLE);
         rotateyAnimShow(layoutProductDetail);
@@ -1801,7 +1801,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
 
     private void fillProductDetail(FoodBean foodBeanDetail) {
         tvProductName.setText(foodBeanDetail.getName());
-        tvProductSale.setText("月售" + foodBeanDetail.getSale());
+        tvProductSale.setText("月售" + foodBeanDetail.getSalesnum());
 //        tvProductPrice.setText(foodBeanDetail.getPrice() + "");
         tvProductContent.setText(foodBeanDetail.getContent());
 
@@ -1833,7 +1833,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             tvProductGiftName.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(foodBeanDetail.getDisprice()) && !TextUtils.equals("0", foodBeanDetail.getDisprice())) {
+        if (foodBeanDetail.getDisprice() != null && foodBeanDetail.getDisprice().compareTo(BigDecimal.ZERO) != 0) {
             tvProductPrice.setText("¥" + foodBeanDetail.getDisprice());
             tvOldProductPrice.setText("¥" + foodBeanDetail.getPrice());
             tvOldProductPrice.setVisibility(View.VISIBLE);
@@ -1884,7 +1884,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 }
                 addItem(specBeanList, layoutSpec);
 
-                if (specBeanList.get(0).getDiscount() != null && specBeanList.get(0).getDiscount().compareTo(new BigDecimal(0.00)) == 1) {
+                if (specBeanList.get(0).getDiscount() != null && specBeanList.get(0).getDiscount().compareTo(BigDecimal.ZERO) == 1) {
                     tvSpecPrice.setText(specBeanList.get(0).getDiscount() + "");
                     tvSpecOldPrice.setText("¥ " + specBeanList.get(0).getPrice() + "");
                     tvSpecOldPrice.setVisibility(View.VISIBLE);
@@ -1968,7 +1968,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 @Override
                 public void onClick(View v) {
                     point = (int) v.getTag();
-                    if (specBeanList.get(point).getDiscount() != null && specBeanList.get(point).getDiscount().compareTo(new BigDecimal(0.00)) == 1) {
+                    if (specBeanList.get(point).getDiscount() != null && specBeanList.get(point).getDiscount().compareTo(BigDecimal.ZERO) == 1) {
                         tvSpecPrice.setText(specBeanList.get(point).getDiscount() + "");
                         tvSpecOldPrice.setText("¥ " + specBeanList.get(point).getPrice() + "");
                         tvSpecOldPrice.setVisibility(View.VISIBLE);
@@ -2142,7 +2142,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
         } else {
             onAddClick(view, foodBean);
             if (isShowDetail) {
-                addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), position, this);
+//                addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), position, this);
             }
         }
     }
@@ -2184,7 +2184,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
                 }
             }
         } else if (isShowDetail) {
-            addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), position, this);
+//            addWidgetDetail.setData(((BusinessFragment) mFragments.get(0)).getFoodAdapter(), position, this);
         }
     }
 
@@ -2193,7 +2193,7 @@ public class BusinessActivity extends ToolBarActivity implements AddWidget.OnAdd
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 

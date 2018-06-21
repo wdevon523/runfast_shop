@@ -1,7 +1,7 @@
 package com.gxuc.runfast.shop.view;
 
-
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -11,24 +11,22 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.gxuc.runfast.shop.adapter.shopcaradater.FoodAdapter;
+import com.github.florent37.viewanimator.AnimationListener;
+import com.github.florent37.viewanimator.ViewAnimator;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.FoodBean;
-import com.github.florent37.viewanimator.ViewAnimator;
-import com.gxuc.runfast.shop.util.ToastUtil;
-import com.lljjcoder.citylist.Toast.ToastUtils;
 
 public class AddWidget extends FrameLayout {
 
-    private View add, sub;
+    private View sub;
     private TextView tv_count;
-    private int position;
-    private long count;
-
-    private BaseQuickAdapter foodAdapter;
+    private int count;
+    private AddButton addbutton;
+    private boolean sub_anim, circle_anim;
+    private FoodBean foodBean;
 
     public interface OnAddClick {
+
         void onAddClick(View view, FoodBean fb);
 
         void onSubClick(FoodBean fb);
@@ -40,65 +38,52 @@ public class AddWidget extends FrameLayout {
         super(context);
     }
 
-    public AddWidget(@NonNull final Context context, @Nullable AttributeSet attrs) {
+    public AddWidget(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         inflate(context, R.layout.view_addwidget, this);
-        add = findViewById(R.id.iv_add);
+        addbutton = findViewById(R.id.addbutton);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AddWidget);
+        for (int i = 0; i < a.getIndexCount(); i++) {
+            int attr = a.getIndex(i);
+            switch (attr) {
+                case R.styleable.AddWidget_circle_anim:
+                    circle_anim = a.getBoolean(R.styleable.AddWidget_circle_anim, false);
+                    break;
+                case R.styleable.AddWidget_sub_anim:
+                    sub_anim = a.getBoolean(R.styleable.AddWidget_sub_anim, false);
+                    break;
+            }
+
+        }
+        a.recycle();
         sub = findViewById(R.id.iv_sub);
-        tv_count = (TextView) findViewById(R.id.tv_count);
-        add.setOnClickListener(new OnClickListener() {
+        tv_count = findViewById(R.id.tv_count);
+        addbutton.setAnimListner(new AddButton.AnimListner() {
             @Override
-            public void onClick(View v) {
-                FoodBean fb = (FoodBean) foodAdapter.getItem(position);
-
-                if (count >= fb.getNum()){
-                    ToastUtil.showToast("库存不足");
-                    return;
-                }
-
-                if (count == 0) {
-                    ViewAnimator.animate(sub)
-                            .translationX(add.getLeft() - sub.getLeft(), 0)
-                            .rotation(360)
-                            .alpha(0, 255)
-                            .duration(300)
-                            .interpolator(new DecelerateInterpolator())
-                            .andAnimate(tv_count)
-                            .translationX(add.getLeft() - tv_count.getLeft(), 0)
-                            .rotation(360)
-                            .alpha(0, 255)
-                            .interpolator(new DecelerateInterpolator())
-                            .duration(300)
-                            .start()
-                    ;
-//                    sub.setAlpha(1f);
-//                    tv_count.setAlpha(1f);
-                }
-
-
-                if (fb.getIslimited() == 1) {
-                    if (fb.getLimittype() == 0) {
-                        if (count == fb.getLimitNum()) {
-                            ToastUtil.showToast("已达到限购上限");
-                            return;
-                        } else {
-                            count++;
-                        }
-                    } else {
-                        if (count == fb.getLimitNum()) {
-                            ToastUtil.showToast("已超过优惠件数，将以原价购买");
-                        }
-                        count++;
-                    }
-                } else {
-                    count++;
-                }
-                fb.setSelectCount(count);
-                foodAdapter.setData(position, fb);
+            public void onStop() {
+//                if (count == 0) {
+//                    ViewAnimator.animate(sub)
+//                            .translationX(addbutton.getLeft() - sub.getLeft(), 0)
+//                            .rotation(360)
+//                            .alpha(0, 255)
+//                            .duration(300)
+//                            .interpolator(new DecelerateInterpolator())
+//                            .andAnimate(tv_count)
+//                            .translationX(addbutton.getLeft() - tv_count.getLeft(), 0)
+//                            .rotation(360)
+//                            .alpha(0, 255)
+//                            .interpolator(new DecelerateInterpolator())
+//                            .duration(300)
+//                            .start()
+//                    ;
+//                }
+//                count++;
+//                tv_count.setText(count + "");
+//                foodBean.setSelectCount(count);
+//                foodBean.getSpecInfo().num = count;
                 if (onAddClick != null) {
-                    onAddClick.onAddClick(v, fb);
+                    onAddClick.onAddClick(addbutton, foodBean);
                 }
-                tv_count.setText(count + "");
             }
         });
         sub.setOnClickListener(new OnClickListener() {
@@ -107,43 +92,50 @@ public class AddWidget extends FrameLayout {
                 if (count == 0) {
                     return;
                 }
-//                if (count == 1 && foodAdapter instanceof FoodAdapter) {
-                if (count == 1) {
-//                    ViewAnimator.animate(sub)
-//                            .translationX(0, add.getLeft() - sub.getLeft())
-//                            .rotation(-360)
-//                            .alpha(255, 0)
-//                            .duration(300)
-//                            .interpolator(new AccelerateInterpolator())
-//                            .andAnimate(tv_count)
-//                            .translationX(0, add.getLeft() - tv_count.getLeft())
-//                            .rotation(-360)
-//                            .alpha(255, 0)
-//                            .interpolator(new AccelerateInterpolator())
-//                            .duration(300)
-//                            .start()
-//                    ;
-                    sub.setAlpha(0f);
-                    tv_count.setAlpha(0f);
-                }
-                count--;
-                FoodBean fb = (FoodBean) foodAdapter.getItem(position);
-                fb.setSelectCount(count);
-                foodAdapter.setData(position, fb);
+//                if (count == 1 && sub_anim) {
+//                    subAnim();
+//                }
+//                count--;
+//                tv_count.setText(count == 0 ? "1" : count + "");
+//                foodBean.setSelectCount(count);
+//                foodBean.getSpecInfo().num = count;
                 if (onAddClick != null) {
-                    onAddClick.onSubClick(fb);
+                    onAddClick.onSubClick(foodBean);
                 }
-                tv_count.setText(count == 0 ? "1" : count + "");
             }
         });
     }
 
-    public void setData(BaseQuickAdapter fa, int c, OnAddClick onAddClick) {
-        foodAdapter = fa;
-        position = c;
+    private void subAnim(){
+        ViewAnimator.animate(sub)
+                .translationX(0, addbutton.getLeft() - sub.getLeft())
+                .rotation(-360)
+                .alpha(255, 0)
+                .duration(300)
+                .interpolator(new AccelerateInterpolator())
+                .andAnimate(tv_count)
+                .onStop(new AnimationListener.Stop() {
+                    @Override
+                    public void onStop() {
+                        if (circle_anim) {
+                            addbutton.expendAnim();
+                        }
+                    }
+                })
+                .translationX(0, addbutton.getLeft() - tv_count.getLeft())
+                .rotation(-360)
+                .alpha(255, 0)
+                .interpolator(new AccelerateInterpolator())
+                .duration(300)
+                .start()
+        ;
+    }
+
+    public void setData(OnAddClick onAddClick, FoodBean foodBean) {
+        this.foodBean = foodBean;
         this.onAddClick = onAddClick;
-        FoodBean flist = (FoodBean) fa.getData().get(c);
-        count = flist.getSelectCount();
+        count = foodBean.getSelectCount();
+//        count = foodBean.getSpecInfo().num;
         if (count == 0) {
             sub.setAlpha(0);
             tv_count.setAlpha(0);
@@ -154,4 +146,15 @@ public class AddWidget extends FrameLayout {
         }
     }
 
+    public void setState(Integer count) {
+        addbutton.setState(count > 0);
+    }
+
+    public void expendAdd(Integer count) {
+        this.count = count;
+        tv_count.setText(count == 0 ? "1" : count + "");
+        if (count == 0) {
+            subAnim();
+        }
+    }
 }

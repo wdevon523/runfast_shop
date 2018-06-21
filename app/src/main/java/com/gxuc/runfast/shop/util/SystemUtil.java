@@ -26,6 +26,7 @@ public class SystemUtil {
 
     /**
      * 获取当前进程名
+     *
      * @param context
      * @return 进程名
      */
@@ -180,7 +181,7 @@ public class SystemUtil {
         inputMethodManager.showSoftInput(view, 0);
     }
 
-    public static final String DATE_FORMAT= "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     public static String getNowDateFormat() {
         final Date currentTime = new Date();
@@ -200,5 +201,13 @@ public class SystemUtil {
         }
     };
 
-
+    public static long date2TimeStamp(String date, String format) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            return sdf.parse(date).getTime() / 1000;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

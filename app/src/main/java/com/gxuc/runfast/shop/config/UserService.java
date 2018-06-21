@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.example.supportv1.app.BaseApplication;
 import com.example.supportv1.utils.SharedPreferencesUtil;
@@ -73,7 +74,7 @@ public class UserService {
      *
      * @param user
      */
-    public static void saveUserInfo(User user) {
+    public static void saveUserInfo(UserInfo user) {
         if (user == null) {
             return;
         }
@@ -97,7 +98,7 @@ public class UserService {
      *
      * @return
      */
-    public static User getUserInfo(Context context) {
+    public static UserInfo getUserInfo(Context context) {
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(BaseApplication.APP_CONTEXT, CustomConstant.sp_name);
         String userJson = (String) sharedPreferencesUtil.getData(USER_INFO);
         if (TextUtils.isEmpty(userJson)) {
@@ -105,7 +106,7 @@ public class UserService {
             return null;
         }
         Gson gson = new Gson();
-        return gson.fromJson(userJson, User.class);
+        return gson.fromJson(userJson, UserInfo.class);
     }
 
 

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.bean.score.MyScore;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,13 +20,13 @@ import java.util.List;
 
 public class ScoreRecordAdapter extends RecyclerView.Adapter<ScoreRecordAdapter.ScoreRecordViewHolder> {
 
-    private List<MyScore> mScoreList;
+    private ArrayList<MyScore> mScoreList;
 
     private Context context;
 
     private View.OnClickListener mListener;
 
-    public ScoreRecordAdapter(List<MyScore> mScoreList, Context context, View.OnClickListener listener) {
+    public ScoreRecordAdapter(ArrayList<MyScore> mScoreList, Context context, View.OnClickListener listener) {
         this.mScoreList = mScoreList;
         this.context = context;
         mListener = listener;
@@ -44,11 +45,11 @@ public class ScoreRecordAdapter extends RecyclerView.Adapter<ScoreRecordAdapter.
         MyScore myScore = mScoreList.get(position);
         //积分类型1注册积分、2消费积分(下单消费)、3推荐积分、4分享积分、
         // 5收藏积分、6评论积分、7广告积分、8购物消费
-        String score = String.valueOf(myScore.getScore());
+        String score = String.valueOf(myScore.score);
         if (score.contains(".")){
             score = score.substring(0,score.indexOf("."));
         }
-        switch (myScore.getType()){
+        switch (myScore.type){
             case 1:
                 holder.mTvMakeMoneyTitle.setText("注册积分");
                 holder.mTvMakeMoneyNum.setText("+"+score);
@@ -90,12 +91,17 @@ public class ScoreRecordAdapter extends RecyclerView.Adapter<ScoreRecordAdapter.
                 holder.mTvMakeMoneyNum.setTextColor(context.getResources().getColor(R.color.color_money_green));
                 break;
        }
-        holder.mTvMakeMoneyTime.setText(myScore.getCreateTime());
+        holder.mTvMakeMoneyTime.setText(myScore.createTime);
     }
 
     @Override
     public int getItemCount() {
         return mScoreList == null ? 0 : mScoreList.size();
+    }
+
+    public void setList(ArrayList<MyScore> mScoreList) {
+        this.mScoreList = mScoreList;
+        notifyDataSetChanged();
     }
 
     public class ScoreRecordViewHolder extends RecyclerView.ViewHolder {

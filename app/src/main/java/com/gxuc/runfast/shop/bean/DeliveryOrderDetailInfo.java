@@ -1,5 +1,7 @@
 package com.gxuc.runfast.shop.bean;
 
+import java.math.BigDecimal;
+
 public class DeliveryOrderDetailInfo {
 
     /**
@@ -59,8 +61,8 @@ public class DeliveryOrderDetailInfo {
     public String createTime;
     public String updateTime;
     public String amountPaid;
-    public String amountPayable;
-    public int deliveryCost;
+    public BigDecimal amountPayable;
+    public BigDecimal deliveryCost;
     public String fromAddress;
     public String fromLat;
     public String fromLng;

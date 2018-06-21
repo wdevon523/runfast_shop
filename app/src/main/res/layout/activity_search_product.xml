@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context=".activity.SearchProductActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.SearchProductActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,14 +19,16 @@
             android:id="@+id/iv_search_back"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/icon_back"/>
+            android:padding="@dimen/dimen_7_dp"
+            android:src="@drawable/icon_back" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_weight="1"
-            android:background="@drawable/shape_search_background_scroll"
+            android:background="@drawable/shape_search_f3f4f5"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="center_vertical">
@@ -34,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_search"/>
+                android:src="@drawable/icon_search" />
 
             <EditText
                 android:id="@+id/et_search_name"
@@ -47,8 +50,7 @@
                 android:singleLine="true"
                 android:textColor="@color/color_text_gray"
                 android:textColorHint="@color/color_text_gray"
-                android:textSize="14sp"
-                />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -59,7 +61,8 @@
             android:layout_marginRight="15dp"
             android:text="搜索"
             android:textColor="@color/color_address_black"
-            android:textSize="15sp"/>
+            android:textSize="15sp" />
+
     </LinearLayout>
 
     <RelativeLayout
@@ -81,26 +84,36 @@
                 android:layout_height="wrap_content"
                 android:text="历史搜索"
                 android:textColor="@color/color_address_black"
-                android:textSize="14sp"/>
+                android:textSize="14sp" />
 
             <com.gxuc.runfast.shop.view.ZFlowLayout
                 android:id="@+id/flow_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="13dp"/>
+                android:layout_marginTop="13dp" />
         </LinearLayout>
 
-        <cn.bingoogolapple.refreshlayout.BGARefreshLayout
-            android:id="@+id/rl_search_refresh"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_100_dp"
+                android:background="@color/white"
+                android:scaleType="center"
+                android:src="@drawable/gif_header_repast"
+                app:layout_srlBackgroundColor="@android:color/transparent"
+                app:layout_srlSpinnerStyle="Scale" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/view_search_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/color_line_back"/>
-        </cn.bingoogolapple.refreshlayout.BGARefreshLayout>
+                android:background="@color/color_line_back" />
+
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
     </RelativeLayout>
 
 </LinearLayout>

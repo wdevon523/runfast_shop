@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.bean.CashBankInfo;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,14 +22,14 @@ import java.util.List;
  */
 public class CashUserNameAdapter extends RecyclerView.Adapter<CashUserNameAdapter.CashUserNameViewHolder> {
 
-    private List<CashBankInfo> mScoreList;
+    private List<CashBankInfo> cashBankInfoList;
 
     private Context context;
 
     private View.OnClickListener mListener;
 
-    public CashUserNameAdapter(List<CashBankInfo> mScoreList, Context context, View.OnClickListener listener) {
-        this.mScoreList = mScoreList;
+    public CashUserNameAdapter(List<CashBankInfo> cashBankInfoList, Context context, View.OnClickListener listener) {
+        this.cashBankInfoList = cashBankInfoList;
         this.context = context;
         mListener = listener;
     }
@@ -42,16 +43,16 @@ public class CashUserNameAdapter extends RecyclerView.Adapter<CashUserNameAdapte
 
     @Override
     public void onBindViewHolder(CashUserNameViewHolder holder, int position) {
-        CashBankInfo bankInfo = mScoreList.get(position);
+        CashBankInfo bankInfo = cashBankInfoList.get(position);
         if (bankInfo != null) {
-            holder.tv_bank_name.setText(bankInfo.getBanktype());
-            holder.tv_user_name.setText(bankInfo.getName());
-            String account = bankInfo.getAccount();
+            holder.tv_bank_name.setText(bankInfo.banktype);
+            holder.tv_user_name.setText(bankInfo.name);
+            String account = bankInfo.account;
             if (account.length() > 4){
                 account = account.substring(account.length()-4);
             }
             holder.tv_bank_code.setText("**** **** **** "+account);
-            holder.tv_bank_time.setText("添加日期 "+bankInfo.getCreateTime());
+            holder.tv_bank_time.setText("添加日期 "+bankInfo.createTime);
 
             holder.iv_delete_bank.setTag(position);
             holder.iv_delete_bank.setOnClickListener(mListener);
@@ -61,7 +62,12 @@ public class CashUserNameAdapter extends RecyclerView.Adapter<CashUserNameAdapte
 
     @Override
     public int getItemCount() {
-        return mScoreList == null ? 0 : mScoreList.size();
+        return cashBankInfoList == null ? 0 : cashBankInfoList.size();
+    }
+
+    public void setList(ArrayList<CashBankInfo> cashBankInfoList) {
+        this.cashBankInfoList = cashBankInfoList;
+        notifyDataSetChanged();
     }
 
     public class CashUserNameViewHolder extends RecyclerView.ViewHolder {

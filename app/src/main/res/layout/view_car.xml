@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.gxuc.runfast.shop.view.ShopCarView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/car_mainfl"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dimen_80_dp"
+    android:layout_gravity="bottom"
+    android:elevation="4dp"
+    android:gravity="bottom">
+
+    <RelativeLayout
+        android:id="@+id/car_rl"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@color/bg_cc464646">
+
+        <TextView
+            android:id="@+id/car_nonselect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="80dp"
+            android:text="未选购商品"
+            android:textColor="@color/view_e5e5e5"
+            android:textSize="@dimen/dimen_12_dp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/amount_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="80dp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tv_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="另需配送费¥4元"
+                android:textColor="@color/white"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/car_limit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:onClick="goAccount"
+            android:paddingLeft="@dimen/dimen_20_dp"
+            android:paddingRight="@dimen/dimen_20_dp"
+            android:text="¥20 起送"
+            android:textColor="@color/text_b8b8b8"
+            android:textSize="@dimen/dimen_16_dp" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/cart_notice"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_30_dp"
+        android:background="@color/bg_fdf2d5"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:textColor="@color/text_333333"
+        android:textSize="@dimen/dimen_12_dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/iv_shop_car"
+        android:layout_width="@dimen/dimen_60_dp"
+        android:layout_height="@dimen/dimen_60_dp"
+        android:layout_marginTop="@dimen/dimen_15_dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/icon_not_shop_car" />
+
+    <TextView
+        android:id="@+id/car_badge"
+        style="@style/badge_style"
+        android:text="2"
+        android:layout_marginLeft="52dp"
+        android:layout_marginTop="@dimen/dimen_15_dp" />
+
+</com.gxuc.runfast.shop.view.ShopCarView>

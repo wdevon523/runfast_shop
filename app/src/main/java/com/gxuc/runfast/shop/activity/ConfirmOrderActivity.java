@@ -18,10 +18,10 @@ import com.gxuc.runfast.shop.adapter.moneyadapter.BalanceProductAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.address.AddressInfo;
 import com.gxuc.runfast.shop.bean.coupon.CouponBean;
-import com.gxuc.runfast.shop.bean.coupon.CouponBeans;
 import com.gxuc.runfast.shop.bean.order.GoodsSellRecordChildren;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartGoodsInfo;
 import com.gxuc.runfast.shop.bean.redpackage.RedPackages;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.IntentConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -33,9 +33,7 @@ import com.gxuc.runfast.shop.bean.address.AddressInfos;
 import com.gxuc.runfast.shop.bean.order.ShoppingCartInfo;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.order.OrderCodeInfo;
-import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.data.IntentFlag;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.google.gson.Gson;
 import com.gxuc.runfast.shop.util.ToastUtil;
 
@@ -204,7 +202,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
 
 
     private void getRedData() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
@@ -240,7 +238,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
      * 获取优惠券
      */
     private void getCouponData() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
@@ -258,22 +256,22 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     }
 
     private void dealMyCoupon(String body) {
-        CouponBeans couponBeans = GsonUtil.parseJsonWithGson(body, CouponBeans.class);
-        if (couponBeans.getRows() != null) {
-//            tvCashCoupon.setText("可用优惠券" + number + "个");
-            tvRedPacket.setText("可用红包" + couponBeans.getRows().size() + "个");
-        } else {
-//            tvCashCoupon.setText("暂无可用优惠券");
-            tvRedPacket.setText("暂无可用红包");
-        }
+//        CouponBeans couponBeans = GsonUtil.parseJsonWithGson(body, CouponBeans.class);
+//        if (couponBeans.getRows() != null) {
+////            tvCashCoupon.setText("可用优惠券" + number + "个");
+//            tvRedPacket.setText("可用红包" + couponBeans.getRows().size() + "个");
+//        } else {
+////            tvCashCoupon.setText("暂无可用优惠券");
+//            tvRedPacket.setText("暂无可用红包");
+//        }
     }
 
     private void getAddressData() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().postListAddress(userInfo.getId(), 1).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofit().postListAddress(userInfo.id, 1).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 dealAddressList(response.body());
@@ -368,7 +366,7 @@ public class ConfirmOrderActivity extends ToolBarActivity {
      *
      */
     private void toPay() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (mAddressId == null) {
             ToastUtil.showToast("请选择收货地址");
             return;
@@ -415,10 +413,10 @@ public class ConfirmOrderActivity extends ToolBarActivity {
                 startActivity(mIntent);
                 finish();
             } else {
-                CustomToast.INSTANCE.showToast(this, codeInfo.getMsg());
+                ToastUtil.showToast(codeInfo.getMsg());
             }
         } else {
-            CustomToast.INSTANCE.showToast(this, "下单失败，请重新选择商品");
+            ToastUtil.showToast("下单失败，请重新选择商品");
         }
     }
 
@@ -467,12 +465,12 @@ public class ConfirmOrderActivity extends ToolBarActivity {
     }
 
     private void updateCoupon(CouponBean couponBean) {
-        couponId = couponBean.getId();
-        couponPrice = couponBean.getPrice();
-        shoppingCartGoodsInfo3.price = String.valueOf(couponPrice);
-        tvRedPacket.setText("¥" + couponPrice);
-        adapter.notifyDataSetChanged();
-        updateMoney();
+//        couponId = couponBean.getId();
+//        couponPrice = couponBean.getPrice();
+//        shoppingCartGoodsInfo3.price = String.valueOf(couponPrice);
+//        tvRedPacket.setText("¥" + couponPrice);
+//        adapter.notifyDataSetChanged();
+//        updateMoney();
     }
 
 }

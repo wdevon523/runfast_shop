@@ -167,6 +167,7 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
                     data.putExtra("orderId", deliveryOrderInfo.id);
                     data.putExtra("price", deliveryOrderInfo.amountPayable / 100);
                     data.putExtra("orderCode", deliveryOrderInfo.orderNo);
+                    data.putExtra("createTime", deliveryOrderInfo.createTime);
                     data.putExtra("isPaotui", true);
                     context.startActivity(data);
                     break;

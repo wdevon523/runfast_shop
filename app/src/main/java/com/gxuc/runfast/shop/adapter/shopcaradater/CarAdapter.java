@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.adapter.shopcaradater;
 
 
 import android.support.annotation.Nullable;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -25,6 +26,6 @@ public class CarAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
 		helper.setText(R.id.car_name, item.getName())
 				.setText(R.id.car_price, "¥" + item.getPrice().multiply(BigDecimal.valueOf(item.getSelectCount())));
 		AddWidget addWidget = helper.getView(R.id.car_addwidget);
-		addWidget.setData(this, helper.getAdapterPosition(), onAddClick);
+		addWidget.setData(onAddClick,item);
 	}
 }

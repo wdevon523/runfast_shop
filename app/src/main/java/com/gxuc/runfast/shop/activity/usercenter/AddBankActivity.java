@@ -13,13 +13,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.data.DataLayer;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.NetInterface;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.GetJsonDataUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
@@ -229,17 +229,30 @@ public class AddBankActivity extends ToolBarActivity {
      * @param
      */
     private void addBank() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         String code = etBankCode.getText().toString().trim();
         String bankName = tvBankName.getText().toString().trim();
         String userName = etBankUserName.getText().toString().trim();
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().addBank(userName, bankName, code).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().addBank(userName, bankName, code).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealAddBank(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("添加成功");
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -249,22 +262,6 @@ public class AddBankActivity extends ToolBarActivity {
         });
     }
 
-    private void dealAddBank(String body) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            boolean success = jsonObject.optBoolean("success");
-            String msg = jsonObject.optString("msg");
-            if (!success) {
-                CustomToast.INSTANCE.showToast(this, msg);
-                return;
-            }
-            Intent intent = new Intent();
-            setResult(RESULT_OK, intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 弹出选择方式

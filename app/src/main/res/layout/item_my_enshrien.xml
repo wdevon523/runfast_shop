@@ -124,7 +124,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="配送费¥3"
-                android:visibility="invisible"
                 android:textColor="@color/color_text_gray_two" />
 
             <ImageView

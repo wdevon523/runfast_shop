@@ -2,14 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_purchases_home"
     android:orientation="vertical">
 
 
     <RelativeLayout
         android:id="@+id/title_layout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white">
+        android:layout_height="?attr/actionBarSize">
 
         <TextView
             android:id="@+id/title_text"
@@ -56,14 +56,14 @@
 
     </RelativeLayout>
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabLayout"
-        style="@style/MyCustomTabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_40_dp"
-        android:background="@android:color/white" />
+    <!--<android.support.design.widget.TabLayout-->
+    <!--android:id="@+id/tabLayout"-->
+    <!--style="@style/MyCustomTabLayout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/dimen_40_dp"-->
+    <!--android:background="@android:color/white" />-->
 
-    <android.support.v4.view.ViewPager
+    <com.gxuc.runfast.shop.view.NoScrollViewPager
         android:id="@+id/viewpager_order"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

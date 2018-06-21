@@ -4,22 +4,25 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 
+import com.example.supportv1.utils.JsonUtil;
+import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.adapter.BusinessAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.bean.spend.AccountRecords;
-import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.spend.AccountRecord;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyAllFragment;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyExpenditureFragment;
 import com.gxuc.runfast.shop.fragment.walletfragmnet.MoneyIncomeFragment;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
-import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,14 +86,24 @@ public class MoneyDetailActivity extends ToolBarActivity {
     }
 
     private void getNetData() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().getListConsume(page,0).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getListConsume().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealConsumeList(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        dealConsumeList(jsonObject.optString("data"));
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -100,11 +113,12 @@ public class MoneyDetailActivity extends ToolBarActivity {
         });
     }
 
-    private void dealConsumeList(String body) {
-        AccountRecords accountRecords = GsonUtil.parseJsonWithGson(body, AccountRecords.class);
-        if (accountRecords != null && accountRecords.getRows().size() > 0) {
+    private void dealConsumeList(String data) {
+        ArrayList<AccountRecord> accountRecordList = JsonUtil.fromJson(data, new TypeToken<ArrayList<AccountRecord>>() {
+        }.getType());
+        if (accountRecordList != null && accountRecordList.size() > 0) {
             Bundle bundle = new Bundle();
-            bundle.putParcelable("record", accountRecords);
+            bundle.putSerializable("record", accountRecordList);
             mMoneyAllFragment = new MoneyAllFragment();
             mMoneyIncomeFragment = new MoneyIncomeFragment();
             mMoneyExpenditureFragment = new MoneyExpenditureFragment();

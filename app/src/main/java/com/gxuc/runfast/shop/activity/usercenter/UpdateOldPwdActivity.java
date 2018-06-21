@@ -8,12 +8,14 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.impl.MyCallback;
-import com.gxuc.runfast.shop.util.CustomToast;
+import com.gxuc.runfast.shop.util.MD5Util;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,25 +139,37 @@ public class UpdateOldPwdActivity extends ToolBarActivity {
         String newPwdAgain = etNewPasswordAgain.getText().toString().trim();
 
         if (TextUtils.isEmpty(oldPwd)) {
-            CustomToast.INSTANCE.showToast(this, "旧密码不能为空");
+            ToastUtil.showToast("旧密码不能为空");
             return;
         }
         if (TextUtils.isEmpty(newPwd)) {
-            CustomToast.INSTANCE.showToast(this, "旧密码不能为空");
+            ToastUtil.showToast("旧密码不能为空");
             return;
         }
         if (!TextUtils.equals(newPwd, newPwdAgain)) {
-            CustomToast.INSTANCE.showToast(this, "两次新密码输入不一致");
+            ToastUtil.showToast("两次新密码输入不一致");
             return;
         }
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             return;
         }
-        CustomApplication.getRetrofit().updatePassword(oldPwd, newPwd, 0, newPwdAgain).enqueue(new MyCallback<String>() {
+
+        CustomApplication.getRetrofitNew().updatePwdByOld(MD5Util.MD5(oldPwd), MD5Util.MD5(newPwd)).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealUpdatePassWord(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("密码修改成功");
+                        finish();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -163,21 +177,32 @@ public class UpdateOldPwdActivity extends ToolBarActivity {
 
             }
         });
+//        CustomApplication.getRetrofit().updatePassword(oldPwd, newPwd, 0, newPwdAgain).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                dealUpdatePassWord(response.body());
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
-    private void dealUpdatePassWord(String body) {
-        try {
-            JSONObject object = new JSONObject(body);
-            boolean success = object.optBoolean("success");
-            String msg = object.optString("msg");
-            CustomToast.INSTANCE.showToast(this, msg);
-            if (success) {
-                finish();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void dealUpdatePassWord(String body) {
+//        try {
+//            JSONObject object = new JSONObject(body);
+//            boolean success = object.optBoolean("success");
+//            String msg = object.optString("msg");
+//            ToastUtil.showToast(msg);
+//            if (success) {
+//                finish();
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @OnClick(R.id.btn_save_password)
     public void onViewClicked() {

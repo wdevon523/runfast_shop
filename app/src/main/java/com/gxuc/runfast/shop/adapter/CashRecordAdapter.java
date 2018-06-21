@@ -2,17 +2,16 @@ package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.bean.spend.AccountRecord;
+import com.gxuc.runfast.shop.bean.spend.WithdrawalRecord;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by huiliu on 2017/9/13.
@@ -22,14 +21,14 @@ import java.util.List;
  */
 public class CashRecordAdapter extends RecyclerView.Adapter<CashRecordAdapter.CashRecordViewHolder> {
 
-    private List<AccountRecord> mScoreList;
+    private ArrayList<WithdrawalRecord> mRecordList;
 
     private Context context;
 
     private View.OnClickListener mListener;
 
-    public CashRecordAdapter(List<AccountRecord> mScoreList, Context context, View.OnClickListener listener) {
-        this.mScoreList = mScoreList;
+    public CashRecordAdapter(ArrayList<WithdrawalRecord> mRecordList, Context context, View.OnClickListener listener) {
+        this.mRecordList = mRecordList;
         this.context = context;
         mListener = listener;
     }
@@ -44,31 +43,36 @@ public class CashRecordAdapter extends RecyclerView.Adapter<CashRecordAdapter.Ca
 
     @Override
     public void onBindViewHolder(CashRecordViewHolder holder, int position) {
-        AccountRecord accountRecord = mScoreList.get(position);
+        WithdrawalRecord withdrawalRecord = mRecordList.get(position);
 
-        if (!TextUtils.isEmpty(accountRecord.getAccount())){
-            String account = accountRecord.getAccount();
+//        if (!TextUtils.isEmpty(WithdrawalRecord.account)){
+            String account = withdrawalRecord.account;
             if (account.length() > 4){
                 account = account.substring(account.length()-4);
             }
-            holder.mTvMakeMoneyTitle.setText("提现至"+accountRecord.getBanktype()+"("+account+")");
-        }else {
-            holder.mTvMakeMoneyTitle.setText(accountRecord.getTypename());
-        }
+            holder.mTvMakeMoneyTitle.setText("提现至"+withdrawalRecord.banktype+"("+account+")");
+//        }else {
+//            holder.mTvMakeMoneyTitle.setText(WithdrawalRecord.getTypename());
+//        }
 
-        if (accountRecord.getMonetary().compareTo(new BigDecimal("0")) == -1){
-            holder.mTvMakeMoneyNum.setText(String.valueOf(accountRecord.getMonetary()));
+        if (withdrawalRecord.monetary.compareTo(BigDecimal.ZERO) == -1){
+            holder.mTvMakeMoneyNum.setText(String.valueOf(withdrawalRecord.monetary));
             holder.mTvMakeMoneyNum.setTextColor(context.getResources().getColor(R.color.color_address_black));
         }else {
-            holder.mTvMakeMoneyNum.setText("+"+String.valueOf(accountRecord.getMonetary()));
+            holder.mTvMakeMoneyNum.setText("+"+String.valueOf(withdrawalRecord.monetary));
             holder.mTvMakeMoneyNum.setTextColor(context.getResources().getColor(R.color.color_money_green));
         }
-        holder.mTvMakeMoneyTime.setText(accountRecord.getCreateTime());
+        holder.mTvMakeMoneyTime.setText(withdrawalRecord.createTime);
     }
 
     @Override
     public int getItemCount() {
-        return mScoreList == null ? 0 : mScoreList.size();
+        return mRecordList == null ? 0 : mRecordList.size();
+    }
+
+    public void setList(ArrayList<WithdrawalRecord> mRecordList) {
+        this.mRecordList = mRecordList;
+        notifyDataSetChanged();
     }
 
     public class CashRecordViewHolder extends RecyclerView.ViewHolder {

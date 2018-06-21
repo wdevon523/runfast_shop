@@ -7,9 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
 import com.gxuc.runfast.shop.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,14 +19,14 @@ import java.util.List;
 
 public class AddressSelectAdapter extends RecyclerView.Adapter<AddressSelectAdapter.AddressSelectViewHolder> implements View.OnClickListener {
 
-    private List<AddressInfo> addresses;
+    private List<AddressBean> addressBeanList;
 
     private Context context;
 
     private OnItemClickListener mOnItemClickListener = null;
 
-    public AddressSelectAdapter(List<AddressInfo> addresses, Context context) {
-        this.addresses = addresses;
+    public AddressSelectAdapter(List<AddressBean> addressBeanList, Context context) {
+        this.addressBeanList = addressBeanList;
         this.context = context;
     }
 
@@ -43,7 +44,7 @@ public class AddressSelectAdapter extends RecyclerView.Adapter<AddressSelectAdap
 
     @Override
     public void onBindViewHolder(AddressSelectViewHolder holder, int position) {
-        AddressInfo addressInfo = addresses.get(position);
+        AddressBean addressBean = addressBeanList.get(position);
 //        if (address != null) {
 //            if (address.status == 1){
 //                holder.title.setTextColor(context.getResources().getColor(R.color.color_orange_select));
@@ -53,15 +54,15 @@ public class AddressSelectAdapter extends RecyclerView.Adapter<AddressSelectAdap
 //                holder.title.setTextColor(context.getResources().getColor(R.color.color_address_black));
 //            }
 //            holder.name.setText(address.address);
-        holder.title.setText(addressInfo.getUserAddress() + addressInfo.getAddress());
-        holder.phone.setText(addressInfo.getPhone());
-        holder.name.setText(addressInfo.getName());
+        holder.title.setText(addressBean.userAddress + addressBean.address);
+        holder.phone.setText(addressBean.phone);
+        holder.name.setText(addressBean.name);
         holder.itemView.setTag(position);
     }
 
     @Override
     public int getItemCount() {
-        return addresses == null ? 0 : addresses.size();
+        return addressBeanList == null ? 0 : addressBeanList.size();
     }
 
     @Override
@@ -72,6 +73,10 @@ public class AddressSelectAdapter extends RecyclerView.Adapter<AddressSelectAdap
         }
     }
 
+    public void setList(ArrayList<AddressBean> addressBeanList) {
+        this.addressBeanList = addressBeanList;
+        notifyDataSetChanged();
+    }
 
 
     public class AddressSelectViewHolder extends RecyclerView.ViewHolder {

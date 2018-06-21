@@ -21,25 +21,26 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amap.api.maps.AMap;
-import com.amap.api.maps.AMapUtils;
-import com.amap.api.maps.CameraUpdate;
-import com.amap.api.maps.CameraUpdateFactory;
-import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
-import com.amap.api.maps.model.CameraPosition;
-import com.amap.api.maps.model.LatLng;
-import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.AMapUtils;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
+import com.example.supportv1.utils.JsonUtil;
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.BusinessActivity;
+import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.activity.MainActivity;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
-import com.gxuc.runfast.shop.adapter.OrderGoodsAdapter;
+import com.gxuc.runfast.shop.adapter.OrderGoodsNewAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.DriverInfo;
-import com.gxuc.runfast.shop.bean.order.OrderDetail;
-import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.OrderInformation;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
@@ -154,8 +155,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
     private AMap aMap;
     private List<String> mStrings;
-    private OrderDetail orderDetailInfo;
-    private User userInfo;
+    private OrderInformation orderDetailInfo;
+    private UserInfo userInfo;
     private Integer orderId;
     private boolean isFromePayFinish;
     private AlertDialog alertDialog;
@@ -252,10 +253,10 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         LinearLayout llMapOrderStatus = (LinearLayout) view.findViewById(R.id.ll_map_order_status);
         TextView tvMapOrdertatus = (TextView) view.findViewById(R.id.tv_map_order_status);
         llMapOrderStatus.setVisibility(View.VISIBLE);
-        if (orderDetailInfo.goodsSellRecord.status == 3 || orderDetailInfo.goodsSellRecord.status == 4) {
+        if (orderDetailInfo.status == 3 || orderDetailInfo.status == 4) {
             float distance = AMapUtils.calculateLineDistance(driverLatLng, businessLatLng);
             tvMapOrdertatus.setText("距离商家" + (int) distance + "m");
-        } else if (orderDetailInfo.goodsSellRecord.status == 5) {
+        } else if (orderDetailInfo.status == 5) {
             float distance = AMapUtils.calculateLineDistance(driverLatLng, userLatLng);
             tvMapOrdertatus.setText("距离您" + (int) distance + "m");
         } else {
@@ -291,20 +292,20 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     }
 
     private void drawBusinessMarkers() {
-        businessLatLng = new LatLng(orderDetailInfo.goodsSellRecord.businessAddressLat,
-                orderDetailInfo.goodsSellRecord.businessAddressLng);
+        businessLatLng = new LatLng(orderDetailInfo.businessAddressLat,
+                orderDetailInfo.businessAddressLng);
 
         View view = getLayoutInflater().inflate(R.layout.icon_business, null);
         LinearLayout llMapOrderStatus = (LinearLayout) view.findViewById(R.id.ll_map_order_status);
         TextView tvMapOrdertatus = (TextView) view.findViewById(R.id.tv_map_order_status);
         CircleImageView ivLogo = (CircleImageView) view.findViewById(R.id.iv_logo);
-        x.image().bind(ivLogo, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo, NetConfig.optionsHeadImage);
+        x.image().bind(ivLogo, UrlConstant.ImageBaseUrl + orderDetailInfo.businessImg, NetConfig.optionsHeadImage);
         llMapOrderStatus.setVisibility(View.VISIBLE);
-        if (orderDetailInfo.goodsSellRecord.status == 1) {
+        if (orderDetailInfo.status == 1) {
             tvMapOrdertatus.setText("等待商家接单");
-        } else if (orderDetailInfo.goodsSellRecord.status == 2 || orderDetailInfo.goodsSellRecord.status == 3) {
+        } else if (orderDetailInfo.status == 2 || orderDetailInfo.status == 3) {
             tvMapOrdertatus.setText("商家正在备货");
-        } else if (orderDetailInfo.goodsSellRecord.status == 4) {
+        } else if (orderDetailInfo.status == 4) {
             tvMapOrdertatus.setText("商家已打包");
         } else {
             llMapOrderStatus.setVisibility(View.GONE);
@@ -316,8 +317,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 .newCameraPosition(new CameraPosition(businessLatLng, 15, 0, 0));
 
         cameraUpdateCenter = CameraUpdateFactory
-                .newCameraPosition(new CameraPosition(new LatLng(orderDetailInfo.goodsSellRecord.businessAddressLat - 0.005,
-                        orderDetailInfo.goodsSellRecord.businessAddressLng), 15, 0, 0));
+                .newCameraPosition(new CameraPosition(new LatLng(orderDetailInfo.businessAddressLat - 0.005,
+                        orderDetailInfo.businessAddressLng), 15, 0, 0));
 
         MarkerOptions markerOptionsBusiness = new MarkerOptions();
         // 设置Marker的坐标，为我们点击地图的经纬度坐标
@@ -333,14 +334,14 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         //将Marker添加到地图上去
         aMap.addMarker(markerOptionsBusiness).showInfoWindow();
 
-        if (orderDetailInfo.goodsSellRecord.status <= 2 && orderDetailInfo.goodsSellRecord.status > 0) {
+        if (orderDetailInfo.status <= 2 && orderDetailInfo.status > 0) {
             aMap.moveCamera(cameraUpdateCenter);
         }
     }
 
 
     private void drawUserMarkers() {
-        userLatLng = new LatLng(orderDetailInfo.goodsSellRecord.userAddressLat, orderDetailInfo.goodsSellRecord.userAddressLng);
+        userLatLng = new LatLng(orderDetailInfo.userAddressLat, orderDetailInfo.userAddressLng);
 
         cameraUpdateUser = CameraUpdateFactory.newLatLngZoom(userLatLng, 15);
         MarkerOptions markerOptionsUser = new MarkerOptions();
@@ -449,17 +450,24 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         if (userInfo == null) {
             return;
         }
-        getOrderDetail(orderId, userInfo);
+        getOrderDetail(orderId);
     }
 
-    private void getOrderDetail(Integer id, User userInfo) {
-        CustomApplication.getRetrofit().getOrderDetail(id).enqueue(new MyCallback<String>() {
+    private void getOrderDetail(Integer id) {
+        CustomApplication.getRetrofitNew().getOrderDetail(id).enqueue(new MyCallback<String>() {
 
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful()) {
-                    String data = response.body();
-                    fillView(data);
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        fillView(jsonObject.optString("data"));
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
                 mRefreshLayout.endRefreshing();
                 mRefreshLayout.setEnabled(true);
@@ -481,89 +489,89 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
      * @param data
      */
     private void fillView(String data) {
-        orderDetailInfo = GsonUtil.fromJson(data, OrderDetail.class);
+        orderDetailInfo = JsonUtil.fromJson(data, OrderInformation.class);
+
         if (orderDetailInfo == null) {
             return;
         }
         drawUserMarkers();
         drawBusinessMarkers();
-        if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.shopperId) && !TextUtils.equals("null", orderDetailInfo.goodsSellRecord.shopperId)) {
-            requestDriverLatLng(orderDetailInfo.goodsSellRecord.shopperId);
+        if (!TextUtils.isEmpty(orderDetailInfo.shopperId) && !TextUtils.equals("null", orderDetailInfo.shopperId)) {
+            requestDriverLatLng(orderDetailInfo.shopperId);
         }
-        mTvOrderManState.setText(orderDetailInfo.goodsSellRecord.statStr + " >");
+        mTvOrderManState.setText(orderDetailInfo.statStr);
 
-        if (orderDetailInfo.goodsSellRecord.status == 2 ||
-                orderDetailInfo.goodsSellRecord.status == 3 ||
-                orderDetailInfo.goodsSellRecord.status == 4 ||
-                orderDetailInfo.goodsSellRecord.status == 5) {
+        if (orderDetailInfo.status == 2 ||
+                orderDetailInfo.status == 3 ||
+                orderDetailInfo.status == 4 ||
+                orderDetailInfo.status == 5) {
             mLlManDeliverTime.setVisibility(View.VISIBLE);
-            mTvManDeliverTime.setText(orderDetailInfo.goodsSellRecord.disTime);
+            mTvManDeliverTime.setText(orderDetailInfo.deliveryDuration + "");
         } else {
             mLlManDeliverTime.setVisibility(View.INVISIBLE);
         }
 
-        showBtnStatus(orderDetailInfo.goodsSellRecord.status);
+        showBtnStatus(orderDetailInfo.status);
 
-        if (orderDetailInfo.goodsSellRecord.isCancel != null) {
-            if (orderDetailInfo.goodsSellRecord.isCancel == 1) {
+        if (orderDetailInfo.isCancel != null && orderDetailInfo.status != 8) {
+            if (orderDetailInfo.isCancel == 1) {
                 mBtnCancelOrder.setVisibility(View.GONE);
-                mTvOrderManState.setText("已申请取消，等待商家处理" + " >");
-            } else if (orderDetailInfo.goodsSellRecord.isCancel == 2) {
+                mTvOrderManState.setText("已申请取消，等待商家处理");
+            } else if (orderDetailInfo.isCancel == 2) {
                 mBtnCancelOrder.setVisibility(View.GONE);
-                mTvOrderManState.setText("商家同意取消订单" + " >");
-            } else if (orderDetailInfo.goodsSellRecord.isCancel == 3) {
+                mTvOrderManState.setText("商家同意取消订单");
+            } else if (orderDetailInfo.isCancel == 3) {
                 mBtnCancelOrder.setVisibility(View.VISIBLE);
-                mTvOrderManState.setText("商家不同意取消订单" + " >");
+                mTvOrderManState.setText("商家不同意取消订单");
             }
         }
 
-        tvDriverName.setText(orderDetailInfo.goodsSellRecord.shopper);
-        tvDriverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
+        tvDriverName.setText(orderDetailInfo.shopper);
+        tvDriverType.setText(orderDetailInfo.isDeliver == 0 ? "快车专送" : "商家配送");
 
 //        ImageLoaderUtil.displayImage(this, mIvOrderDetailBusinessImg, orderDetailInfo.goodsSellRecord.logo);
-        x.image().bind(mIvOrderDetailBusinessImg, UrlConstant.ImageBaseUrl + orderDetailInfo.goodsSellRecord.logo, NetConfig.optionsHeadImage);
-        mTvOrderDetailBusinessName.setText(orderDetailInfo.goodsSellRecord.businessName);
+        x.image().bind(mIvOrderDetailBusinessImg, UrlConstant.ImageBaseUrl + orderDetailInfo.businessImg, NetConfig.optionsHeadImage);
+        mTvOrderDetailBusinessName.setText(orderDetailInfo.businessName);
 
-        OrderGoodsAdapter orderGoodsAdapter = new OrderGoodsAdapter(this, orderDetailInfo.goodsSellRecordChildren);
         llContainProduct.removeAllViews();
-        if (orderDetailInfo.goodsSellRecordChildren != null) {
-            for (int i = 0; i < orderDetailInfo.goodsSellRecordChildren.size(); i++) {
-                llContainProduct.addView(orderGoodsAdapter.getView(i, null, null));
-            }
+        OrderGoodsNewAdapter orderGoodsNewAdapter = new OrderGoodsNewAdapter(this, orderDetailInfo.cartItems);
+        for (int i = 0; i < orderDetailInfo.cartItems.size(); i++) {
+            llContainProduct.addView(orderGoodsNewAdapter.getView(i, null, null));
         }
-        tvOrderDetailOldShipping.setVisibility(orderDetailInfo.goodsSellRecord.showps == orderDetailInfo.total ? View.GONE : View.VISIBLE);
-        tvOrderDetailOldShipping.setText(orderDetailInfo.goodsSellRecord.showps == 0 ? "" : "¥ " + orderDetailInfo.goodsSellRecord.showps);
+
+        tvOrderDetailOldShipping.setVisibility(orderDetailInfo.deliveryFee == orderDetailInfo.finalDeliveryFee ? View.GONE : View.VISIBLE);
+        tvOrderDetailOldShipping.setText(orderDetailInfo.deliveryFee == 0 ? "" : "¥ " + orderDetailInfo.deliveryFee);
         tvOrderDetailOldShipping.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.total);
-        tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.goodsSellRecord.packing);
-        tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.goodsSellRecord.yhprice);
-        mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.goodsSellRecord.disprice == null ? 0 : orderDetailInfo.goodsSellRecord.disprice));
-        mTvOrderDetailCouponPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.activityprice);
-        mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.goodsSellRecord.totalpay);
-        mTvOrderDetailDeliverType.setText(orderDetailInfo.goodsSellRecord.isDeliver == 0 ? "快车专送" : "商家配送");
-        tvOrderDetailCreatTime.setText(orderDetailInfo.goodsSellRecord.createTime);
-        if (!TextUtils.isEmpty(orderDetailInfo.goodsSellRecord.readyTime) || !TextUtils.equals(orderDetailInfo.goodsSellRecord.readyTime, "null")) {
-            mTvOrderDetailDeliverTime.setText(orderDetailInfo.goodsSellRecord.disTime);
-            mLlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
-        } else {
-            mLlOrderDetailDeliverTime.setVisibility(View.GONE);
-        }
-        mTvOrderDetailManInfo.setText(orderDetailInfo.goodsSellRecord.userAddress + orderDetailInfo.goodsSellRecord.address);
-        mTvOrderDetailManPhone.setText(orderDetailInfo.goodsSellRecord.userName + "  " + orderDetailInfo.goodsSellRecord.userMobile);
-        mTvOrderDetailNumber.setText(orderDetailInfo.goodsSellRecord.orderCode);
-        if (orderDetailInfo.goodsSellRecord.isPay == 1) {
+        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.finalDeliveryFee);
+        tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.totalPackageFee);
+        tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.offAmount);
+        mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.cartDisprice));
+        mTvOrderDetailCouponPrice.setText("¥ " + orderDetailInfo.offAmount);
+        mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.totalPay);
+        mTvOrderDetailDeliverType.setText(orderDetailInfo.isDeliver == 0 ? "快车专送" : "商家配送");
+        tvOrderDetailCreatTime.setText(orderDetailInfo.createTime);
+//        if (!TextUtils.isEmpty(orderDetailInfo.readyTime) || !TextUtils.equals(orderDetailInfo.readyTime, "null")) {
+//            mTvOrderDetailDeliverTime.setText(orderDetailInfo.disTime);
+//            mLlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
+//        } else {
+//            mLlOrderDetailDeliverTime.setVisibility(View.GONE);
+//        }
+        mTvOrderDetailManInfo.setText(orderDetailInfo.userAddress + orderDetailInfo.address);
+        mTvOrderDetailManPhone.setText(orderDetailInfo.userName + "  " + orderDetailInfo.userPhone);
+        mTvOrderDetailNumber.setText(orderDetailInfo.orderNo);
+        if (orderDetailInfo.isPay != null && orderDetailInfo.isPay == 1) {
             mLlOrderDetailPatType.setVisibility(View.VISIBLE);
-            if (orderDetailInfo.goodsSellRecord.payType == 0) {
+            if (orderDetailInfo.payType == 0) {
                 mTvOrderDetailPatType.setText("支付宝");
-            } else if (orderDetailInfo.goodsSellRecord.payType == 1) {
+            } else if (orderDetailInfo.payType == 1) {
                 mTvOrderDetailPatType.setText("微信");
-            } else if (orderDetailInfo.goodsSellRecord.payType == 2) {
+            } else if (orderDetailInfo.payType == 2) {
                 mTvOrderDetailPatType.setText("钱包");
             }
         } else {
             mLlOrderDetailPatType.setVisibility(View.GONE);
         }
-        mTvOrderDetailRemark.setText(orderDetailInfo.goodsSellRecord.content);
+        mTvOrderDetailRemark.setText(orderDetailInfo.remark);
     }
 
     private void requestDriverLatLng(String shopperId) {
@@ -682,7 +690,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             mBtnBuyAgain.setVisibility(View.VISIBLE);
             rlContactBusiness.setVisibility(View.VISIBLE);
             rlDriverInfo.setVisibility(View.VISIBLE);
-            mBtnAppraise.setVisibility(orderDetailInfo.goodsSellRecord.isComent == null
+            mBtnAppraise.setVisibility(orderDetailInfo.isComent == null
                     ? View.VISIBLE : View.GONE);
 
             mBtnCancelOrder.setVisibility(View.GONE);
@@ -710,9 +718,9 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_business_name:
-                Intent businessIntent = new Intent(OrderDetailActivity.this, BusinessActivity.class);
+                Intent businessIntent = new Intent(OrderDetailActivity.this, BusinessNewActivity.class);
                 businessIntent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
-                businessIntent.putExtra("orderInfo", orderDetailInfo.goodsSellRecord.businessId);
+                businessIntent.putExtra("businessId", orderDetailInfo.businessId);
                 startActivity(businessIntent);
                 break;
 
@@ -732,11 +740,12 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 Intent payChannelIntent = new Intent(this, PayChannelActivity.class);
 //                payChannelIntent.putExtra("orderId", orderId);
 //                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
-                payChannelIntent.putExtra("orderId", orderDetailInfo.goodsSellRecord.id);
-                payChannelIntent.putExtra("orderCode", orderDetailInfo.goodsSellRecord.orderCode);
-                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.totalpay);
-                payChannelIntent.putExtra("businessName", orderDetailInfo.goodsSellRecord.businessName);
-                payChannelIntent.putExtra("logo", orderDetailInfo.goodsSellRecord.logo);
+                payChannelIntent.putExtra("orderId", orderId);
+                payChannelIntent.putExtra("orderCode", orderDetailInfo.orderNo);
+                payChannelIntent.putExtra("price", orderDetailInfo.totalPay);
+                payChannelIntent.putExtra("businessName", orderDetailInfo.businessName);
+                payChannelIntent.putExtra("logo", orderDetailInfo.businessImg);
+                payChannelIntent.putExtra("createTime", orderDetailInfo.createTime);
                 startActivity(payChannelIntent);
                 break;
             //确认完成
@@ -750,7 +759,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 break;
             //联系商家
             case R.id.rl_contact_business:
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.goodsSellRecord.businessMobile));
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.businessMobile));
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -766,7 +775,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 break;
             //联系骑手
             case R.id.btn_contact_driver:
-                Intent data = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.goodsSellRecord.shopperMobile));
+                Intent data = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + orderDetailInfo.shopperMobile));
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -784,9 +793,9 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             case R.id.btn_appraise:
                 Intent evaluationIntent = new Intent(this, OrderEvaluationActivity.class);
                 evaluationIntent.putExtra("oid", orderId);
-                evaluationIntent.putExtra("logo", orderDetailInfo.goodsSellRecord.logo);
-                evaluationIntent.putExtra("businessName", orderDetailInfo.goodsSellRecord.businessName);
-                evaluationIntent.putExtra("isDeliver", orderDetailInfo.goodsSellRecord.isDeliver);
+                evaluationIntent.putExtra("logo", orderDetailInfo.businessImg);
+                evaluationIntent.putExtra("businessName", orderDetailInfo.businessName);
+                evaluationIntent.putExtra("isDeliver", orderDetailInfo.isDeliver);
                 startActivity(evaluationIntent);
                 break;
         }
@@ -812,19 +821,18 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     }
 
     private void requestBuyAgain() {
-        CustomApplication.getRetrofit().buyAgain(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().buyAgainNew(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
-                        Intent intent = new Intent(OrderDetailActivity.this, BusinessActivity.class);
-                        intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
-                        intent.putExtra("orderInfo", orderDetailInfo.goodsSellRecord.businessId);
+                        Intent intent = new Intent(OrderDetailActivity.this, BusinessNewActivity.class);
+                        intent.putExtra("businessId", orderDetailInfo.businessId);
                         startActivity(intent);
                     } else {
-                        ToastUtil.showToast(jsonObject.optString("msg"));
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -836,6 +844,32 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
             }
         });
+
+
+//        CustomApplication.getRetrofit().buyAgain(orderId).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                String body = response.body();
+//                try {
+//                    JSONObject jsonObject = new JSONObject(body);
+//                    if (jsonObject.optBoolean("success")) {
+//                        Intent intent = new Intent(OrderDetailActivity.this, BusinessActivity.class);
+//                        intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
+//                        intent.putExtra("orderInfo", orderDetailInfo.goodsSellRecord.businessId);
+//                        startActivity(intent);
+//                    } else {
+//                        ToastUtil.showToast(jsonObject.optString("msg"));
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void requestConfirmCompleted() {
@@ -848,7 +882,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                     JSONObject jsonObject = new JSONObject(body);
                     ToastUtil.showToast(jsonObject.optString("msg"));
                     if (jsonObject.optBoolean("success")) {
-                        getOrderDetail(orderId, userInfo);
+                        getOrderDetail(orderId);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -863,11 +897,20 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     }
 
     private void requestCancelOrder() {
-        CustomApplication.getRetrofit().cancelOrder(orderId).enqueue(new MyCallback<String>() {
-
+        CustomApplication.getRetrofitNew().cancelorderNew(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                getOrderDetail(orderId, userInfo);
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        getOrderDetail(orderId);
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -875,6 +918,18 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
             }
         });
+//        CustomApplication.getRetrofit().cancelOrder(orderId).enqueue(new MyCallback<String>() {
+//
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                getOrderDetail(orderId, userInfo);
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
 
     }
 
@@ -933,7 +988,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     @Override
     public void onBGARefreshLayoutBeginRefreshing(BGARefreshLayout refreshLayout) {
         mRefreshLayout.setEnabled(false);
-        getOrderDetail(orderId, userInfo);
+        getOrderDetail(orderId);
     }
 
     @Override

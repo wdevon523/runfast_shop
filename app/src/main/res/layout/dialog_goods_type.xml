@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="小费"
+            android:text="物品类型"
             android:textColor="@color/text_333333"
             android:textSize="@dimen/dimen_16_dp" />
 

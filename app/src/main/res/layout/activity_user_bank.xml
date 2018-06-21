@@ -1,53 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/color_food_gray"
+    android:orientation="vertical"
     tools:context=".activity.usercenter.UserBankActivity">
 
-    <include layout="@layout/layout_title"/>
+    <include layout="@layout/layout_title" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_horizontal"
             android:orientation="vertical">
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="135dp"
-                android:src="@drawable/icon_not_balance"/>
+                android:src="@drawable/icon_not_balance" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="暂无提现账号信息"
                 android:layout_marginTop="35dp"
-                android:textSize="15sp"
-                android:textColor="@color/color_text_gray_two"/>
+                android:text="暂无提现账号信息"
+                android:textColor="@color/color_text_gray_two"
+                android:textSize="15sp" />
         </LinearLayout>
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/view_money_list"
+
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/tv_add_bank"
-            android:layout_marginBottom="5dp"
-            android:background="@color/color_food_gray"/>
+            android:layout_height="match_parent">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen_100_dp"
+                android:background="@color/white"
+                android:scaleType="center"
+                android:src="@drawable/gif_header_repast"
+                app:layout_srlBackgroundColor="@android:color/transparent"
+                app:layout_srlSpinnerStyle="Scale" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/view_money_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/tv_add_bank"
+                android:layout_marginBottom="5dp"
+                android:background="@color/color_food_gray" />
+
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+
         <TextView
             android:id="@+id/tv_add_bank"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_45_dp"
+            android:layout_alignParentBottom="true"
             android:background="@color/color_not_order_black"
-            android:text="添加银行卡"
-            android:textSize="16sp"
-            android:textColor="@color/white"
             android:gravity="center"
-            android:layout_alignParentBottom="true"/>
+            android:text="添加银行卡"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
     </RelativeLayout>
 </LinearLayout>

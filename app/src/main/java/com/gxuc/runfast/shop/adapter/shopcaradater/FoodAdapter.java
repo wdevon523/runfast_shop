@@ -21,6 +21,7 @@ import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.R;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
@@ -46,7 +47,7 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
 
         businessDetail = ((BusinessActivity) context).getBusiness();
         helper.setText(R.id.tv_name, item.getName())
-                .setText(R.id.tv_summary, "月售" + item.getSale());
+                .setText(R.id.tv_summary, "月售" + item.getSalesnum());
 
         helper.setVisible(R.id.view_no_store, item.getNum() == 0);
         helper.setVisible(R.id.tv_no_food_store, item.getNum() == 0);
@@ -82,7 +83,7 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
             helper.setVisible(R.id.tv_gift_name, false);
         }
 
-        if (!TextUtils.isEmpty(item.getDisprice()) && !TextUtils.equals("0", item.getDisprice())) {
+        if (item.getDisprice() != null && item.getDisprice().compareTo(BigDecimal.ZERO) != 0) {
             helper.setText(R.id.tv_price, "¥" + item.getDisprice());
             helper.setText(R.id.tv_old_price, "¥" + item.getPrice());
             helper.setVisible(R.id.tv_old_price, true);
@@ -109,7 +110,7 @@ public class FoodAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         //x.image().bind((ImageView) helper.getView(R.id.iv_food), UrlConstant.ImageBaseUrl + item.getIcon(), NetConfig.optionsPagerCache);
 
         AddWidget addWidget = helper.getView(R.id.addwidget);
-        addWidget.setData(this, helper.getAdapterPosition(), onAddClick);
+//        addWidget.setData(this, helper.getAdapterPosition(), onAddClick);
 
         if (helper.getAdapterPosition() == 0) {
             helper.setVisible(R.id.stick_header, true)

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -20,19 +21,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.WeiXinPayBean;
 import com.gxuc.runfast.shop.bean.WeiXinPayInfo;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
-import com.gxuc.runfast.shop.util.CustomToast;
-import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.activity.ToolBarActivity;
-import com.gxuc.runfast.shop.bean.WeiXinPayBean;
-import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.util.GsonUtil;
-import com.example.supportv1.utils.LogUtil;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -52,6 +53,15 @@ import retrofit2.Response;
 
 public class PayChannelActivity extends ToolBarActivity {
 
+
+    @BindView(R.id.ll_left_time)
+    LinearLayout llLeftTime;
+    @BindView(R.id.tv_left_time)
+    TextView tvLeftTime;
+    @BindView(R.id.tv_total_price)
+    TextView tvTotalPrice;
+    @BindView(R.id.tv_business_name_and_order_code)
+    TextView tvBusinessNameAndOrderCode;
     @BindView(R.id.cb_weixin_pay)
     ImageView mCbWeixinPay;
     @BindView(R.id.cb_wallet_pay)
@@ -69,7 +79,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
     private int payType = 2;//0支付宝  1微信 2钱包
     private boolean isPayBack = false;
-    private User userInfo;
+    private UserInfo userInfo;
     private IWXAPI wxapi;
     private AlertDialog alertDialog;
     private Dialog mPayInputDialog;
@@ -80,6 +90,9 @@ public class PayChannelActivity extends ToolBarActivity {
     private String businessName;
     private String logo;
     private boolean isPaotui;
+    private long TEN_MINUTE = 1000 * 60 * 10;
+    private String createTime;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +129,7 @@ public class PayChannelActivity extends ToolBarActivity {
         price = getIntent().getDoubleExtra("price", 0);
         businessName = getIntent().getStringExtra("businessName");
         logo = getIntent().getStringExtra("logo");
+        createTime = getIntent().getStringExtra("createTime");
         if (orderInfo != null) {
             orderId = orderInfo.getId();
             orderCode = orderInfo.getOrderCode();
@@ -123,7 +137,45 @@ public class PayChannelActivity extends ToolBarActivity {
             businessName = orderInfo.getBusinessName();
             logo = orderInfo.getLogo();
         }
+
+        llLeftTime.setVisibility(isPaotui ? View.GONE : View.VISIBLE);
         mBtnToPay.setText("确认支付 ¥ " + price);
+        tvTotalPrice.setText(price + "");
+        tvBusinessNameAndOrderCode.setText(businessName + "-" + orderCode);
+
+        long passTime = System.currentTimeMillis() - (SystemUtil.date2TimeStamp(createTime, SystemUtil.DATE_FORMAT) * 1000);
+
+        if (passTime > TEN_MINUTE) {
+            llLeftTime.setVisibility(View.GONE);
+        } else {
+            llLeftTime.setVisibility(View.VISIBLE);
+            countDownTimer = new CountDownTimer(TEN_MINUTE - passTime, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    long minuteLong = millisUntilFinished / 1000 / 60;
+                    String minute = minuteLong + "";
+                    if (minuteLong < 10) {
+                        minute = "0" + minuteLong;
+                    }
+                    long secondLong = millisUntilFinished / 1000 % 60;
+                    String second = secondLong + "";
+                    if (secondLong < 10) {
+                        second = "0" + secondLong;
+                    }
+
+                    tvLeftTime.setText("剩余支付时间" + minute + ":" + second);
+                }
+
+                @Override
+                public void onFinish() {
+                    finish();
+                }
+            };
+        }
+
+        if (countDownTimer != null) {
+            countDownTimer.start();
+        }
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,7 +210,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
     private void requsetCheckPayStatus() {
 
-        CustomApplication.getRetrofit().getOrderPayStatus(orderCode, payType).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().orderQuery(orderCode).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -184,6 +236,33 @@ public class PayChannelActivity extends ToolBarActivity {
 
             }
         });
+
+//        CustomApplication.getRetrofit().getOrderPayStatus(orderCode, payType).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                String body = response.body();
+//                try {
+//                    JSONObject jsonObject = new JSONObject(body);
+//                    if (jsonObject.optBoolean("success")) {
+//                        Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+//                        intent.putExtra("orderId", orderId);
+//                        intent.putExtra("logo", logo);
+//                        intent.putExtra("price", price);
+//                        intent.putExtra("businessName", businessName);
+//
+//                        startActivity(intent);
+//                        finish();
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private void requestQueryPaoTuiStatus() {
@@ -319,7 +398,8 @@ public class PayChannelActivity extends ToolBarActivity {
                         if (isPaotui) {
                             requestPaoTuiPay("WXPAY_APP");
                         } else {
-                            requestWeiXinPay();
+//                            requestWeiXinPay();
+                            requestNewPay("WXPAY_APP");
                         }
 //                        requestWeiXinSign();
 //                        wechatpay();
@@ -328,12 +408,45 @@ public class PayChannelActivity extends ToolBarActivity {
                         if (isPaotui) {
                             requestPaoTuiPay("ALIPAY_APP");
                         } else {
-                            requestAliPay();
+//                            requestAliPay();
+                            requestNewPay("ALIPAY_APP");
                         }
                         break;
                 }
                 break;
         }
+    }
+
+    private void requestNewPay(final String channel) {
+
+        CustomApplication.getRetrofitNew().payOrder(orderCode, channel).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        String data = jsonObject.optString("data");
+                        if (TextUtils.equals("ALIPAY_APP", channel)) {
+                            alipay(data);
+                        } else {
+                            WeiXinPayInfo weiXinPayInfo = GsonUtil.fromJson(data, WeiXinPayInfo.class);
+                            wechatPaoTuipay(weiXinPayInfo);
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorCode"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
     }
 
     private void requestPaoTuiPay(final String channel) {
@@ -451,7 +564,7 @@ public class PayChannelActivity extends ToolBarActivity {
     private void dealWalletPay(String body) {
         try {
             JSONObject object = new JSONObject(body);
-            CustomToast.INSTANCE.showToast(this, object.optString("msg"));
+            ToastUtil.showToast(object.optString("msg"));
             if (object.optBoolean("success")) {
                 Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
                 intent.putExtra("orderId", orderId);
@@ -538,4 +651,12 @@ public class PayChannelActivity extends ToolBarActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+    }
 }

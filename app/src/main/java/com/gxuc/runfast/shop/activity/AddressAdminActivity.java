@@ -16,8 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
@@ -31,12 +30,13 @@ import com.gxuc.runfast.shop.adapter.MyAddressAdapter;
 import com.gxuc.runfast.shop.adapter.SearchAddressAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.Address;
-import com.gxuc.runfast.shop.bean.address.AddressInfo;
-import com.gxuc.runfast.shop.bean.user.User;
+import com.gxuc.runfast.shop.bean.address.AddressBean;
+import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.SystemUtil;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.zaaach.citypicker.CityPicker;
 import com.zaaach.citypicker.adapter.OnPickListener;
 import com.zaaach.citypicker.model.City;
@@ -102,9 +102,9 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_management);
+        ButterKnife.bind(this);
         setRightMsg("新增地址");
 
-        ButterKnife.bind(this);
         initMap();
         initData();
         setListener();
@@ -126,8 +126,13 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
 
         poiSearch = new PoiSearch(this, query);
         poiSearch.setOnPoiSearchListener(this);
-        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(address.latLng.latitude,
-                address.latLng.longitude), 1000));//设置周边搜索的中心点以及半径
+        if (address.latLng == null) {
+            poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(39.9088600000,
+                    116.3973900000), 1000));
+        } else {
+            poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(address.latLng.latitude,
+                    address.latLng.longitude), 1000));//设置周边搜索的中心点以及半径
+        }
         poiSearch.searchPOIAsyn();
 
     }
@@ -205,7 +210,7 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
             //获取周围兴趣点
             poisList = poiResult.getPois();
             if (poisList == null || poisList.size() == 0) {
-                return;
+                poisList = new ArrayList<>();
             }
 
             searchAddressAdapter.setPoiList(poisList);
@@ -219,15 +224,32 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
 
 
     private void requestAddressList() {
-        User userInfo = UserService.getUserInfo(this);
+        UserInfo userInfo = UserService.getUserInfo(this);
         if (userInfo == null) {
             llMyAddress.setVisibility(View.GONE);
             return;
         }
-        CustomApplication.getRetrofit().postListAddress(userInfo.getId(), 1).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getAddressList().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
-                dealAddressList(response.body());
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray data = jsonObject.optJSONArray("data");
+                        if (data != null && data.length() > 0) {
+                            dealAddressList(data);
+                            llMyAddress.setVisibility(View.VISIBLE);
+                        } else {
+                            llMyAddress.setVisibility(View.GONE);
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                        llMyAddress.setVisibility(View.GONE);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -235,30 +257,17 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
 
             }
         });
-
     }
 
-    private void dealAddressList(String body) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            JSONArray jsonArray = jsonObject.optJSONArray("rows");
-            if (jsonArray != null && jsonArray.length() > 0) {
-                llMyAddress.setVisibility(View.VISIBLE);
-                ArrayList<AddressInfo> addressInfoList = JsonUtil.fromJson(jsonArray.toString(), new TypeToken<ArrayList<AddressInfo>>() {
-                }.getType());
+    private void dealAddressList(JSONArray data) {
+        ArrayList<AddressBean> addressBeanList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<AddressBean>>() {
+        }.getType());
+        llShowHideMoreAddress.setVisibility(addressBeanList.size() > 3 ? View.VISIBLE : View.GONE);
 
-                llShowHideMoreAddress.setVisibility(addressInfoList.size() > 3 ? View.VISIBLE : View.GONE);
-
-                fillMyAddressView(addressInfoList);
-            } else {
-                llMyAddress.setVisibility(View.GONE);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        fillMyAddressView(addressBeanList);
     }
 
-    private void fillMyAddressView(final ArrayList<AddressInfo> addressInfoList) {
+    private void fillMyAddressView(final ArrayList<AddressBean> addressInfoList) {
         MyAddressAdapter myAddressAdapter = new MyAddressAdapter(this, addressInfoList);
         llContainMyAddress.removeAllViews();
         for (int i = 0; i < addressInfoList.size(); i++) {
@@ -271,10 +280,10 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
         myAddressAdapter.setOnMyAddressClickLstener(new MyAddressAdapter.OnMyAddressClickLstener() {
             @Override
             public void onMyAddressClick(int position) {
-                AddressInfo addressInfo = addressInfoList.get(position);
-                address.title = addressInfo.getUserAddress();
-                address.address = addressInfo.getCityName();
-                address.latLng = new LatLng(Double.valueOf(addressInfo.getLatitude()), Double.valueOf(addressInfo.getLongitude()));
+                AddressBean addressInfo = addressInfoList.get(position);
+                address.title = addressInfo.userAddress;
+                address.address = addressInfo.cityName;
+                address.latLng = new LatLng(Double.valueOf(addressInfo.latitude), Double.valueOf(addressInfo.longitude));
                 finishAct();
             }
         });
@@ -292,6 +301,7 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
                 chooseLocation();
                 break;
             case R.id.tv_refresh_location:
+                finishAct();
                 break;
             case R.id.ll_show_hide_more_address:
                 isShowMore = !isShowMore;
@@ -329,7 +339,11 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
                             tvAddress.setText(data.getName());
                             etSearchAddress.setText("");
                             etSearchAddress.clearFocus();
-                            poisList.clear();
+                            if (poisList == null) {
+                                poisList = new ArrayList<>();
+                            } else {
+                                poisList.clear();
+                            }
                             searchAddressAdapter.setPoiList(poisList);
                         }
                     }

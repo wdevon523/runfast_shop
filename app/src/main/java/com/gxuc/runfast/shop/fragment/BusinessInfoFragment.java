@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,8 +19,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.activity.BusinessLicenceActivity;
+import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.activity.ShowImageActivity;
+import com.gxuc.runfast.shop.adapter.BusinessImageAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.BusinessNewDetail;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
@@ -30,6 +36,8 @@ import com.shizhefei.fragment.LazyFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.x;
+
+import java.util.Arrays;
 
 import butterknife.Unbinder;
 import retrofit2.Call;
@@ -53,8 +61,14 @@ public class BusinessInfoFragment extends LazyFragment {
 
 //    ZFlowLayout flImgContain;
 
+    private BusinessNewDetail businessDetail;
+
     Unbinder unbinder;
-    private BusinessDetail businessDetail;
+    private RecyclerView recyclerImage;
+    private String[] images;
+    private BusinessImageAdapter businessImageAdapter;
+    private LinearLayout llTakeSelf;
+    private String[] split;
 
     public BusinessInfoFragment() {
         // Required empty public constructor
@@ -68,7 +82,7 @@ public class BusinessInfoFragment extends LazyFragment {
         setContentView(R.layout.fragment_business_info);
         iniView();
 //        getBusinessEvaluate(((BusinessActivity) getActivity()).getBusinessId());
-        businessDetail = ((BusinessActivity) getActivity()).getBusiness();
+        businessDetail = ((BusinessNewActivity) getActivity()).getBusiness();
         dealBusinessInfo();
     }
 
@@ -78,13 +92,15 @@ public class BusinessInfoFragment extends LazyFragment {
         tvBusinessRemark = (TextView) findViewById(R.id.tv_business_remark);
         tvDistributionTime = (TextView) findViewById(R.id.tv_distribution_time);
         rlBusinessLicence = (RelativeLayout) findViewById(R.id.rl_business_licence);
+        recyclerImage = (RecyclerView) findViewById(R.id.recycler_image);
+        llTakeSelf = (LinearLayout) findViewById(R.id.ll_take_self);
 
 //        flImgContain = (ZFlowLayout) findViewById(R.id.ll_img_contain);
         rlBusinessLicence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), BusinessLicenceActivity.class);
-                intent.putExtra("licence", businessDetail.getImgs());
+//                intent.putExtra("licence", businessDetail.getImgs());
                 startActivity(intent);
             }
         });
@@ -92,7 +108,7 @@ public class BusinessInfoFragment extends LazyFragment {
         tvBusinessPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + businessDetail.getMobile()));
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + businessDetail.mobile));
                 if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -107,6 +123,11 @@ public class BusinessInfoFragment extends LazyFragment {
                 startActivity(intent);
             }
         });
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerImage.setLayoutManager(linearLayoutManager);
+        businessImageAdapter = new BusinessImageAdapter(getContext(), images);
+        recyclerImage.setAdapter(businessImageAdapter);
     }
 
     /**
@@ -126,10 +147,25 @@ public class BusinessInfoFragment extends LazyFragment {
 //        });
 //    }
     private void dealBusinessInfo() {
-        tvBusinessAddress.setText(businessDetail.getAddress());
-        tvBusinessPhone.setText(businessDetail.getMobile());
-        tvBusinessRemark.setText(businessDetail.getContent());
-        tvDistributionTime.setText(businessDetail.getWordTime());
+        tvBusinessAddress.setText(businessDetail.address);
+        tvBusinessPhone.setText(businessDetail.mobile);
+        tvBusinessRemark.setText(businessDetail.content);
+        llTakeSelf.setVisibility(businessDetail.suportSelf ? View.VISIBLE : View.GONE);
+        if (!TextUtils.isEmpty(businessDetail.face_image)) {
+            images = businessDetail.face_image.split(",");
+        }
+        int imageLength = images == null ? 0 : images.length;
+        if (!TextUtils.isEmpty(businessDetail.inner_image)) {
+            split = businessDetail.inner_image.split(",");
+        }
+        int spitLength = split == null ? 0 : split.length;
+        if (images != null) {
+            images = Arrays.copyOf(images, imageLength + spitLength);
+            System.arraycopy(split, 0, images, imageLength, spitLength);
+            businessImageAdapter.setList(images);
+        }
+
+//        tvDistributionTime.setText(businessDetail.getWordTime());
 
 //        flImgContain.removeAllViews();
 //        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

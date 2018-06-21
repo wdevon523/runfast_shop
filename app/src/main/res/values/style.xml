@@ -176,4 +176,12 @@
         <item name="android:windowExitAnimation">@anim/custom_push_up_out</item>
     </style>
 
+    <style name="cut_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/dimen_12_dp</item>
+        <item name="android:text">没什么可送的了就是来凑行数的</item>
+        <item name="android:textColor">@color/text_666666</item>
+    </style>
+
 </resources>

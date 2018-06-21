@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
@@ -52,12 +53,14 @@ public class FilterAdaper extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
+        viewHolder.llFilter.setBackgroundResource(filterInfo.isCheck ? R.drawable.bg_spec_check : R.color.bg_f3f4f5);
         viewHolder.tvFilterName.setText(filterInfo.name);
         return convertView;
     }
 
     static class ViewHolder {
+        @BindView(R.id.ll_filter)
+        LinearLayout llFilter;
         @BindView(R.id.iv_filter_logo)
         ImageView ivFilterLogo;
         @BindView(R.id.tv_filter_name)
@@ -67,4 +70,5 @@ public class FilterAdaper extends BaseAdapter {
             ButterKnife.bind(this, view);
         }
     }
+
 }

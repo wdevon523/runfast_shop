@@ -66,7 +66,7 @@ public class GoodsTypeDialog extends Dialog implements View.OnClickListener {
                 changeBg();
                 break;
             case R.id.tv_cancel:
-                listener.onTypeDialogClick(goodsType, goodsWeight);
+                listener.onTypeDialogClick("", goodsWeight);
                 dismiss();
                 break;
             case R.id.tv_sure:

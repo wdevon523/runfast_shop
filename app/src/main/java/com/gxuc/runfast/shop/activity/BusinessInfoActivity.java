@@ -124,7 +124,7 @@ public class BusinessInfoActivity extends AppCompatActivity {
                         foodBean.setShowprice(jsonObject.optString("showprice"));
                         foodBean.setIsonly(jsonObject.optInt("isonly"));
                         foodBean.setPrice(new BigDecimal(jsonObject.optString("price")));
-                        foodBean.setSale(String.valueOf(jsonObject.optInt("salesnum")));
+                        foodBean.setSalesnum(jsonObject.optInt("salesnum"));
                         foodBean.setBusinessId(jsonObject.optInt("businessId"));
                         foodBean.setBusinessName(jsonObject.optString("businessName"));
                         foodBean.setAgentId(jsonObject.optInt("agentId"));

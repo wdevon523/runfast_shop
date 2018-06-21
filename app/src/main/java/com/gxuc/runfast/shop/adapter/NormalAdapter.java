@@ -13,15 +13,12 @@ import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.activity.WebActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.maintop.TopImage;
-import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.data.IntentFlag;
-import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.gxuc.runfast.shop.util.CustomToast;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.request.ImageRequest;
+import com.gxuc.runfast.shop.util.ToastUtil;
 import com.jude.rollviewpager.adapter.StaticPagerAdapter;
 
 import org.json.JSONException;
@@ -78,7 +75,7 @@ public class NormalAdapter extends StaticPagerAdapter {
                         mContext.startActivity(webIntent);
                         break;
                     case 2://链接
-                        CustomToast.INSTANCE.showToast(mContext, "2链接");
+                        ToastUtil.showToast("2链接");
                         break;
                     case 3://商家分类类型
 //                        String[] split = topImage.getLinkAddr().split("=");
@@ -119,7 +116,7 @@ public class NormalAdapter extends StaticPagerAdapter {
             public void onResponse(Call<String> call, Response<String> response) {
 
                 if (!response.isSuccessful()) {
-                    CustomToast.INSTANCE.showToast(CustomApplication.getContext(), "网络数据异常");
+                    ToastUtil.showToast("网络数据异常");
                     return;
                 }
 

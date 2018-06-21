@@ -154,7 +154,7 @@ public class TipDialog extends Dialog implements View.OnClickListener {
                 dismiss();
                 break;
             case R.id.tv_sure:
-                if (isOrder) {
+                if (isOrder && !TextUtils.isEmpty(etOrtherTip.getText().toString())) {
                     tip = Integer.valueOf(etOrtherTip.getText().toString());
                 }
                 listener.onDialogClick(tip, true);

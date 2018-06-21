@@ -32,17 +32,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
                         android:text="¥ "
                         android:textColor="@color/color_coupon_number"
-                        android:textSize="15sp" />
+                        android:textSize="@dimen/dimen_15_dp" />
 
                     <TextView
                         android:id="@+id/tv_coupon_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
                         android:text="10"
                         android:textColor="@color/color_coupon_number"
-                        android:textSize="30sp" />
+                        android:textSize="@dimen/dimen_30_dp" />
                 </LinearLayout>
 
                 <TextView
@@ -53,13 +55,13 @@
                     android:text="满30元可用"
                     android:textColor="@color/color_text_gray_two"
                     android:textSize="10sp" />
+
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -74,7 +76,7 @@
                     android:id="@+id/tv_coupon_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_marginTop="@dimen/dimen_10_dp"
                     android:text="2017-01-01至2017-02-01"
                     android:textColor="@color/color_text_gray_two"
                     android:textSize="10sp" />

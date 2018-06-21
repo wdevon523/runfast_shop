@@ -64,7 +64,7 @@ public class AboutActivity extends ToolBarActivity {
         int versionCode = 0;
         try {
             versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
-            CustomApplication.getRetrofit().checkNewVersion(versionCode).enqueue(new MyCallback<String>() {
+            CustomApplication.getRetrofitNew().checkNewVersion(versionCode).enqueue(new MyCallback<String>() {
                 @Override
                 public void onSuccessResponse(Call<String> call, Response<String> response) {
                     String body = response.body();

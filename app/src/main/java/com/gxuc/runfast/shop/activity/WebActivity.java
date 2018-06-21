@@ -53,7 +53,7 @@ public class WebActivity extends ToolBarActivity {
 
     private void setWebViewSetting() {
         WebSettings settings = webview.getSettings();
-        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
+//        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         settings.setSupportZoom(true);
         settings.setLoadWithOverviewMode(true);

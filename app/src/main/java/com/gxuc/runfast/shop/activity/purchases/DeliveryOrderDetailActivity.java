@@ -24,6 +24,8 @@ import com.gxuc.runfast.shop.util.ToastUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -66,6 +68,8 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
     TextView tvCopy;
     @BindView(R.id.tv_delivery_order_time)
     TextView tvDeliveryOrderTime;
+    @BindView(R.id.tv_delivery_order_remark)
+    TextView tvDeliveryOrderRemark;
     @BindView(R.id.rl_delivery_order_status)
     RelativeLayout rlDeliveryOrderStatus;
     private int orderId;
@@ -120,23 +124,22 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
     }
 
     private void fillView() {
-
         tvDeliveryOrderStatus.setText(CustomUtils.getStatusStr(deliveryOrderDetailInfo.status));
         tvDeliveryOrderGoods.setText(TextUtils.equals("DAIGOU", deliveryOrderDetailInfo.type) ? deliveryOrderDetailInfo.goodsDescription : deliveryOrderDetailInfo.goodsType);
         tvBuyAddress.setText(TextUtils.equals("NEARBY", deliveryOrderDetailInfo.fromType) ? "就近购买" : deliveryOrderDetailInfo.fromAddress);
         tvSendAddress.setText(deliveryOrderDetailInfo.toAddress);
         tvSendName.setText(deliveryOrderDetailInfo.toName);
         tvSendMobile.setText(deliveryOrderDetailInfo.toMobile);
-        tvDeliveryPrice.setText("¥ " + deliveryOrderDetailInfo.deliveryCost);
-        tvTotalPrice.setText("总计 ¥" + Integer.valueOf(deliveryOrderDetailInfo.amountPayable) / 100);
-        tvActualPay.setText("实付 ¥" + (TextUtils.isEmpty(deliveryOrderDetailInfo.amountPaid) ? "0" : Integer.valueOf(deliveryOrderDetailInfo.amountPaid) / 100));
+        tvDeliveryPrice.setText("¥ " + deliveryOrderDetailInfo.deliveryCost.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
+        tvTotalPrice.setText("总计 ¥" + deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
+        tvActualPay.setText("实付 ¥" + (deliveryOrderDetailInfo.amountPayable == null ? "0" : deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
         tvExpectedTime.setText(deliveryOrderDetailInfo.pickTime);
         tvDeliveryDistance.setText(deliveryOrderDetailInfo.distance + "米");
 //        tvDeliveryDriver.setText(deliveryOrderDetailInfo.);
         tvDeliveryOrderNum.setText(deliveryOrderDetailInfo.orderNo);
         tvDeliveryOrderTime.setText(deliveryOrderDetailInfo.createTime);
         tvDeliveryDriver.setText(deliveryOrderDetailInfo.driverName);
-
+        tvDeliveryOrderRemark.setText(deliveryOrderDetailInfo.remark);
     }
 
     private void initView() {

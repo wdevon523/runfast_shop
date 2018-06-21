@@ -3,11 +3,13 @@ package com.gxuc.runfast.shop.activity.ordercenter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.supportv1.utils.JsonUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
@@ -19,6 +21,7 @@ import com.gxuc.runfast.shop.util.CustomUtils;
 import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,18 +97,23 @@ public class OrderStatusActivity extends ToolBarActivity {
     }
 
     private void requestOrderStatus() {
-        CustomApplication.getRetrofit().getOrderStatus(orderId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getOrderStatus(orderId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
-                    String outStatuslist = jsonObject.optJSONArray("outStatuslist").toString();
-                    orderStatusList = GsonUtil.fromJson(outStatuslist, new TypeToken<ArrayList<OrderStatus>>() {
-                    }.getType());
-
-                    if (orderStatusList != null && orderStatusList.size() > 0) {
-                        fillView();
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray data = jsonObject.optJSONArray("data");
+                        if (data != null && data.length() > 0) {
+                            orderStatusList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<OrderStatus>>() {
+                            }.getType());
+                            if (orderStatusList != null && orderStatusList.size() > 0) {
+                                fillView();
+                            }
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

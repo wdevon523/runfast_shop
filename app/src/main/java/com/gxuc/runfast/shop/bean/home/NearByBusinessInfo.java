@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.bean.home;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class NearByBusinessInfo {
@@ -104,7 +105,7 @@ public class NearByBusinessInfo {
     public float levelId;
     public Object teamid;
     public boolean goldBusiness;
-    public double startPay;
+    public BigDecimal startPay;
     public int id;
     public String longitude;
     public int period;
@@ -132,6 +133,7 @@ public class NearByBusinessInfo {
     public String code;
     public String distance;
     public boolean autoTaking;
+    public boolean suportSelf;
     public int isDeliver;
     public String latitude;
     public Object face_image;
@@ -157,7 +159,7 @@ public class NearByBusinessInfo {
     public Object showps;
     public Object endwork2;
     public double busshowps;
-    public int deliveryFee;
+    public BigDecimal deliveryFee;
     public String createTime;
     public Object worktoday;
     public String establishname;
@@ -165,7 +167,6 @@ public class NearByBusinessInfo {
     public String account;
     public boolean open;
     public Object teamname;
-    public List<?> activityMap;
-    public List<?> activityList;
+    public List<BusinessEvent> activityList;
 
 }
