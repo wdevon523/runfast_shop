@@ -138,7 +138,7 @@ public final class DataLayer {
 
             // 判断stateCode值
             try {
-                if (json.contains("token") && (!url.contains("login") || !url.contains("register"))) {
+                if (json.contains("token") && !url.contains("login") && !url.contains("register")) {
                     JSONObject jsonObject = new JSONObject(json);
 //                    if (jsonObject.optBoolean("success")) {
                     String token = jsonObject.optString("token");

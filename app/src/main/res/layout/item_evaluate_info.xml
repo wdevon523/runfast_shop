@@ -8,11 +8,11 @@
 
     <ImageView
         android:id="@+id/iv_head"
-        android:layout_width="@dimen/dimen_40_dp"
-        android:layout_height="@dimen/dimen_40_dp"
+        android:layout_width="@dimen/dimen_35_dp"
+        android:layout_height="@dimen/dimen_35_dp"
         android:layout_marginLeft="@dimen/dimen_10_dp"
         android:layout_marginRight="@dimen/dimen_10_dp"
-        android:layout_marginTop="@dimen/dimen_10_dp"
+        android:layout_marginTop="@dimen/dimen_15_dp"
         android:background="@drawable/image_background"
         android:src="@drawable/icon_default_head" />
 
@@ -57,7 +57,7 @@
         android:layout_alignLeft="@+id/tv_user_name"
         android:layout_below="@+id/rb_order_evaluate"
         android:layout_marginRight="@dimen/dimen_10_dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/dimen_10_dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textColor="@color/color_text_gray_two" />
@@ -113,7 +113,7 @@
         android:layout_height="1dp"
         android:layout_below="@+id/layout_business"
         android:layout_marginLeft="@dimen/dimen_5_dp"
-        android:layout_marginTop="@dimen/dimen_10_dp"
+        android:layout_marginTop="@dimen/dimen_15_dp"
         android:background="@color/color_line_back" />
 
 </RelativeLayout>

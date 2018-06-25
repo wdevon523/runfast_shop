@@ -28,15 +28,15 @@ public class GoodsSellStandardInfo {
     public BigDecimal price;
     public Object num;
     public Integer activityId;
-    public Object activityType;
+    public Integer activityType;
     public Object shared;
-    public int isLimited;
+    public Integer isLimited;
     public int limitNum;
     public Object specialType;
     public String specialName;
     public String specialImg;
     public Object targetId;
     public BigDecimal disprice;
-    public Object discount;
+    public BigDecimal discount;
 
 }

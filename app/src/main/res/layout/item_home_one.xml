@@ -70,8 +70,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_shop" />
+                android:scaleType="centerCrop"/>
 
             <ImageView
                 android:id="@+id/iv_preferential_buisness_two"
@@ -79,8 +78,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/dimen_8_dp"
                 android:layout_weight="1"
-                android:scaleType="centerCrop"
-                android:src="@drawable/icon_shop" />
+                android:scaleType="centerCrop" />
 
         </LinearLayout>
 

@@ -2,11 +2,13 @@ package com.gxuc.runfast.shop.fragment;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -17,9 +19,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.supportv1.utils.JsonUtil;
+import com.example.supportv1.utils.LogUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
+import com.gxuc.runfast.shop.activity.MainActivity;
 import com.gxuc.runfast.shop.adapter.MessageAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.message.MessageInfo;
@@ -38,6 +42,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,8 +54,8 @@ public class MessageFragment extends Fragment {
 
 
     Unbinder unbinder;
-    @BindView(R.id.toolbar_title)
-    TextView toolbarTitle;
+//    @BindView(R.id.toolbar_title)
+//    TextView toolbarTitle;
     @BindView(R.id.rv_message_list)
     RecyclerView mRvMessageList;
     @BindView(R.id.ll_empty_message)
@@ -75,7 +80,7 @@ public class MessageFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_message, container, false);
         unbinder = ButterKnife.bind(this, view);
-        toolbarTitle.setText("消息");
+//        toolbarTitle.setText("消息");
         initData();
         return view;
     }
@@ -100,8 +105,9 @@ public class MessageFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-
         if (!hidden) {
+//            StatusUtil.setUseStatusBarColor(getActivity(), getResources().getColor(R.color.white));
+            StatusUtil.setSystemStatus(getActivity(), true, true);
             userInfo = UserService.getUserInfo(getActivity());
             if (userInfo == null) {
                 messageInfoList.clear();

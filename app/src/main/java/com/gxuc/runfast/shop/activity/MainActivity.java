@@ -13,11 +13,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RadioGroup;
@@ -53,6 +55,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.api.TagAliasCallback;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -72,6 +75,7 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
     public int MAIN_PAGE = 0;
 
     private List<Fragment> mFragments;
+    private boolean isBlack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,11 +88,27 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         requestCheckNewVersion();
         requestPermissions();
         initDate(savedInstanceState);
+        initView();
+    }
+
+    private void initView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            LinearLayoutCompat.LayoutParams layoutParams = new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.setMargins(0, StatusUtil.getStatusBarHeight(this), 0, 0);
+            //顶部距离
+            if (toolbar != null) {
+                toolbar.setLayoutParams(layoutParams);
+            }
+        }
+
+//        isBlack = true;
+//        StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.bg_fba42a));
+//        StatusUtil.setSystemStatus(MainActivity.this, false, isBlack);
     }
 
     private void requestPermissions() {
 
-        if (SharePreferenceUtil.getInstance().getBooleanValue(CustomConstant.IS_FIRST, false)){
+        if (SharePreferenceUtil.getInstance().getBooleanValue(CustomConstant.IS_FIRST, false)) {
             SharePreferenceUtil.getInstance().putBooleanValue(CustomConstant.IS_FIRST, false);
             if (!SystemUtil.isNotificationEnabled(this)) {
                 showPermissionDialog("应用需要获取通知栏权限,请前往应用信息-权限中开启", true);
@@ -266,15 +286,27 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
         switch (checkedId) {
             case R.id.main_tab_food:
                 index = 0;
+//                isBlack = true;
+//                StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.bg_fba42a));
+//                StatusUtil.setSystemStatus(MainActivity.this, false, isBlack);
                 break;
             case R.id.main_tab_message:
                 index = 1;
+//                isBlack = true;
+//                StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.white));
+//                StatusUtil.setSystemStatus(MainActivity.this, false, isBlack);
                 break;
             case R.id.main_tab_order:
                 index = 2;
+//                isBlack = true;
+//                StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.white));
+//                StatusUtil.setSystemStatus(MainActivity.this, false, isBlack);
                 break;
             case R.id.main_tab_user:
                 index = 3;
+//                isBlack = true;
+//                StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.white));
+//                StatusUtil.setSystemStatus(MainActivity.this, false, isBlack);
                 break;
         }
         chekedFragment(index);

@@ -74,6 +74,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -144,6 +145,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     private TextView tvDeliverTime;
     private RecentlyOrderInfo recentlyOrderInfo;
     private UserInfo userInfo;
+    float fraction;
 
     @Nullable
     @Override
@@ -375,7 +377,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 //                LogUtil.d("devon", "-----homeTopViewHeight-------" + homeTopViewHeight + "-----homeTopViewTop-------" + homeTopViewTop + "----scrollY----" + scrollY + "+++++++++++" + (homeTopViewHeight + homeTopViewTop));
 
 //                if (homeTopViewHeight + homeTopViewTop - homeMarginHeight <= 40) {
-                if (homeTopViewHeight + homeTopViewTop <= 50 || mLayoutManager.findFirstVisibleItemPosition() > 0) {
+                if (homeTopViewHeight + homeTopViewTop <= 30 || mLayoutManager.findFirstVisibleItemPosition() > 0) {
                     realFilterView.setVisibility(View.VISIBLE);
                 } else {
                     realFilterView.setVisibility(View.GONE);
@@ -528,6 +530,9 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
         LogUtil.d("wdevon", "HomeFragment is hidden" + hidden);
         if (!hidden) {
 //            refreshData();
+            StatusUtil.setSystemStatus(getActivity(), true, true);
+//            StatusUtil.setUseStatusBarColor(getActivity(), ColorUtil.getNewColorByStartEndColor(getContext(), fraction, R.color.bg_fba42a, R.color.snow));
+//            StatusUtil.setUseStatusBarColor(getActivity(), getResources().getColor(R.color.white));
             userInfo = UserService.getUserInfo(getActivity());
             requestAllShopCart();
             if (agentInfo != null) {
@@ -593,8 +598,12 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     private void requestAllShopCart() {
 
         if (userInfo == null) {
+            rlShopppingCart.setVisibility(View.GONE);
             return;
         }
+
+        rlShopppingCart.setVisibility(View.VISIBLE);
+
         CustomApplication.getRetrofitNew().getAllShopCart().enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
@@ -666,7 +675,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     }
 
     private void requestGetHomeAct() {
-        CustomApplication.getRetrofitNew().getHomeAct(agentInfo.id).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getHomeAct(agentInfo.id, pointLon, pointLat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -827,7 +836,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 
     // 处理标题栏颜色渐变
     private void handleTitleBarColorEvaluate() {
-        float fraction;
+
         if (homeTopViewTop > 0) {
             fraction = 1f - homeTopViewTop * 1f / 60;
             if (fraction < 0f) fraction = 0f;
@@ -841,7 +850,6 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
         if (fraction > 1f) fraction = 1f;
         llHomeTop.setAlpha(1f);
         llSearch.setAlpha(1f);
-
 //        if (fraction >= 1f || isStickyTop) {
         if (fraction >= 1f) {
 //            isStickyTop = true;
@@ -849,12 +857,14 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 //            viewActionMoreBg.setAlpha(0f);
             llHomeTop.setBackgroundColor(getContext().getResources().getColor(R.color.snow));
             llSearch.setBackgroundColor(getContext().getResources().getColor(R.color.bg_f3f4f5));
+//            StatusUtil.setUseStatusBarColor(getActivity(), getResources().getColor(R.color.snow));
 //            llTopAddress.setVisibility(View.GONE);
         } else {
 //            viewTitleBg.setAlpha(1f - fraction);
 //            viewActionMoreBg.setAlpha(1f - fraction);
             llHomeTop.setBackgroundColor(ColorUtil.getNewColorByStartEndColor(getContext(), fraction, R.color.bg_fba42a, R.color.snow));
             llSearch.setBackgroundColor(ColorUtil.getNewColorByStartEndColor(getContext(), fraction, R.color.white, R.color.bg_f3f4f5));
+//            StatusUtil.setUseStatusBarColor(getActivity(), ColorUtil.getNewColorByStartEndColor(getContext(), fraction, R.color.bg_fba42a, R.color.snow));
 //            llTopAddress.setVisibility(View.VISIBLE);
         }
     }

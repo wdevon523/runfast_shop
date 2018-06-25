@@ -317,6 +317,12 @@ public class UpdateMessageActivity extends ToolBarActivity {
             ToastUtil.showToast("新密码不能为空");
             return;
         }
+
+        if (newPwd.length() < 6) {
+            ToastUtil.showToast("请输入6-16位密码");
+            return;
+        }
+
         if (!TextUtils.equals(newPwd, newPwdAgain)) {
             ToastUtil.showToast("两次新密码输入不一致");
             return;

@@ -50,7 +50,8 @@
                 android:singleLine="true"
                 android:textColor="@color/color_text_gray"
                 android:textColorHint="@color/color_text_gray"
-                android:textSize="14sp" />
+                android:textSize="@dimen/dimen_14_dp" />
+
         </LinearLayout>
 
         <TextView
@@ -61,7 +62,7 @@
             android:layout_marginRight="15dp"
             android:text="搜索"
             android:textColor="@color/color_address_black"
-            android:textSize="15sp" />
+            android:textSize="@dimen/dimen_15_dp" />
 
     </LinearLayout>
 

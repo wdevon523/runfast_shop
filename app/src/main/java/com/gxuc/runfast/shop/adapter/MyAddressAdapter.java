@@ -1,6 +1,8 @@
 package com.gxuc.runfast.shop.adapter;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,8 @@ import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.address.AddressBean;
+import com.gxuc.runfast.shop.view.CenteredImageSpan;
+import com.hedan.textdrawablelibrary.TextViewDrawable;
 
 import java.util.ArrayList;
 
@@ -52,9 +56,47 @@ public class MyAddressAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.tvMyName.setText(addressInfo.name);
+//        viewHolder.tvMyAddressTag.setVisibility(addressInfo.tag == null || addressInfo.tag < 0 || addressInfo.tag > 3 ? View.GONE : View.VISIBLE);
+
+        String gender = "";
+        if (addressInfo.gender == null) {
+            gender = "先生";
+        } else {
+            gender = addressInfo.gender == 0 ? "女士" : "先生";
+        }
+
+        viewHolder.tvMyName.setText(addressInfo.name + "  " + gender);
         viewHolder.tvMyMobile.setText(addressInfo.phone);
         viewHolder.tvMyAddressDetail.setText(addressInfo.userAddress + addressInfo.address);
+
+        if (addressInfo.tag != null) {
+            if (addressInfo.tag == 1) {
+                CenteredImageSpan span = new CenteredImageSpan(context, R.drawable.icon_home);
+                SpannableString ss = new SpannableString("  " + addressInfo.userAddress + addressInfo.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                viewHolder.tvMyAddressDetail.setText(ss);
+
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(R.drawable.icon_home), null, null, null);
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablePadding(8);
+            } else if (addressInfo.tag == 2) {
+
+                CenteredImageSpan span = new CenteredImageSpan(context, R.drawable.icon_company);
+                SpannableString ss = new SpannableString("  " + addressInfo.userAddress + addressInfo.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                viewHolder.tvMyAddressDetail.setText(ss);
+
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(R.drawable.icon_company), null, null, null);
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablePadding(8);
+            } else if (addressInfo.tag == 3) {
+                CenteredImageSpan span = new CenteredImageSpan(context, R.drawable.icon_school);
+                SpannableString ss = new SpannableString("  " + addressInfo.userAddress + addressInfo.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                viewHolder.tvMyAddressDetail.setText(ss);
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(R.drawable.icon_school), null, null, null);
+//                viewHolder.tvMyAddressDetail.setCompoundDrawablePadding(8);
+            }
+        }
+
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,8 +109,10 @@ public class MyAddressAdapter extends BaseAdapter {
     }
 
     static class ViewHolder {
+        @BindView(R.id.tv_my_address_tag)
+        TextView tvMyAddressTag;
         @BindView(R.id.tv_my_address_detail)
-        TextView tvMyAddressDetail;
+        TextViewDrawable tvMyAddressDetail;
         @BindView(R.id.tv_my_name)
         TextView tvMyName;
         @BindView(R.id.tv_my_mobile)

@@ -23,6 +23,7 @@ import com.willy.ratingbar.BaseRatingBar;
 import org.json.JSONException;
 import org.xutils.x;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class BreakfastAdapter extends RecyclerView.Adapter<BreakfastAdapter.Brea
 
             holder.iv_gold_business.setVisibility(businessInfo.goldBusiness ? View.VISIBLE : View.GONE);
 
-            holder.tv_sale_price.setText("配送费¥" + businessInfo.deliveryFee);
+            holder.tv_sale_price.setText("配送费¥" + businessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
 
             holder.tv_is_charge.setText(businessInfo.isDeliver == 0 ? "快车转送" : "商家配送");
             holder.tv_is_charge.setTextColor(businessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.bg_44be99));

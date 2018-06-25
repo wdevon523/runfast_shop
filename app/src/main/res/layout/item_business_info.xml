@@ -6,11 +6,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_1_dp"
-        android:background="@color/view_e5e5e5" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -241,7 +236,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_30_dp"
                 android:gravity="center_vertical"
-                android:paddingLeft="@dimen/dimen_70_dp"
+                android:paddingLeft="@dimen/dimen_80_dp"
                 android:textColor="@color/text_999999"
                 android:textSize="@dimen/dimen_13_dp"
                 android:visibility="gone" />
@@ -256,5 +251,10 @@
             android:visibility="gone" />
 
     </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_10_dp"
+        android:background="@color/view_e5e5e5" />
 
 </LinearLayout>

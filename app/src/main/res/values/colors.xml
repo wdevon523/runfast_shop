@@ -7,7 +7,6 @@
     <color name="colorAccent">#ff9f14</color>
 
     <color name="color_title">#ffffff</color>
-    <color name="color_login_gray">#E6E6E6</color>
     <color name="color_line_gray">#E8E8E8</color>
     <color name="color_white">#ffffff</color>
     <color name="color_price">#c4c4c4</color>
@@ -415,8 +414,9 @@
     <color name="text_fc9153">#fc9153</color>
 
     <!--<color name="text_fb7d30">#fb7d30</color>-->
-    <color name="view_e5e5e5">#e5e5e5</color>
     <color name="view_c4c4c4">#c4c4c4</color>
+    <color name="view_e5e5e5">#e5e5e5</color>
+    <color name="view_e6e6e6">#e6e6e6</color>
     <color name="bg_fff4ed">#fff4ed</color>
     <color name="bg_f9f9f9">#f9f9f9</color>
     <color name="bg_fbf9e8">#fbf9e8</color>
@@ -432,7 +432,20 @@
     <color name="bg_f3f2f2">#f3f2f2</color>
     <color name="bg_fdf2d5">#fdf2d5</color>
     <color name="bg_3b3b3b">#3b3b3b</color>
+    <color name="bg_878787">#878787</color>
+    <color name="bg_f4f4f4">#f4f4f4</color>
+    <color name="bg_f6f6f6">#f6f6f6</color>
     <color name="bg_f8f8f8">#f8f8f8</color>
+
+    <color name="bg_eaf8e1">#eaf8e1</color>
+    <color name="text_7bce49">#7bce49</color>
+
+    <color name="bg_dfebfd">#dfebfd</color>
+    <color name="text_4085f2">#4085f2</color>
+
+    <color name="bg_fff1d3">#fff1d3</color>
+    <color name="text_ffae16">#ffae16</color>
+
     <color name="bg_80ffffff">#80ffffff</color>
     <color name="bg_60000000">#60000000</color>
 

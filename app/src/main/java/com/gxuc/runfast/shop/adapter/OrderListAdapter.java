@@ -4,9 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,7 +117,13 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         }
 
         holder.tv_order_shop_time.setText(orderInfo.createTime);
-        holder.tv_order_shop_price.setText("共" + orderInfo.totalNum + "件商品，实付" + "¥ " + String.valueOf(orderInfo.cartPrice));
+
+        String orderPriceStr = "共" + orderInfo.totalNum + "件商品，实付" + "¥ " + String.valueOf(orderInfo.totalPay);
+        SpannableString spanString = new SpannableString(orderPriceStr);
+        StyleSpan span = new StyleSpan(Typeface.BOLD);
+        spanString.setSpan(span, orderPriceStr.indexOf("¥"), orderPriceStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.tv_order_shop_price.setText(spanString);
+
         x.image().bind(holder.iv_order_shop, UrlConstant.ImageBaseUrl + orderInfo.businessImg, NetConfig.optionsLogoImage);
 
         holder.tv_order_pay_now.setOnClickListener(new View.OnClickListener() {

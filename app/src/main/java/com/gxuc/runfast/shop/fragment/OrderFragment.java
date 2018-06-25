@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.supportv1.utils.JsonUtil;
+import com.example.supportv1.utils.LogUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -45,6 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,8 +57,8 @@ import retrofit2.Response;
  */
 public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener {
 
-    @BindView(R.id.toolbar_title)
-    TextView toolbarTitle;
+//    @BindView(R.id.toolbar_title)
+//    TextView toolbarTitle;
 
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout smartRefreshLayout;
@@ -89,7 +91,7 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_order, container, false);
         unbinder = ButterKnife.bind(this, view);
-        toolbarTitle.setText("订单");
+//        toolbarTitle.setText("订单");
         initData();
         initEvent();
 
@@ -166,8 +168,9 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-
         if (!hidden) {
+//            StatusUtil.setUseStatusBarColor(getActivity(), getResources().getColor(R.color.white));
+            StatusUtil.setSystemStatus(getActivity(), true, true);
             userInfo = UserService.getUserInfo(getActivity());
             if (userInfo == null) {
                 mOrderInfos.clear();

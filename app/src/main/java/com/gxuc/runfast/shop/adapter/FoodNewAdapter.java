@@ -51,18 +51,18 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
                 .addOnClickListener(R.id.rl_spec)
                 .addOnClickListener(R.id.food_main);
 
-        x.image().bind((ImageView) helper.getView(R.id.iv_food), UrlConstant.ImageBaseUrl + item.getImgPath(), NetConfig.optionsLogoImage);
+        x.image().bind((ImageView) helper.getView(R.id.iv_food), UrlConstant.ImageBaseUrl + item.getImgPath());
 
 //        LogUtil.d("devonxxx" ,UrlConstant.ImageBaseUrl + item.getImgPath());
 
         helper.setText(R.id.tv_old_price, "¥" + item.getDisprice());
 
         if (item.getPrice().compareTo(item.getDisprice()) == 0) {
-            helper.setVisible(R.id.tv_old_price, false);
-            helper.setText(R.id.tv_price, "¥" + item.getPrice().stripTrailingZeros().toPlainString());
+            helper.setVisible(R.id.tv_old_price, false)
+                    .setText(R.id.tv_price, "¥" + item.getPrice().stripTrailingZeros().toPlainString());
         } else {
-            helper.setVisible(R.id.tv_old_price, true);
-            helper.setText(R.id.tv_price, "¥" + item.getDisprice().stripTrailingZeros().toPlainString())
+            helper.setVisible(R.id.tv_old_price, true)
+                    .setText(R.id.tv_price, "¥" + item.getDisprice().stripTrailingZeros().toPlainString())
                     .setText(R.id.tv_old_price, "¥" + item.getPrice().stripTrailingZeros().toPlainString());
             ((TextView) helper.getView(R.id.tv_old_price)).getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
         }
@@ -78,9 +78,30 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         helper.setVisible(R.id.tv_spec_num, item.getSelectCount() > 0)
                 .setText(R.id.tv_spec_num, item.getSelectCount() + "");
 
-        if (item.getIslimited() == 1) {
-            helper.setVisible(R.id.tv_limit, true);
-            helper.setText(R.id.tv_limit, "每单限购" + item.getLimitNum() + "件");
+        if (item.getGoodsSellStandardList().get(0).activityType != null) {
+
+            if (item.getGoodsSellStandardList().get(0).activityType == 2) {
+                //打折
+//                BigDecimal multiply = item.getGoodsSellStandardList().get(0).discount.multiply(new BigDecimal(10));
+                helper.setVisible(R.id.tv_act, true)
+                        .setText(R.id.tv_act, item.getGoodsSellStandardList().get(0).discount.multiply(new BigDecimal(10)).stripTrailingZeros().toPlainString() + "折");
+            } else if (item.getGoodsSellStandardList().get(0).activityType == 3) {
+                //赠品
+            } else if (item.getGoodsSellStandardList().get(0).activityType == 4) {
+                //特价
+            }
+
+        } else {
+            helper.setVisible(R.id.tv_act, false);
+        }
+
+        if (item.getGoodsSellStandardList().get(0).isLimited != null) {
+            if (item.getGoodsSellStandardList().get(0).isLimited == 1) {
+                helper.setVisible(R.id.tv_limit, true)
+                        .setText(R.id.tv_limit, "每单限购" + item.getGoodsSellStandardList().get(0).limitNum + "件");
+            } else {
+                helper.setVisible(R.id.tv_limit, false);
+            }
         } else {
             helper.setVisible(R.id.tv_limit, false);
         }
@@ -109,7 +130,6 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
             helper.setVisible(R.id.addwidget, false);
             helper.setVisible(R.id.rl_spec, false);
         }
-
 //        getActStr(item);
     }
 

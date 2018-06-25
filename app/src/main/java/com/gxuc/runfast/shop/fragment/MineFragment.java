@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.example.supportv1.utils.JsonUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
+import com.gxuc.runfast.shop.activity.MyEvaluateActivity;
 import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.activity.usercenter.ConsultationActivity;
@@ -51,6 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -61,17 +63,16 @@ public class MineFragment extends Fragment {
 
     @BindView(R.id.iv_head)
     CircleImageView ivHead;
-    Unbinder unbinder;
     @BindView(R.id.tv_user_name)
     TextView tvUserName;
-    @BindView(R.id.tv_wallet_money)
-    TextView tvWalletMoney;
-    @BindView(R.id.tv_coupons_num)
-    TextView tvCouponsNum;
+    @BindView(R.id.tv_user_info)
+    TextView tvUserInfo;
     @BindView(R.id.tv_integral_num)
     TextView tvIntegralNum;
     @BindView(R.id.view_new_version)
     View viewNewVersion;
+
+    Unbinder unbinder;
     private UserInfo userInfo;
 
     public MineFragment() {
@@ -93,41 +94,40 @@ public class MineFragment extends Fragment {
             clearUi();
         } else {
             requestGetUserInfo();
-            requesttMyRedPackage();
+//            requesttMyRedPackage();
         }
     }
 
-    private void requesttMyRedPackage() {
-        CustomApplication.getRetrofitNew().getMyRedPack(0, 10).enqueue(new MyCallback<String>() {
-            @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String body = response.body();
-                try {
-                    JSONObject jsonObject = new JSONObject(body);
-                    if (jsonObject.optBoolean("success")) {
-                        dealMyRedPack(jsonObject.optJSONArray("data"));
-                    } else {
-                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
-
-            }
-        });
-
-    }
-
-    private void dealMyRedPack(JSONArray data) {
-        ArrayList<CouponBean> couponBeanList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<CouponBean>>() {
-        }.getType());
-
-        tvCouponsNum.setText(couponBeanList == null ? "0" : couponBeanList.size() + "");
-    }
+//    private void requesttMyRedPackage() {
+//        CustomApplication.getRetrofitNew().getMyRedPack(0, 10).enqueue(new MyCallback<String>() {
+//            @Override
+//            public void onSuccessResponse(Call<String> call, Response<String> response) {
+//                String body = response.body();
+//                try {
+//                    JSONObject jsonObject = new JSONObject(body);
+//                    if (jsonObject.optBoolean("success")) {
+//                        dealMyRedPack(jsonObject.optJSONArray("data"));
+//                    } else {
+//                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailureResponse(Call<String> call, Throwable t) {
+//
+//            }
+//        });
+//
+//    }
+//
+//    private void dealMyRedPack(JSONArray data) {
+//        ArrayList<CouponBean> couponBeanList = JsonUtil.fromJson(data.toString(), new TypeToken<ArrayList<CouponBean>>() {
+//        }.getType());
+//
+//    }
 
     /**
      * 重置页面
@@ -137,8 +137,7 @@ public class MineFragment extends Fragment {
         UserService.clearUserInfo();
         SharePreferenceUtil.getInstance().putStringValue("token", "");
         tvUserName.setText("登录/注册");
-        tvWalletMoney.setText("0");
-        tvCouponsNum.setText("0");
+        tvUserInfo.setVisibility(View.GONE);
         tvIntegralNum.setText("0");
     }
 
@@ -151,8 +150,7 @@ public class MineFragment extends Fragment {
             x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.pic, NetConfig.optionsHeadImage);
         }
         tvUserName.setText(TextUtils.isEmpty(userInfo.nickname) ? userInfo.mobile : userInfo.nickname);
-        tvWalletMoney.setText(userInfo.remainder + "");
-        tvCouponsNum.setText((TextUtils.isEmpty(userInfo.rnum)) ? "0" : userInfo.rnum);
+        tvUserInfo.setVisibility(View.VISIBLE);
         String score = String.valueOf(userInfo.score);
         if (score.contains(".")) {
             score = score.substring(0, score.indexOf("."));
@@ -178,6 +176,8 @@ public class MineFragment extends Fragment {
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         viewNewVersion.setVisibility(CustomApplication.isNeedUpdate ? View.VISIBLE : View.GONE);
+//        StatusUtil.setUseStatusBarColor(getActivity(), getResources().getColor(R.color.white));
+        StatusUtil.setSystemStatus(getActivity(), true, true);
 //        if (!hidden && userInfo != null) {
 //            requestGetUserInfo();
 //        }
@@ -209,7 +209,7 @@ public class MineFragment extends Fragment {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                clearUi();
             }
         });
 
@@ -262,7 +262,7 @@ public class MineFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_head, R.id.tv_user_name, R.id.layout_help_center, R.id.layout_my_wallet, R.id.layout_coupons, R.id.layout_integral, R.id.layout_address, R.id.layout_collection, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about})
+    @OnClick({R.id.iv_head, R.id.tv_user_name, R.id.layout_address, R.id.layout_collection, R.id.layout_evalute, R.id.layout_my_wallet, R.id.layout_red_package, R.id.layout_integral, R.id.layout_business_join, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about, R.id.layout_help_center})
     public void onViewClicked(View view) {
         userInfo = UserService.getUserInfo(getActivity());
 
@@ -279,34 +279,56 @@ public class MineFragment extends Fragment {
                     startActivity(new Intent(getContext(), LoginQucikActivity.class));
                 }
                 break;
-            case R.id.layout_help_center://帮助中心
-                startActivity(new Intent(getContext(), HelpCenterActivity.class));
-                break;
-            case R.id.layout_my_wallet://我的钱包余额
-                if (UserService.getUserInfo(getActivity()) != null) {
-                    startActivity(new Intent(getContext(), WalletActivity.class));
-                }
-                break;
-            case R.id.layout_coupons://优惠券
-                if (UserService.getUserInfo(getActivity()) != null) {
-                    startActivity(new Intent(getContext(), CouponActivity.class));
-                }
-                break;
-            case R.id.layout_integral://积分
-                if (UserService.getUserInfo(getActivity()) != null) {
-                    startActivity(new Intent(getContext(), IntegralActivity.class));
-                }
-                break;
             case R.id.layout_address://地址管理
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
+                }
                 Intent intent = new Intent(getActivity(), AddressSelectActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.MANAGER_ADDRESS);
                 startActivity(intent);
                 break;
             case R.id.layout_collection://收藏
-                if (UserService.getUserInfo(getActivity()) != null) {
-                    startActivity(new Intent(getContext(), MyEnshrineActivity.class));
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
                 }
+                startActivity(new Intent(getContext(), MyEnshrineActivity.class));
+
                 break;
+            case R.id.layout_evalute://收藏
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
+                }
+                startActivity(new Intent(getContext(), MyEvaluateActivity.class));
+
+                break;
+            case R.id.layout_my_wallet://我的钱包余额
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
+                }
+                startActivity(new Intent(getContext(), WalletActivity.class));
+
+                break;
+            case R.id.layout_red_package://优惠券
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
+                }
+                startActivity(new Intent(getContext(), CouponActivity.class));
+
+                break;
+            case R.id.layout_integral://积分
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class));
+                    return;
+                }
+                startActivity(new Intent(getContext(), IntegralActivity.class));
+
+                break;
+
             case R.id.layout_join://加盟
                 startActivity(new Intent(getContext(), JoinBusinessActivity.class));
                 break;
@@ -320,6 +342,9 @@ public class MineFragment extends Fragment {
 //                startActivity(new Intent(getContext(), AboutActivity.class));
                 startActivity(new Intent(getContext(), PurchasesActivity.class));
 //                startActivity(new Intent(getContext(), SubmitOrderActivity.class));
+                break;
+            case R.id.layout_help_center://帮助中心
+                startActivity(new Intent(getContext(), HelpCenterActivity.class));
                 break;
         }
     }

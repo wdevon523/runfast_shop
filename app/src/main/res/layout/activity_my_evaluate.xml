@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:background="@drawable/bg_mine">
+
+
+                <com.gxuc.runfast.shop.view.CircleImageView
+                    android:id="@+id/iv_head_logo"
+                    android:layout_width="@dimen/dimen_70_dp"
+                    android:layout_height="@dimen/dimen_70_dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/dimen_30_dp"
+                    android:src="@drawable/icon_default_head" />
+
+                <TextView
+                    android:id="@+id/tv_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_head_logo"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/dimen_5_dp"
+                    android:text="登录/注册"
+                    android:textColor="@color/text_333333"
+                    android:textSize="@dimen/dimen_15_dp" />
+
+                <TextView
+                    android:id="@+id/tv_tevaluate_"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_user_name"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="@dimen/dimen_5_dp"
+                    android:text="已贡献17条评价"
+                    android:textColor="@color/text_333333"
+                    android:textSize="@dimen/dimen_12_dp" />
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/home_recycleview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never" />
+
+        </LinearLayout>
+
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+</LinearLayout>

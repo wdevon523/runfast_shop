@@ -16,6 +16,8 @@ import com.gxuc.runfast.shop.R;
 import com.example.supportv1.activity.BaseActivity;
 import com.example.supportv1.assist.netWork.OFNetMessage;
 
+import crossoverone.statuslib.StatusUtil;
+
 
 /**
  * 工具栏的Activity
@@ -36,7 +38,7 @@ public class ToolBarActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("toolbar","toolCreate");
+        Log.d("toolbar", "toolCreate");
     }
 
 //    /***
@@ -91,7 +93,7 @@ public class ToolBarActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        Log.d("toolbar","toolDestroy");
+        Log.d("toolbar", "toolDestroy");
 //        if (messageReceiver != null) {
 //            LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver);
 //            messageReceiver = null;
@@ -110,6 +112,8 @@ public class ToolBarActivity extends BaseActivity {
     }
 
     private void toolBarInit() {
+        setStatusColor();
+        setSystemInvadeBlack();
         //StatusBarCompat.setStatusBarColor(this, getResources().getColor(R.color.colorPrimary), true);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         rightTitle = (TextView) findViewById(R.id.tv_right_title);
@@ -131,10 +135,11 @@ public class ToolBarActivity extends BaseActivity {
 
     /**
      * 设置未读消息的数量
+     *
      * @param msg
      */
-    public void setBadge(String msg){
-        if (tvBadge == null){
+    public void setBadge(String msg) {
+        if (tvBadge == null) {
             return;
         }
         tvBadge.setText(msg);
@@ -142,10 +147,11 @@ public class ToolBarActivity extends BaseActivity {
 
     /**
      * 设置是否显示未读消息
+     *
      * @param isShow
      */
-    public void isShowBadge(boolean isShow){
-        if (isShow){
+    public void isShowBadge(boolean isShow) {
+        if (isShow) {
             tvBadge.setVisibility(View.VISIBLE);
             return;
         }
@@ -154,10 +160,11 @@ public class ToolBarActivity extends BaseActivity {
 
     /**
      * 设置是否显示右边消息
+     *
      * @param isShow
      */
-    public void isShowRightMsg(boolean isShow){
-        if (isShow){
+    public void isShowRightMsg(boolean isShow) {
+        if (isShow) {
             layoutRight.setVisibility(View.VISIBLE);
             return;
         }
@@ -166,13 +173,14 @@ public class ToolBarActivity extends BaseActivity {
 
     /**
      * 设置右边title文字
+     *
      * @param msg
      */
-    public void setRightMsg(String msg){
-        if (rightTitle == null){
+    public void setRightMsg(String msg) {
+        if (rightTitle == null) {
             return;
         }
-        if (TextUtils.isEmpty(msg)){
+        if (TextUtils.isEmpty(msg)) {
             rightTitle.setText("");
             isShowRightMsg(false);
             return;
@@ -183,11 +191,12 @@ public class ToolBarActivity extends BaseActivity {
 
     /**
      * 获取右边文字信息
+     *
      * @return
      */
-    public String getRightMsg(){
+    public String getRightMsg() {
         String rightMsg = rightTitle.getText().toString().trim();
-        if (TextUtils.isEmpty(rightMsg)){
+        if (TextUtils.isEmpty(rightMsg)) {
             return "";
         }
         return rightMsg;
@@ -196,19 +205,21 @@ public class ToolBarActivity extends BaseActivity {
     /**
      * 显示右上角设置按钮
      */
-    public void showSetting(){
+    public void showSetting() {
         if (layoutRightImage != null) {
             layoutRightImage.setVisibility(View.VISIBLE);
         }
     }
+
     /**
      * 隐藏右上角设置按钮
      */
-    public void dismmisSetting(){
+    public void dismmisSetting() {
         if (layoutRightImage != null) {
             layoutRightImage.setVisibility(View.GONE);
         }
     }
+
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
         toolBarInit();
@@ -246,14 +257,23 @@ public class ToolBarActivity extends BaseActivity {
 
     @Override
     public void uiFinish(OFNetMessage msg) {
-        if (msg.responsebean != null){
-            if (msg.responsebean.result == 12){
-                Log.d("responsebean","msg.responsebean.result = "+msg.responsebean.result);
+        if (msg.responsebean != null) {
+            if (msg.responsebean.result == 12) {
+                Log.d("responsebean", "msg.responsebean.result = " + msg.responsebean.result);
                 //PushManager.getInstance().stopService(this.getApplicationContext());
                 //showErrorDialog();
             }
         }
         super.uiFinish(msg);
+    }
+
+    protected void setStatusColor() {
+        StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.transparent));
+    }
+
+    protected void setSystemInvadeBlack() {
+        // 第二个参数是是否沉浸,第三个参数是状态栏字体是否为黑色
+        StatusUtil.setSystemStatus(this, false, true);
     }
 
     /**

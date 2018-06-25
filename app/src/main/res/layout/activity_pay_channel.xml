@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/view_e6e6e6"
     android:orientation="vertical"
     tools:context=".activity.ordercenter.PayChannelActivity">
 
@@ -13,6 +14,7 @@
         android:id="@+id/ll_left_time"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_120_dp"
+        android:layout_marginTop="@dimen/dimen_10_dp"
         android:background="@color/white"
         android:gravity="center"
         android:orientation="vertical">

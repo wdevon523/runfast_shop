@@ -13,19 +13,18 @@ import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.adapter.HourMinuteChooseAdapter;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class TimeChooseDialog extends Dialog implements View.OnClickListener, HourMinuteChooseAdapter.OnHourMinuteChooseClickListener {
 
     private Context context;
+    private boolean showTomorrow;
     private OnTimeDialogClickListener listener;
     private List<String> timesList = new ArrayList<>();
     private TextView tvCancel;
@@ -39,9 +38,10 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
     private String hourMinute;
     private HourMinuteChooseAdapter hourMinuteChooseAdapter;
 
-    public TimeChooseDialog(@NonNull Context context, OnTimeDialogClickListener listener) {
+    public TimeChooseDialog(@NonNull Context context, boolean showTomorrow, OnTimeDialogClickListener listener) {
         super(context);
         this.context = context;
+        this.showTomorrow = showTomorrow;
         this.listener = listener;
     }
 
@@ -106,8 +106,11 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         tvSure.setOnClickListener(this);
         tvToday = (TextView) findViewById(R.id.tv_today);
         tvToday.setOnClickListener(this);
+
         tvTomorrow = (TextView) findViewById(R.id.tv_tomorrow);
         tvTomorrow.setOnClickListener(this);
+        tvTomorrow.setVisibility(showTomorrow ? View.VISIBLE : View.GONE);
+
         recyclerHourMinute = (RecyclerView) findViewById(R.id.recycler_hour_minute);
 
         hourMinuteChooseAdapter = new HourMinuteChooseAdapter(context, this, timesList, day);
@@ -125,10 +128,12 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         hourMinuteChooseAdapter.notifyDataSetChanged();
         for (int i = 0; i < 24; i++) {
             for (int j = 0; j < 6; j++) {
-                if (i < 10) {
-                    timesList.add("0" + i + ":" + j + "0");
-                } else {
-                    timesList.add(i + ":" + j + "0");
+                if (j % 2 == 0) {
+                    if (i < 10) {
+                        timesList.add("0" + i + ":" + j + "0");
+                    } else {
+                        timesList.add(i + ":" + j + "0");
+                    }
                 }
             }
         }
@@ -148,10 +153,12 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         for (int i = mHour; i < 24; i++) {
             for (int j = 0; j < 6; j++) {
                 if ((i == mHour && j > mMinuts / 10) || i > mHour) {
-                    if (i < 10) {
-                        timesList.add("0" + i + ":" + j + "0");
-                    } else {
-                        timesList.add(i + ":" + j + "0");
+                    if (j % 2 == 0) {
+                        if (i < 10) {
+                            timesList.add("0" + i + ":" + j + "0");
+                        } else {
+                            timesList.add(i + ":" + j + "0");
+                        }
                     }
                 }
             }

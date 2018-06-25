@@ -91,12 +91,15 @@ public class UpdateAddressActivity extends ToolBarActivity {
             if (mAddressInfo.tag != null) {
                 switch (mAddressInfo.tag) {
                     case 1:
+                        tag = 1;
                         rgTag.check(R.id.rb_home);
                         break;
                     case 2:
+                        tag = 2;
                         rgTag.check(R.id.rb_company);
                         break;
                     case 3:
+                        tag = 3;
                         rgTag.check(R.id.rb_school);
                         break;
                 }

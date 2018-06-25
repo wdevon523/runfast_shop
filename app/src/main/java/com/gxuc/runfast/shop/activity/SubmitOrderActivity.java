@@ -1,11 +1,16 @@
 package com.gxuc.runfast.shop.activity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -38,8 +43,10 @@ import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.view.CenteredImageSpan;
 import com.gxuc.runfast.shop.view.CustomScrollView;
 import com.gxuc.runfast.shop.view.TimeChooseDialog;
+import com.hedan.textdrawablelibrary.TextViewDrawable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,10 +58,11 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDialog.OnTimeDialogClickListener {
+public class SubmitOrderActivity extends ToolBarActivity {
     @BindView(R.id.rl_title)
     RelativeLayout rlTitle;
     @BindView(R.id.iv_back)
@@ -65,10 +73,16 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
     CustomScrollView scrollView;
     @BindView(R.id.tv_take_yourself)
     TextView tvTakeYourself;
+    @BindView(R.id.text_take_yourself)
+    TextView textTakeYourself;
+    @BindView(R.id.tv_just_send_address_tag)
+    TextView tvJustSendAddressTag;
     @BindView(R.id.tv_just_send_address_detail)
-    TextView tvJustSendAddressDetail;
+    TextViewDrawable tvJustSendAddressDetail;
+    @BindView(R.id.tv_address_tag)
+    TextView tvSendAddressTag;
     @BindView(R.id.tv_send_address_detail)
-    TextView tvSendAddressDetail;
+    TextViewDrawable tvSendAddressDetail;
     @BindView(R.id.tv_just_send_name_and_mobile)
     TextView tvJustSendNameAndMobile;
     @BindView(R.id.tv_send_name_and_mobile)
@@ -91,6 +105,8 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
     LinearLayout llDiverSend;
     @BindView(R.id.tv_diver_send)
     TextView tvDiverSend;
+    @BindView(R.id.text_diver_send)
+    TextView textDiverSend;
     @BindView(R.id.tv_take_address)
     TextView tvTakeAddress;
     @BindView(R.id.tv_distance_to_you)
@@ -175,7 +191,8 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
     private ShopCartBean shopCartBean;
     private String sendTime = SystemUtil.getNowDateFormat();
     private String takeTime = SystemUtil.getNowDateFormat();
-    private TimeChooseDialog timeChooseDialog;
+    private TimeChooseDialog sendTimeChooseDialog;
+    private TimeChooseDialog takeimeChooseDialog;
     private String orderRemark;
     private boolean suportSelf;
     private int eatInBusiness;
@@ -267,7 +284,61 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
     }
 
     private void initView() {
-        timeChooseDialog = new TimeChooseDialog(this, this);
+        StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.bg_fba42a));
+        StatusUtil.setSystemStatus(this, false, true);
+
+        sendTimeChooseDialog = new TimeChooseDialog(this, true, new TimeChooseDialog.OnTimeDialogClickListener() {
+            @Override
+            public void onTimeDialogClick(String day, String hourMinute) {
+                if (TextUtils.isEmpty(day)) {
+                    sendTime = SystemUtil.getNowDateFormat();
+                    tvSendTime.setText("立即取件");
+                    tvJustSendTime.setText("立即取件");
+                    return;
+                }
+                if (TextUtils.equals("TODAY", day)) {
+                    String nowDateFormat = SystemUtil.getNowDateFormat();
+                    String data = nowDateFormat.substring(0, 11);
+                    sendTime = data + hourMinute + ":00";
+                    tvSendTime.setText(sendTime);
+                    tvJustSendTime.setText(sendTime);
+                } else {
+                    long l = System.currentTimeMillis() + 86400000;
+                    String time = SystemUtil.getTime(l);
+                    LogUtil.d("devon", "-----------" + time + "-------------");
+                    String data = time.substring(0, 11);
+                    sendTime = data + hourMinute + ":00";
+                    tvSendTime.setText(sendTime);
+                    tvJustSendTime.setText(sendTime);
+                }
+            }
+        });
+
+        takeimeChooseDialog = new TimeChooseDialog(this, false, new TimeChooseDialog.OnTimeDialogClickListener() {
+            @Override
+            public void onTimeDialogClick(String day, String hourMinute) {
+                if (TextUtils.isEmpty(day)) {
+                    takeTime = SystemUtil.getNowDateFormat();
+                    tvTakeYourselfTime.setText("立即取件");
+                    return;
+                }
+                if (TextUtils.equals("TODAY", day)) {
+                    String nowDateFormat = SystemUtil.getNowDateFormat();
+                    String data = nowDateFormat.substring(0, 11);
+                    takeTime = data + hourMinute + ":00";
+                    tvTakeYourselfTime.setText("大约 " + takeTime.substring(11, 16) + " 达到");
+                } else {
+                    long l = System.currentTimeMillis() + 86400000;
+                    String time = SystemUtil.getTime(l);
+                    LogUtil.d("devon", "-----------" + time + "-------------");
+                    String data = time.substring(0, 11);
+                    takeTime = data + hourMinute + ":00";
+                    tvTakeYourselfTime.setText("大约" + takeTime.substring(11, 16) + "达到");
+                }
+            }
+        });
+
+
     }
 
     private void initData() {
@@ -349,6 +420,7 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
                 tvJustSendNameAndMobile.setVisibility(View.GONE);
             }
         } else {
+
             if (isSuportSelf) {
                 tvSendAddressDetail.setText(shopCartBean.userAddress + shopCartBean.address);
                 tvSendNameAndMobile.setText(shopCartBean.userName + "     " + shopCartBean.userMobile);
@@ -359,6 +431,55 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
                 tvJustSendNameAndMobile.setVisibility(View.VISIBLE);
             }
         }
+
+
+//        if (isSuportSelf) {
+//            tvSendAddressTag.setVisibility(shopCartBean.userAddressTag == null || shopCartBean.userAddressTag < 0 || shopCartBean.userAddressTag > 3 ? View.GONE : View.VISIBLE);
+//        } else {
+//            tvJustSendAddressTag.setVisibility(shopCartBean.userAddressTag == null || shopCartBean.userAddressTag < 0 || shopCartBean.userAddressTag > 3 ? View.GONE : View.VISIBLE);
+//        }
+
+        if (shopCartBean.userAddressTag != null) {
+            if (shopCartBean.userAddressTag == 1) {
+                CenteredImageSpan span = new CenteredImageSpan(this, R.drawable.icon_home);
+                SpannableString ss = new SpannableString("  " + shopCartBean.userAddress + shopCartBean.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                tvSendAddressDetail.setText(ss);
+                tvJustSendAddressDetail.setText(ss);
+
+//                tvSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_home), null, null, null);
+//                tvSendAddressDetail.setCompoundDrawablePadding(8);
+
+//                tvJustSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_home), null, null, null);
+//                tvJustSendAddressDetail.setCompoundDrawablePadding(8);
+            } else if (shopCartBean.userAddressTag == 2) {
+                CenteredImageSpan span = new CenteredImageSpan(this, R.drawable.icon_company);
+                SpannableString ss = new SpannableString("  " + shopCartBean.userAddress + shopCartBean.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                tvSendAddressDetail.setText(ss);
+                tvJustSendAddressDetail.setText(ss);
+
+//                tvSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_company), null, null, null);
+//                tvSendAddressDetail.setCompoundDrawablePadding(8);
+
+//                tvJustSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_company), null, null, null);
+//                tvJustSendAddressDetail.setCompoundDrawablePadding(8);
+            } else if (shopCartBean.userAddressTag == 3) {
+
+                CenteredImageSpan span = new CenteredImageSpan(this, R.drawable.icon_home);
+                SpannableString ss = new SpannableString("  " + shopCartBean.userAddress + shopCartBean.address);
+                ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                tvSendAddressDetail.setText(ss);
+                tvJustSendAddressDetail.setText(ss);
+
+//                tvSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_school), null, null, null);
+//                tvSendAddressDetail.setCompoundDrawablePadding(8);
+
+//                tvJustSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_school), null, null, null);
+//                tvJustSendAddressDetail.setCompoundDrawablePadding(8);
+            }
+        }
+
 //        tvBusinessToTake.setVisibility(suportSelf ? View.VISIBLE : View.GONE);
         tvBusinessIsCharge.setVisibility(suportSelf ? View.GONE : View.VISIBLE);
         tvBusinessIsCharge.setText(shopCartBean.isDeliver == 0 ? "快车转送" : "商家配送");
@@ -373,6 +494,8 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
         tvSubPrice.setText("¥" + shopCartBean.totalPay);
         tvTotalPrice.setText("¥" + shopCartBean.totalPay);
         tvDiscountPrice.setText("为您节省¥" + shopCartBean.offAmount);
+
+
         tvRedPacket.setText(TextUtils.isEmpty(userRedPrice) ? "" : "¥" + userRedPrice);
         tvCashCoupon.setText(TextUtils.isEmpty(userCouponPrice) ? "" : "¥" + userCouponPrice);
         tvTakeAddress.setText(shopCartBean.businessAddr);
@@ -488,12 +611,14 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
 //            viewActionMoreBg.setAlpha(0f);
             rlTitle.setBackgroundColor(getResources().getColor(R.color.bg_f3f2f2));
             viewBackground.setBackgroundColor(getResources().getColor(R.color.bg_f3f2f2));
+            StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.white));
 //            llTopAddress.setVisibility(View.GONE);
         } else {
 //            viewTitleBg.setAlpha(1f - fraction);
 //            viewActionMoreBg.setAlpha(1f - fraction);
             rlTitle.setBackgroundColor(ColorUtil.getNewColorByStartEndColor(this, fraction, R.color.bg_fba42a, R.color.bg_f3f2f2));
             viewBackground.setBackgroundColor(ColorUtil.getNewColorByStartEndColor(this, fraction, R.color.bg_fba42a, R.color.bg_f3f2f2));
+            StatusUtil.setUseStatusBarColor(this, ColorUtil.getNewColorByStartEndColor(this, fraction, R.color.bg_fba42a, R.color.white));
 //            llTopAddress.setVisibility(View.VISIBLE);
         }
 
@@ -503,12 +628,15 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_take_yourself:
+
+                textTakeYourself.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
                 llDiverSend.setVisibility(View.GONE);
                 llTakeYourself.setVisibility(View.VISIBLE);
                 rlEatHere.setVisibility(View.VISIBLE);
                 rlEatTakeOut.setVisibility(View.VISIBLE);
                 suportSelf = true;
                 tvBusinessToTake.setVisibility(View.VISIBLE);
+                tvDiscountPriceDetail.setVisibility(View.GONE);
                 if (isFromCart) {
                     try {
                         paramJson.put("suportSelf", suportSelf + "");
@@ -524,12 +652,15 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
 
                 break;
             case R.id.tv_diver_send:
+
+                textDiverSend.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
                 llDiverSend.setVisibility(View.VISIBLE);
                 llTakeYourself.setVisibility(View.GONE);
                 rlEatHere.setVisibility(View.GONE);
                 rlEatTakeOut.setVisibility(View.GONE);
                 suportSelf = false;
                 tvBusinessToTake.setVisibility(View.GONE);
+                tvDiscountPriceDetail.setVisibility(View.VISIBLE);
 
                 if (isFromCart) {
                     try {
@@ -567,14 +698,13 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
                 startActivityForResult(sendIntent, REQUESTCODE_ADDRESS);
                 break;
             case R.id.rl_just_send_time:
-                timeChooseDialog.show();
+                sendTimeChooseDialog.show();
                 break;
             case R.id.rl_send_time:
-                timeChooseDialog.show();
+                sendTimeChooseDialog.show();
                 break;
             case R.id.ll_take_yourself_time:
-
-
+                takeimeChooseDialog.show();
                 break;
             case R.id.cb_agree_deal:
                 break;
@@ -766,28 +896,4 @@ public class SubmitOrderActivity extends ToolBarActivity implements TimeChooseDi
         }
     }
 
-    @Override
-    public void onTimeDialogClick(String day, String hourMinute) {
-        if (TextUtils.isEmpty(day)) {
-            sendTime = SystemUtil.getNowDateFormat();
-            tvSendTime.setText("立即取件");
-            tvJustSendTime.setText("立即取件");
-            return;
-        }
-        if (TextUtils.equals("TODAY", day)) {
-            String nowDateFormat = SystemUtil.getNowDateFormat();
-            String data = nowDateFormat.substring(0, 11);
-            sendTime = data + hourMinute + ":00";
-            tvSendTime.setText(sendTime);
-            tvJustSendTime.setText(sendTime);
-        } else {
-            long l = System.currentTimeMillis() + 86400000;
-            String time = SystemUtil.getTime(l);
-            LogUtil.d("devon", "-----------" + time + "-------------");
-            String data = time.substring(0, 11);
-            sendTime = data + hourMinute + ":00";
-            tvSendTime.setText(sendTime);
-            tvJustSendTime.setText(sendTime);
-        }
-    }
 }

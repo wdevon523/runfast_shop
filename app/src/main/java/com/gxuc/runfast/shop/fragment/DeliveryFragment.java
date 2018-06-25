@@ -141,7 +141,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
         View view = inflater.inflate(R.layout.fragment_delivery, container, false);
         unbinder = ButterKnife.bind(this, view);
         tipDialog = new TipDialog(getContext(), this);
-        timeChooseDialog = new TimeChooseDialog(getContext(), this);
+        timeChooseDialog = new TimeChooseDialog(getContext(), true, this);
         goodsTypeDialog = new GoodsTypeDialog(getContext(), this);
         lat = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT);
         lng = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON);

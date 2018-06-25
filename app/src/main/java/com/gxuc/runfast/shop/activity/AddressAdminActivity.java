@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.activity;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -97,6 +98,7 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
     private List<PoiItem> poisList;
     private SearchAddressAdapter searchAddressAdapter;
     private List<PoiItem> pois;
+    private UserInfo userInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -293,6 +295,12 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tv_right_title:
+
+                userInfo = UserService.getUserInfo(this);
+                if (userInfo == null || userInfo.id == null) {
+                    startActivity(new Intent(this, LoginQucikActivity.class));
+                    return;
+                }
                 Intent intent = new Intent(this, UpdateAddressActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.ADD_ADDRESS);
                 startActivity(intent);
@@ -382,6 +390,7 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
         for (int i = 0; i < pois.size(); i++) {
             View nearByView = LayoutInflater.from(this).inflate(R.layout.item_address_name, null);
             TextView tvAddressName = (TextView) nearByView.findViewById(R.id.tv_address_title);
+            tvAddressName.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
             tvAddressName.setText(pois.get(i).getTitle());
             nearByView.setTag(pois.get(i));
             llContainNearbyAddress.addView(nearByView);

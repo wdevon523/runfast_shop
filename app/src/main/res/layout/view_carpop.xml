@@ -62,7 +62,7 @@
                     android:drawablePadding="2dp"
                     android:gravity="center"
                     android:onClick="clearCar"
-                    android:text="清空"
+                    android:text="清空购物车"
                     android:textColor="#666666"
                     android:textSize="12sp" />
             </LinearLayout>

@@ -6,40 +6,51 @@
     android:layout_height="match_parent"
     android:visibility="gone">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_top"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:gravity="center_vertical">
+        android:layout_height="50dp">
 
         <ImageView
             android:id="@+id/iv_product_back"
+            android:layout_width="@dimen/dimen_18_dp"
+            android:layout_height="@dimen/dimen_18_dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_15_dp"
+            android:src="@drawable/icon_close" />
+
+        <!--<TextView-->
+        <!--android:id="@+id/business_title"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_weight="1"-->
+        <!--android:gravity="center"-->
+        <!--android:singleLine="true"-->
+        <!--android:textColor="#FF333333"-->
+        <!--android:textSize="@dimen/dimen_20_dp" />-->
+
+        <ImageView
+            android:id="@+id/iv_favorite_good"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:src="@drawable/icon_back_map" />
-
-        <TextView
-            android:id="@+id/business_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:singleLine="true"
-            android:textColor="#FF333333"
-            android:textSize="@dimen/dimen_20_dp" />
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_15_dp"
+            android:layout_toLeftOf="@+id/iv_share"
+            android:src="@drawable/icon_favorite_good"
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/iv_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
-            android:layout_marginRight="15dp"
-            android:src="@drawable/icon_share_product"
-            android:visibility="gone" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_15_dp"
+            android:src="@drawable/icon_share_good"
+            android:visibility="visible" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <!--<com.gxuc.runfast.shop.view.HeadZoomScrollView-->
     <!--android:id="@+id/scrollView"-->
@@ -59,6 +70,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingBottom="@dimen/dimen_70_dp"
             android:background="@color/color_white"
             android:orientation="vertical">
 
@@ -68,7 +80,6 @@
                 android:layout_height="235dp"
                 android:layout_marginLeft="@dimen/dimen_15_dp"
                 android:layout_marginRight="@dimen/dimen_15_dp"
-                android:scaleType="centerCrop"
                 app:siBorderColor="@color/view_e5e5e5"
                 app:siBorderWidth="1px"
                 app:siRadius="10dp"
@@ -87,15 +98,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/color_address_black"
-                    android:textSize="20sp" />
+                    android:textSize="@dimen/dimen_20_dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_food_sale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/dimen_5_dp"
                     android:textColor="@color/color_text_gray"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/dimen_12_dp" />
 
                 <LinearLayout
                     android:id="@+id/ll_product_act"
@@ -140,16 +152,28 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="@dimen/dimen_5_dp"
+                    android:layout_marginTop="@dimen/dimen_5_dp"
                     android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/tv_food_price"
+                        android:layout_marginTop="@dimen/dimen_10_dp"
+                        android:text="¥"
+                        android:textColor="@color/text_fb4e44"
+                        android:textSize="@dimen/dimen_15_dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_food_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/color_price_red"
-                        android:textSize="@dimen/dimen_20_dp" />
+                        android:layout_marginLeft="@dimen/dimen_10_dp"
+                        android:textColor="@color/text_fb4e44"
+                        android:textSize="@dimen/dimen_25_dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_old_product_price"
@@ -157,10 +181,10 @@
                         android:layout_height="wrap_content"
                         android:layout_alignTop="@id/tv_food_price"
                         android:layout_marginLeft="@dimen/dimen_3_dp"
-                        android:layout_marginTop="@dimen/dimen_5_dp"
+                        android:layout_marginTop="@dimen/dimen_10_dp"
                         android:layout_toRightOf="@id/tv_food_price"
                         android:textColor="@color/text_666666"
-                        android:textSize="15dp" />
+                        android:textSize="@dimen/dimen_15_dp" />
                     <!--<ImageView-->
                     <!--android:id="@+id/iv_sub"-->
                     <!--android:layout_width="wrap_content"-->
@@ -184,6 +208,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:orientation="horizontal">
 
                         <com.gxuc.runfast.shop.view.AddWidget
@@ -222,7 +247,9 @@
                                 android:textSize="10sp"
                                 android:visibility="gone" />
                         </RelativeLayout>
+
                     </LinearLayout>
+
                 </RelativeLayout>
 
                 <TextView
@@ -230,55 +257,57 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/dimen_10_dp"
-                    android:textColor="@color/text_666666" />
+                    android:textColor="@color/text_fb4e44"
+                    android:textSize="@dimen/dimen_12_dp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="@dimen/dimen_15_dp"
                 android:background="@color/color_line_gray" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:layout_width="@dimen/dimen_3_dp"
-                    android:layout_height="15dp"
-                    android:background="@color/color_orange_select" />
+                android:layout_marginBottom="@dimen/dimen_10_dp"
+                android:layout_marginTop="@dimen/dimen_20_dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
+                    android:layout_marginLeft="@dimen/dimen_15_dp"
                     android:text="菜品描述"
                     android:textColor="@color/color_address_black"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/dimen_15_dp" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_food_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen_20_dp"
+                android:layout_marginLeft="@dimen/dimen_12_dp"
+                android:lineSpacingExtra="@dimen/dimen_5_dp"
+                android:textColor="@color/color_text_gray_two"
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:layout_width="@dimen/dimen_3_dp"
-                    android:layout_height="15dp"
-                    android:background="@color/color_orange_select" />
+                android:layout_marginBottom="@dimen/dimen_10_dp"
+                android:layout_marginTop="@dimen/dimen_20_dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
+                    android:layout_marginLeft="@dimen/dimen_15_dp"
                     android:text="商品评价"
                     android:textColor="@color/color_address_black"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/dimen_15_dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -286,7 +315,7 @@
                     android:layout_marginLeft="12dp"
                     android:text="共有0人评价"
                     android:textColor="@color/color_text_gray"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/dimen_12_dp" />
 
             </LinearLayout>
 
@@ -332,16 +361,6 @@
                     android:textColor="@color/color_text_gray_two"
                     android:textSize="12sp" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tv_food_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="65dp"
-                android:layout_marginLeft="12dp"
-                android:lineSpacingExtra="5dp"
-                android:textColor="@color/color_text_gray_two"
-                android:textSize="14sp" />
 
         </LinearLayout>
 

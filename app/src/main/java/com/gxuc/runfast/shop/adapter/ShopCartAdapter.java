@@ -17,6 +17,7 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.bean.CartItemsBean;
 import com.gxuc.runfast.shop.bean.ShopCartBean;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
 import org.xutils.x;
@@ -48,7 +49,7 @@ public class ShopCartAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ShopCartViewHolder shopCartViewHolder = (ShopCartViewHolder) holder;
         final ShopCartBean shopCartBean = data.get(position);
-        x.image().bind(shopCartViewHolder.ivShoppingCartBusinessLogo, UrlConstant.ImageBaseUrl + shopCartBean.businessImg);
+        x.image().bind(shopCartViewHolder.ivShoppingCartBusinessLogo, UrlConstant.ImageBaseUrl + shopCartBean.businessImg, NetConfig.optionsLogoImage);
         shopCartViewHolder.tvShoppingCartBusinessName.setText(shopCartBean.businessName);
         shopCartViewHolder.tvShoppingCartBusinessName.setTag(shopCartBean.businessId);
 

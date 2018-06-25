@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/dimen_10_dp"
     android:background="@color/white"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/dimen_10_dp"
-    android:paddingRight="@dimen/dimen_10_dp">
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_10_dp"
+        android:background="@color/view_e5e5e5" />
 
     <LinearLayout
         android:id="@+id/ll_too_far"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingLeft="@dimen/dimen_10_dp"
+        android:paddingRight="@dimen/dimen_10_dp"
         android:visibility="gone">
 
         <TextView
@@ -67,22 +70,25 @@
 
     <LinearLayout
         android:id="@+id/ll_business"
+        android:paddingLeft="@dimen/dimen_10_dp"
+        android:paddingRight="@dimen/dimen_10_dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/dimen_30_dp"
+        android:gravity="center_vertical">
 
         <CheckBox
             android:id="@+id/cb_shoppingcart_business"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:button="@drawable/selector_choose"
-            android:paddingBottom="@dimen/dimen_10_dp"
-            android:paddingRight="@dimen/dimen_10_dp"
-            android:paddingTop="@dimen/dimen_10_dp" />
+            android:layout_width="@dimen/dimen_16_dp"
+            android:layout_height="@dimen/dimen_16_dp"
+            android:layout_marginRight="@dimen/dimen_9_dp"
+            android:background="@drawable/selector_choose"
+            android:button="@null" />
+        <!--android:button="@drawable/selector_choose" />-->
 
         <ImageView
             android:id="@+id/iv_shopping_cart_business_logo"
             android:layout_width="@dimen/dimen_20_dp"
-            android:layout_height="13dp"
+            android:layout_height="@dimen/dimen_20_dp"
             android:layout_gravity="center"
             android:src="@drawable/weibo_login" />
 
@@ -99,23 +105,27 @@
 
     </LinearLayout>
 
-
     <LinearLayout
         android:id="@+id/ll_shopping_cart_business_act"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/dimen_25_dp" />
+        android:paddingLeft="@dimen/dimen_35_dp"
+        android:paddingRight="@dimen/dimen_10_dp"
+        android:orientation="vertical" />
 
     <LinearLayout
         android:id="@+id/ll_shopping_cart_business_goods"
         android:layout_width="match_parent"
+        android:paddingLeft="@dimen/dimen_10_dp"
+        android:paddingRight="@dimen/dimen_10_dp"
         android:layout_height="wrap_content"
         android:orientation="vertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/dimen_10_dp"
+        android:paddingRight="@dimen/dimen_10_dp"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -137,6 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen_15_dp"
                 android:textColor="@color/text_333333"
                 android:textSize="@dimen/dimen_14_dp" />
 
@@ -162,15 +173,22 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen_15_dp"
                 android:textColor="@color/text_333333"
                 android:textSize="@dimen/dimen_14_dp" />
 
         </RelativeLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1_dp"
+            android:layout_marginLeft="@dimen/dimen_25_dp"
+            android:layout_marginTop="@dimen/dimen_10_dp"
+            android:background="@color/view_e5e5e5" />
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dimen_55_dp"
-            android:layout_marginTop="@dimen/dimen_10_dp">
+            android:layout_height="@dimen/dimen_50_dp">
 
             <TextView
                 android:id="@+id/tv_shopping_cart_business_total_preferential"
@@ -184,10 +202,11 @@
 
             <TextView
                 android:id="@+id/tv_shopping_cart_pay"
-                android:layout_width="@dimen/dimen_100_dp"
+                android:layout_width="@dimen/dimen_80_dp"
                 android:layout_height="@dimen/dimen_30_dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen_15_dp"
                 android:background="@drawable/bg_fb7d30"
                 android:gravity="center"
                 android:text="去结算"
@@ -199,10 +218,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/dimen_5_dp"
+                android:layout_marginRight="@dimen/dimen_10_dp"
                 android:layout_toLeftOf="@+id/tv_shopping_cart_pay"
                 android:textColor="@color/text_fb4e44"
-                android:textSize="@dimen/dimen_17_dp" />
+                android:textSize="@dimen/dimen_20_dp"
+                android:textStyle="bold" />
 
         </RelativeLayout>
 

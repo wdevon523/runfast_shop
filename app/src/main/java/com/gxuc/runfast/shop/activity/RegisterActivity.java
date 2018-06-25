@@ -262,7 +262,7 @@ public class RegisterActivity extends ToolBarActivity {
             return;
         }
 
-        if (password.length() <6 || password.length() > 16) {
+        if (password.length() < 6) {
             ToastUtil.showToast("请输入6-16位密码");
             return;
         }

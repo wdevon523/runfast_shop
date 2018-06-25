@@ -323,14 +323,14 @@ public interface NetInterface {
     /**
      * 余额支付
      *
-     * @param id
-     * @param pass
+     * @param orderId
+     * @param password
      * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.WALLET_PAY)
-    Call<String> walletPay(@Field("id") Integer id,
-                           @Field("password") String pass);
+    Call<String> walletPay(@Field("orderId") int orderId,
+                           @Field("password") String password);
 
     /**
      * 微信支付
@@ -662,7 +662,9 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.GET_HOME_ACT)
-    Call<String> getHomeAct(@Field("agentId") String agenId);
+    Call<String> getHomeAct(@Field("agentId") String agenId,
+                            @Field("userLng") double userLng,
+                            @Field("userLat") double userLat);
 
     /**
      * 获取附近商家列表
@@ -823,6 +825,7 @@ public interface NetInterface {
 
     /**
      * 修改用户地址
+     * gender 0:女；1：男
      *
      * @return
      */
@@ -1316,6 +1319,14 @@ public interface NetInterface {
      */
     @POST(UrlConstant.CHECK_SHOP_CART)
     Call<String> checkShopCart();
+
+    /**
+     * 获取用户评价列表
+     *
+     * @return
+     */
+    @POST(UrlConstant.GET_MY_EVALUATE)
+    Call<String> getMyEvaluate();
 
 
 }

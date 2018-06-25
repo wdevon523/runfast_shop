@@ -33,6 +33,7 @@ import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.MD5Util;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
@@ -497,7 +498,7 @@ public class PayChannelActivity extends ToolBarActivity {
 
     private void requestWalletPay(String password) {
         CustomProgressDialog.startProgressDialog(this);
-        CustomApplication.getRetrofit().walletPay(orderId, password).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().walletPay(orderId, MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 mPayInputDialog.dismiss();
@@ -564,8 +565,8 @@ public class PayChannelActivity extends ToolBarActivity {
     private void dealWalletPay(String body) {
         try {
             JSONObject object = new JSONObject(body);
-            ToastUtil.showToast(object.optString("msg"));
             if (object.optBoolean("success")) {
+                ToastUtil.showToast("支付成功");
                 Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
                 intent.putExtra("orderId", orderId);
                 intent.putExtra("logo", logo);
@@ -573,6 +574,8 @@ public class PayChannelActivity extends ToolBarActivity {
                 intent.putExtra("businessName", businessName);
                 startActivity(intent);
                 finish();
+            } else {
+                ToastUtil.showToast(object.optString("errorMsg"));
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -19,7 +19,7 @@ public class SpecSelectInfo {
     public String standarOptionName;
     public String totalPrice;
 
-    public int isLimited;
+    public Integer isLimited;
     public int limitNum;
 
     public BigDecimal price;

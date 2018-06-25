@@ -236,6 +236,12 @@ public class BindMobileActivity extends ToolBarActivity {
             return;
         }
 
+        if (password.length() < 6 && llPassword.getVisibility() == View.VISIBLE) {
+            ToastUtil.showToast("请输入6-16位密码");
+            return;
+        }
+
+
         CustomApplication.getRetrofitNew().bindMobile(mobile, password, code, thirdLoginId, thirdLoginType, CustomApplication.alias).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {

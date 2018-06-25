@@ -26,7 +26,10 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -98,6 +101,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import crossoverone.statuslib.StatusUtil;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -185,6 +189,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private BusinessCouponDialog businessCouponDialog;
     private ArrayList<BusinessCouponInfo> businessCouponInfoList;
     private Bitmap blurBitmap;
+    private ImageView ivSubNum;
+    private ImageView ivAddNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +224,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 
 
     private void initViews() {
+        StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.white));
+        StatusUtil.setSystemStatus(this, false, true);
+
         rootview = (CoordinatorLayout) findViewById(R.id.rootview);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -310,8 +319,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         tvSpecPrice = (TextView) view.findViewById(R.id.tv_spec_price);
         tvSpecGroup = (TextView) view.findViewById(R.id.tv_spec_group);
         tvSpecCount = (TextView) view.findViewById(R.id.tv_spec_count);
-        ImageView ivAddNum = (ImageView) view.findViewById(R.id.iv_add_num);
-        ImageView ivSubNum = (ImageView) view.findViewById(R.id.iv_sub_num);
+        ivAddNum = (ImageView) view.findViewById(R.id.iv_add_num);
+        ivSubNum = (ImageView) view.findViewById(R.id.iv_sub_num);
         ivAddNum.setOnClickListener(this);
         ivSubNum.setOnClickListener(this);
         ivCloseSpec.setOnClickListener(this);
@@ -398,7 +407,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 //        new DownloadImageTask().execute(UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath);
 
 
-        x.image().bind(ivShopBg, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath, new Callback.CommonCallback<Drawable>() {
+        x.image().bind(ivShopBg, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath, NetConfig.optionsLogoImage, new Callback.CommonCallback<Drawable>() {
             @Override
             public void onSuccess(Drawable result) {
                 Bitmap bitmap = ((BitmapDrawable) result).getBitmap();
@@ -422,8 +431,18 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         });
         x.image().bind(ivShop, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath);
 //        ivShopBg.setAlpha(0.8f);
+        String shopDescrib = "¥" + (businessInfo.startPay == null ? 0 : businessInfo.startPay.stripTrailingZeros().toPlainString()) + "起送 | 配送费¥" + businessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + " | 月售" + (businessInfo.salesnum == null ? 0 : businessInfo.salesnum);
+        int one = shopDescrib.indexOf("|");
+        int two = shopDescrib.lastIndexOf("|");
+//        tvShopDescribe.setText(shopDescrib);
+        SpannableStringBuilder builder = new SpannableStringBuilder(shopDescrib);
+        ForegroundColorSpan graySpan = new ForegroundColorSpan(getResources().getColor(R.color.text_999999));
+        ForegroundColorSpan graySpan1 = new ForegroundColorSpan(getResources().getColor(R.color.text_999999));
+        builder.setSpan(graySpan1, one, one + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        builder.setSpan(graySpan, two, two + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        tvShopDescribe.setText("¥" + (businessInfo.startPay == null ? 0 : businessInfo.startPay.stripTrailingZeros().toPlainString()) + "起送 | 配送费¥" + businessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + " | 月售" + (businessInfo.salesnum == null ? 0 : businessInfo.salesnum));
+        tvShopDescribe.setText(builder);
+
         tvShopNotice.setVisibility(TextUtils.isEmpty(businessInfo.content) ? View.GONE : View.VISIBLE);
         tvShopNotice.setText(businessInfo.content);
         if (businessInfo.isDeliver == 0) {
@@ -605,7 +624,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         foodBean.setAgentId(jsonObject.optInt("agentId"));
                         foodBean.setContent(jsonObject.optString("content"));
                         foodBean.setLimittype(jsonObject.optInt("limittype"));
-                        foodBean.setIslimited(jsonObject.optInt("islimited"));
+                        foodBean.setIslimited(jsonObject.optInt("isLimited"));
                         foodBean.setLimitNum(jsonObject.optInt("limitNum"));
                         foodBean.setNum(jsonObject.optInt("num"));
                         foodBean.setShowzs(jsonObject.optString("showzs"));
@@ -673,6 +692,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private void dealShopCartInfo(JSONObject jsonObject) {
         if (!TextUtils.equals("null", jsonObject.optString("data"))) {
             shopCartBean = JsonUtil.fromJson(jsonObject.optString("data"), ShopCartBean.class);
+            if (!TextUtils.isEmpty(shopCartBean.limitTips)) {
+                ToastUtil.showToast(shopCartBean.limitTips);
+            }
             if (shopCartBean.cartItems != null && shopCartBean.cartItems.size() > 0) {
                 dealShopCart();
             }
@@ -755,7 +777,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         foodSpecBean.getSpecInfo().num = shopCartBean.cartItems.get(j).num;
                         foodSpecBean.getSpecInfo().standardId = shopCartBean.cartItems.get(j).key.standarId;
                         foodSpecBean.getSpecInfo().standarOptionName = shopCartBean.cartItems.get(j).standarOptionName;
-                        foodSpecBean.getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalPrice;
+                        foodSpecBean.getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice + "");
 //                        foodSpecBean.getSpecInfo().isLimited = shopCartBusinessInfoList.get(j).key.standarId;
 
                         foodSpecBean.getSpecInfo().optionIdMap = new HashMap<>();
@@ -798,7 +820,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                     } else {
                         foodBeens.get(i).setSelectCount(shopCartBean.cartItems.get(j).num);
                         foodBeens.get(i).getSpecInfo().num = shopCartBean.cartItems.get(j).num;
-                        foodBeens.get(i).getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalPrice;
+                        foodBeens.get(i).getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice + "");
                         boolean isContain = false;
                         for (int k = 0; k < carFoods.size(); k++) {
                             if (carFoods.get(k).getId() == foodBeens.get(i).getId()) {
@@ -973,6 +995,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
             tvSpecCount.setText(isInShopCar ? carFoods.get(carPosition).getSpecInfo().num + "" : "0");
             specSelectInfo.num = isInShopCar ? carFoods.get(carPosition).getSpecInfo().num : 0;
 
+            tvSpecCount.setVisibility(isInShopCar ? View.VISIBLE : View.INVISIBLE);
+            ivSubNum.setVisibility(isInShopCar ? View.VISIBLE : View.INVISIBLE);
+
             showSpceStr();
         }
 
@@ -1020,13 +1045,19 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 if (isInShopCar) break;
             }
 
-            if (isInShopCar) {
-                tvSpecCount.setText(carFoods.get(carPosition).getSpecInfo().num + "");
-                specSelectInfo.num = carFoods.get(carPosition).getSpecInfo().num;
-            } else {
-                tvSpecCount.setText("0");
-                specSelectInfo.num = 0;
-            }
+//            if (isInShopCar) {
+//                tvSpecCount.setText(carFoods.get(carPosition).getSpecInfo().num + "");
+//                specSelectInfo.num = carFoods.get(carPosition).getSpecInfo().num;
+//            } else {
+//                tvSpecCount.setText("0");
+//                specSelectInfo.num = 0;
+//            }
+
+            tvSpecCount.setText(isInShopCar ? carFoods.get(carPosition).getSpecInfo().num + "" : "0");
+            specSelectInfo.num = isInShopCar ? carFoods.get(carPosition).getSpecInfo().num : 0;
+
+            tvSpecCount.setVisibility(isInShopCar ? View.VISIBLE : View.INVISIBLE);
+            ivSubNum.setVisibility(isInShopCar ? View.VISIBLE : View.INVISIBLE);
             showSpceStr();
         }
     };
@@ -1428,6 +1459,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                                 if (isSpec) {
                                     specSelectInfo.num++;
                                     tvSpecCount.setText(specSelectInfo.num + "");
+                                    tvSpecCount.setVisibility(specSelectInfo.num == 0 ? View.INVISIBLE : View.VISIBLE);
+                                    ivSubNum.setVisibility(specSelectInfo.num == 0 ? View.INVISIBLE : View.VISIBLE);
                                 }
                             } else {
                                 ToastUtil.showToast(jsonObject.optString("errorMsg"));
@@ -1456,6 +1489,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                                 if (isSpec) {
                                     specSelectInfo.num--;
                                     tvSpecCount.setText(specSelectInfo.num + "");
+                                    tvSpecCount.setVisibility(specSelectInfo.num == 0 ? View.INVISIBLE : View.VISIBLE);
+                                    ivSubNum.setVisibility(specSelectInfo.num == 0 ? View.INVISIBLE : View.VISIBLE);
                                 }
                             } else {
                                 ToastUtil.showToast(jsonObject.optString("errorMsg"));
@@ -1744,10 +1779,11 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         firstFragment.getTypeAdapter().updateBadge(new HashMap<String, Integer>());
         updatePackingPrice();
         shopCarView.updateAmount(new BigDecimal(0), businessInfo.startPay);
-
-        addWidgetDetail.setData(this, firstFragment.getFoodAdapter().getItem(goodClickPosition));
-        tvSpecNum.setText(foodBeens.get(goodClickPosition).getSelectCount() + "");
-        tvSpecNum.setVisibility(foodBeens.get(goodClickPosition).getSelectCount() > 0 ? View.VISIBLE : View.GONE);
+        if (foodBeens.size() != 0) {
+            addWidgetDetail.setData(this, firstFragment.getFoodAdapter().getItem(goodClickPosition));
+            tvSpecNum.setText(foodBeens.get(goodClickPosition).getSelectCount() + "");
+            tvSpecNum.setVisibility(foodBeens.get(goodClickPosition).getSelectCount() > 0 ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void toShopDetail(View view) {
@@ -1825,42 +1861,57 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         tvProductSale.setText("月售" + foodBeanDetail.getSalesnum());
 //        tvProductPrice.setText(foodBeanDetail.getPrice() + "");
         tvProductContent.setText(foodBeanDetail.getContent());
-        x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + foodBeanDetail.getImgPath(), NetConfig.optionsHeadImage);
+        x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + foodBeanDetail.getImgPath());
 
-        if (foodBeanDetail.getIslimited() == 1 || (!TextUtils.isEmpty(foodBeanDetail.getShowprice()) && !TextUtils.equals("null", foodBeanDetail.getShowprice()))) {
-            llProductAct.setVisibility(View.VISIBLE);
+//        if (foodBeanDetail.getIslimited() == 1 || (!TextUtils.isEmpty(foodBeanDetail.getShowprice()) && !TextUtils.equals("null", foodBeanDetail.getShowprice()))) {
+//            llProductAct.setVisibility(View.VISIBLE);
+//
+//            if ((!TextUtils.isEmpty(foodBeanDetail.getShowprice()) && !TextUtils.equals("null", foodBeanDetail.getShowprice()))) {
+//                tvProductDiscount.setVisibility(View.VISIBLE);
+//                tvProductDiscount.setText(foodBeanDetail.getShowprice());
+//            } else {
+//                tvProductDiscount.setVisibility(View.GONE);
+//            }
+//
+//            if (foodBeanDetail.getIslimited() == 1) {
+//                tvProductLimit.setVisibility(View.VISIBLE);
+//                tvProductLimit.setText("限购" + foodBeanDetail.getLimitNum() + "件");
+//            } else {
+//                tvProductLimit.setVisibility(View.GONE);
+//            }
+//
+//        } else {
+//            llProductAct.setVisibility(View.GONE);
+//        }
 
-            if ((!TextUtils.isEmpty(foodBeanDetail.getShowprice()) && !TextUtils.equals("null", foodBeanDetail.getShowprice()))) {
-                tvProductDiscount.setVisibility(View.VISIBLE);
-                tvProductDiscount.setText(foodBeanDetail.getShowprice());
-            } else {
-                tvProductDiscount.setVisibility(View.GONE);
+//        if (!TextUtils.isEmpty(foodBeanDetail.getShowzs()) && !TextUtils.equals("null", foodBeanDetail.getShowzs())) {
+//            tvProductGiftName.setVisibility(View.VISIBLE);
+//            tvProductGiftName.setText(foodBeanDetail.getShowzs());
+//        } else {
+//            tvProductGiftName.setVisibility(View.GONE);
+//        }
+        String actStr = "";
+        if (foodBeanDetail.getGoodsSellStandardList().get(0).activityType != null) {
+            if (foodBeanDetail.getGoodsSellStandardList().get(0).activityType == 2) {
+                actStr = foodBeanDetail.getGoodsSellStandardList().get(0).discount.multiply(new BigDecimal(10)).stripTrailingZeros().toPlainString() + "折";
             }
-
-            if (foodBeanDetail.getIslimited() == 1) {
-                tvProductLimit.setVisibility(View.VISIBLE);
-                tvProductLimit.setText("限购" + foodBeanDetail.getLimitNum() + "件");
-            } else {
-                tvProductLimit.setVisibility(View.GONE);
-            }
-
-        } else {
-            llProductAct.setVisibility(View.GONE);
         }
 
-        if (!TextUtils.isEmpty(foodBeanDetail.getShowzs()) && !TextUtils.equals("null", foodBeanDetail.getShowzs())) {
-            tvProductGiftName.setVisibility(View.VISIBLE);
-            tvProductGiftName.setText(foodBeanDetail.getShowzs());
-        } else {
-            tvProductGiftName.setVisibility(View.GONE);
+        if (foodBeanDetail.getGoodsSellStandardList().get(0).isLimited != null) {
+            if (foodBeanDetail.getGoodsSellStandardList().get(0).isLimited == 1) {
+                actStr += "每单限购" + foodBeanDetail.getGoodsSellStandardList().get(0).limitNum + "件";
+            }
         }
 
-        if (foodBeanDetail.getDisprice() != null && foodBeanDetail.getDisprice().compareTo(BigDecimal.ZERO) != 0) {
-            tvProductPrice.setText("¥" + foodBeanDetail.getDisprice());
+        tvProductGiftName.setVisibility(TextUtils.isEmpty(actStr) ? View.GONE : View.VISIBLE);
+        tvProductGiftName.setText(actStr);
+
+        if (foodBeanDetail.getDisprice() != null && foodBeanDetail.getDisprice().compareTo(foodBeanDetail.getPrice()) != 0) {
+            tvProductPrice.setText("" + foodBeanDetail.getDisprice());
             tvOldProductPrice.setText("¥" + foodBeanDetail.getPrice());
             tvOldProductPrice.setVisibility(View.VISIBLE);
         } else {
-            tvProductPrice.setText("¥" + foodBeanDetail.getPrice());
+            tvProductPrice.setText("" + foodBeanDetail.getPrice());
             tvOldProductPrice.setVisibility(View.GONE);
         }
 

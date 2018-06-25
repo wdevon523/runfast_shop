@@ -330,7 +330,7 @@ public class UrlConstant {
     /**
      * 钱包支付
      */
-    public static final String WALLET_PAY = "pay/paypacket.do";
+    public static final String WALLET_PAY = "user/wm/order/wallletPay";
     /**
      * 支付宝支付
      */
@@ -785,6 +785,10 @@ public class UrlConstant {
      */
     public static final String CHECK_SHOP_CART = "user/wm/cart/chooseCartItem";
 
+    /**
+     * 获取用户评价列表
+     */
+    public static final String GET_MY_EVALUATE = "user/wm/my/listComment";
 
 
 }

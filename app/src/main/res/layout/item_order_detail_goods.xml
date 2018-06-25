@@ -7,9 +7,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dimen_10_dp"
         android:paddingLeft="@dimen/dimen_15_dp"
         android:paddingRight="@dimen/dimen_15_dp"
-        android:paddingBottom="@dimen/dimen_10_dp"
         android:paddingTop="@dimen/dimen_10_dp">
 
 
@@ -93,17 +93,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/tv_order_detail_good_price"
+            android:layout_centerVertical="true"
             android:includeFontPadding="false"
             android:text="¥ 3"
             android:textColor="@color/text_666666"
-            android:textSize="@dimen/dimen_13_dp" />
+            android:textSize="@dimen/dimen_11_dp" />
 
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_height="@dimen/dimen_5_dp"/>
+        android:layout_height="@dimen/dimen_5_dp"
+        android:background="@color/white" />
 
 </LinearLayout>

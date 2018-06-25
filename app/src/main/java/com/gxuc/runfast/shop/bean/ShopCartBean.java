@@ -25,6 +25,7 @@ public class ShopCartBean implements Serializable {
      * userMobile : null
      * userPhone : null
      * userAddress : null
+     * userAddressTag : 0
      * address : null
      * userAddressId : null
      * userAddressLat : null
@@ -85,6 +86,7 @@ public class ShopCartBean implements Serializable {
     public String userMobile;
     public String userPhone;
     public String userAddress;
+    public Integer userAddressTag;
     public String address;
     public String userAddressId;
     public String userAddressLat;
@@ -118,6 +120,7 @@ public class ShopCartBean implements Serializable {
     public BigDecimal cartDisprice;
     public BigDecimal offAmount;
     public String cartTips;
+    public String limitTips;
     public Object distance;
     public int totalNum;
     public Object remark;
