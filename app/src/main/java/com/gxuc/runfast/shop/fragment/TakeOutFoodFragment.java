@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,17 +22,12 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
 import com.gxuc.runfast.shop.activity.DeliveryAddressActivity;
 import com.gxuc.runfast.shop.activity.SearchProductActivity;
-import com.gxuc.runfast.shop.adapter.BottomPageAdapter;
-import com.gxuc.runfast.shop.adapter.BreakfastAdapter;
 import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
 import com.gxuc.runfast.shop.adapter.NearbyBusinessAdapter;
-import com.gxuc.runfast.shop.adapter.NormalAdapter;
-import com.gxuc.runfast.shop.adapter.PageScrollAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.BusinessExercise;
 import com.gxuc.runfast.shop.bean.BusinessInfo;
@@ -99,7 +93,7 @@ public class TakeOutFoodFragment extends Fragment implements
     BGARefreshLayout mRefreshLayout;
 
     @BindView(R.id.ll_no_business)
-    LinearLayout llNoNusiness;
+    LinearLayout llNoBusiness;
 //    @BindView(R.id.rv_home_middle)
 //    RecyclerView mRvHomeMiddle;
 //    @BindView(R.id.rv_home_bottom)
@@ -491,7 +485,7 @@ public class TakeOutFoodFragment extends Fragment implements
                 try {
                     JSONObject jsonObject = new JSONObject(data);
                     JSONArray bus = jsonObject.getJSONArray("rows");
-                    llNoNusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
+                    llNoBusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
                     mRefreshLayout.setEnabled(businessNewInfos.size() > 3);
                     if (bus == null || bus.length() <= 0) {
                         moreAdapter.loadAllDataCompleted();
@@ -540,7 +534,7 @@ public class TakeOutFoodFragment extends Fragment implements
                     mRefreshLayout.setEnabled(true);
                     moreAdapter.loadCompleted();
 
-                    llNoNusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
+                    llNoBusiness.setVisibility(businessNewInfos.size() > 3 ? View.GONE : View.VISIBLE);
                     mRefreshLayout.setEnabled(businessNewInfos.size() > 3);
                     CustomProgressDialog.stopProgressDialog();
                 } catch (JSONException e) {

@@ -2,7 +2,6 @@ package com.gxuc.runfast.shop.activity;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -10,7 +9,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.style.ImageSpan;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -31,8 +30,12 @@ import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.activity.usercenter.CouponActivity;
 import com.gxuc.runfast.shop.adapter.OrderGoodsNewAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
+import com.gxuc.runfast.shop.bean.BusinessNewDetail;
+import com.gxuc.runfast.shop.bean.OrderTimeBean;
 import com.gxuc.runfast.shop.bean.ShopCartBean;
+import com.gxuc.runfast.shop.bean.ValidActivityListBean;
 import com.gxuc.runfast.shop.bean.user.UserInfo;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
@@ -45,6 +48,7 @@ import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.CenteredImageSpan;
 import com.gxuc.runfast.shop.view.CustomScrollView;
+import com.gxuc.runfast.shop.view.OrderTimeChooseDialog;
 import com.gxuc.runfast.shop.view.TimeChooseDialog;
 import com.hedan.textdrawablelibrary.TextViewDrawable;
 
@@ -53,6 +57,7 @@ import org.json.JSONObject;
 import org.xutils.x;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -149,10 +154,8 @@ public class SubmitOrderActivity extends ToolBarActivity {
     TextView tvEatSavePackPrice;
     @BindView(R.id.tv_send_price)
     TextView tvSendPrice;
-    @BindView(R.id.tv_enjoy_act)
-    TextView tvEnjoyAct;
-    @BindView(R.id.tv_enjoy_price)
-    TextView tvEnjoyPrice;
+    @BindView(R.id.ll_contain_act)
+    LinearLayout llContainAct;
     @BindView(R.id.tv_red_packet)
     TextView tvRedPacket;
     @BindView(R.id.rl_red_packet)
@@ -189,9 +192,10 @@ public class SubmitOrderActivity extends ToolBarActivity {
     private int REQUESTCODE_RED_PACKAGE = 1003;
     private int REQUESTCODE_COUPON = 1004;
     private ShopCartBean shopCartBean;
-    private String sendTime = SystemUtil.getNowDateFormat();
-    private String takeTime = SystemUtil.getNowDateFormat();
-    private TimeChooseDialog sendTimeChooseDialog;
+    private String nowTime = SystemUtil.getNowDateFormat();
+    private String sendTime;
+    private String takeTime;
+    private OrderTimeChooseDialog sendTimeChooseDialog;
     private TimeChooseDialog takeimeChooseDialog;
     private String orderRemark;
     private boolean suportSelf;
@@ -204,6 +208,10 @@ public class SubmitOrderActivity extends ToolBarActivity {
     private UserInfo userInfo;
     private boolean isSetText;
     private boolean isSuportSelf;
+    private BigDecimal totalPackageFee;
+    private BigDecimal deliveryFee;
+    private boolean isFirst = true;
+    private BusinessNewDetail businessInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -232,8 +240,10 @@ public class SubmitOrderActivity extends ToolBarActivity {
             paramJson.put("userRedId", "");
             paramMap.put("suportSelf", "");
             paramJson.put("suportSelf", "");
-            paramMap.put("selfTime", takeTime);
-            paramJson.put("selfTime", takeTime);
+            paramMap.put("bookTime", sendTime);
+            paramJson.put("bookTime", sendTime);
+//            paramMap.put("selfTime", takeTime);
+//            paramJson.put("selfTime", takeTime);
             paramMap.put("selfMobile", userInfo.mobile);
             paramJson.put("selfMobile", userInfo.mobile);
             paramMap.put("eatInBusiness", "0");
@@ -286,59 +296,6 @@ public class SubmitOrderActivity extends ToolBarActivity {
     private void initView() {
         StatusUtil.setUseStatusBarColor(this, getResources().getColor(R.color.bg_fba42a));
         StatusUtil.setSystemStatus(this, false, true);
-
-        sendTimeChooseDialog = new TimeChooseDialog(this, true, new TimeChooseDialog.OnTimeDialogClickListener() {
-            @Override
-            public void onTimeDialogClick(String day, String hourMinute) {
-                if (TextUtils.isEmpty(day)) {
-                    sendTime = SystemUtil.getNowDateFormat();
-                    tvSendTime.setText("立即取件");
-                    tvJustSendTime.setText("立即取件");
-                    return;
-                }
-                if (TextUtils.equals("TODAY", day)) {
-                    String nowDateFormat = SystemUtil.getNowDateFormat();
-                    String data = nowDateFormat.substring(0, 11);
-                    sendTime = data + hourMinute + ":00";
-                    tvSendTime.setText(sendTime);
-                    tvJustSendTime.setText(sendTime);
-                } else {
-                    long l = System.currentTimeMillis() + 86400000;
-                    String time = SystemUtil.getTime(l);
-                    LogUtil.d("devon", "-----------" + time + "-------------");
-                    String data = time.substring(0, 11);
-                    sendTime = data + hourMinute + ":00";
-                    tvSendTime.setText(sendTime);
-                    tvJustSendTime.setText(sendTime);
-                }
-            }
-        });
-
-        takeimeChooseDialog = new TimeChooseDialog(this, false, new TimeChooseDialog.OnTimeDialogClickListener() {
-            @Override
-            public void onTimeDialogClick(String day, String hourMinute) {
-                if (TextUtils.isEmpty(day)) {
-                    takeTime = SystemUtil.getNowDateFormat();
-                    tvTakeYourselfTime.setText("立即取件");
-                    return;
-                }
-                if (TextUtils.equals("TODAY", day)) {
-                    String nowDateFormat = SystemUtil.getNowDateFormat();
-                    String data = nowDateFormat.substring(0, 11);
-                    takeTime = data + hourMinute + ":00";
-                    tvTakeYourselfTime.setText("大约 " + takeTime.substring(11, 16) + " 达到");
-                } else {
-                    long l = System.currentTimeMillis() + 86400000;
-                    String time = SystemUtil.getTime(l);
-                    LogUtil.d("devon", "-----------" + time + "-------------");
-                    String data = time.substring(0, 11);
-                    takeTime = data + hourMinute + ":00";
-                    tvTakeYourselfTime.setText("大约" + takeTime.substring(11, 16) + "达到");
-                }
-            }
-        });
-
-
     }
 
     private void initData() {
@@ -350,10 +307,52 @@ public class SubmitOrderActivity extends ToolBarActivity {
         isFromCart = getIntent().getBooleanExtra("isFromCart", false);
         isSuportSelf = getIntent().getBooleanExtra("suportSelf", false);
 
+
+        int mHour = Integer.valueOf(nowTime.substring(11, 13)) + 1;
+        if (mHour < 10) {
+            sendTime = nowTime.substring(0, 11) + "0" + mHour + ":00:00";
+            takeTime = nowTime.substring(0, 11) + "0" + mHour + ":00:00";
+        } else {
+            sendTime = nowTime.substring(0, 11) + mHour + ":00:00";
+            takeTime = nowTime.substring(0, 11) + mHour + ":00:00";
+        }
+
         llJustDiverSend.setVisibility(isSuportSelf ? View.GONE : View.VISIBLE);
         llDiverSend.setVisibility(isSuportSelf ? View.VISIBLE : View.GONE);
+        tvTakeYourselfTime.setText("大约 " + takeTime.substring(11, 16) + " 到店");
+        etTakeYourselfMobile.setText(userInfo.mobile);
+        requestBusinessDetail();
 //        SharePreferenceUtil.getInstance().putBooleanValue("isFromCart", false);
     }
+
+
+    private void requestBusinessDetail() {
+
+        CustomApplication.getRetrofitNew().getBusinessDetail(businessId, Double.valueOf(lng), Double.valueOf(lat)).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        String data = jsonObject.optString("data");
+                        businessInfo = JsonUtil.fromJson(data, BusinessNewDetail.class);
+                        initTimeDialog();
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
 
     private void requestGetOrderInfo() {
         CustomProgressDialog.startProgressDialog(this);
@@ -393,21 +392,136 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 dealOrderGoods();
             }
 
-
-            if (shopCartBean.validActivityList != null && shopCartBean.validActivityList.size() > 0) {
-                for (int i = 0; i < shopCartBean.validActivityList.size(); i++) {
-                    if (shopCartBean.validActivityList.get(i).activityType == 1) {
-                        tvEnjoyPrice.setText("- ¥ " + shopCartBean.validActivityList.get(i).less);
-                        break;
-                    }
-                }
+            try {
+                paramMap.put("bookTime", sendTime);
+                paramJson.put("bookTime", sendTime);
+                paramMap.put("selfTime", takeTime);
+                paramJson.put("selfTime", takeTime);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
 //            if (shopCartBean.toAddressId != null) {
 //                paramMap.put("toAddressId", shopCartBean.toAddressId + "");
 //            }
         }
 
+    }
+
+    private void initTimeDialog() {
+        sendTimeChooseDialog = new OrderTimeChooseDialog(this, new OrderTimeChooseDialog.OnTimeDialogClickListener() {
+            @Override
+            public void onTimeDialogClick(String day, OrderTimeBean orderTimeBean) {
+                if (TextUtils.isEmpty(day) || TextUtils.equals("立即配送", orderTimeBean.hourMinute)) {
+                    sendTime = SystemUtil.getNowDateFormat();
+                    tvSendTime.setText("立即配送");
+                    tvJustSendTime.setText("立即配送");
+                    paramMap.put("bookTime", shopCartBean.disTime);
+                    try {
+                        paramJson.put("bookTime", shopCartBean.disTime);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                if (TextUtils.equals("TODAY", day)) {
+                    String nowDateFormat = SystemUtil.getNowDateFormat();
+                    String data = nowDateFormat.substring(0, 11);
+                    sendTime = data + orderTimeBean.hourMinute + ":00";
+                    tvSendTime.setText("大约 " + sendTime.substring(11, 16) + " 送达");
+                    tvJustSendTime.setText("大约 " + sendTime.substring(11, 16) + " 送达");
+                } else {
+                    long l = System.currentTimeMillis() + 86400000;
+                    String time = SystemUtil.getTime(l);
+                    LogUtil.d("devon", "-----------" + time + "-------------");
+                    String data = time.substring(0, 11);
+                    sendTime = data + orderTimeBean.hourMinute + ":00";
+                    tvSendTime.setText("大约 " + sendTime.substring(11, 16) + " 送达");
+                    tvJustSendTime.setText("大约 " + sendTime.substring(11, 16) + " 送达");
+                }
+                paramMap.put("bookTime", sendTime);
+                try {
+                    paramJson.put("bookTime", sendTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (isFromCart) {
+                    SharePreferenceUtil.getInstance().putStringValue("paramJson", paramJson.toString());
+                    requestFromCartOrderInfo();
+                } else {
+                    requestGetOrderInfo();
+                }
+
+            }
+        });
+
+        takeimeChooseDialog = new TimeChooseDialog(this, false, new TimeChooseDialog.OnTimeDialogClickListener() {
+            @Override
+            public void onTimeDialogClick(String day, String hourMinute) {
+                if (TextUtils.isEmpty(day) || TextUtils.equals("立即配送", hourMinute)) {
+                    takeTime = SystemUtil.getNowDateFormat();
+                    tvTakeYourselfTime.setText("大约 " + takeTime.substring(11, 16) + " 到店");
+                    paramMap.put("selfTime", takeTime);
+                    try {
+                        paramJson.put("selfTime", takeTime);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                if (TextUtils.equals("TODAY", day)) {
+                    String nowDateFormat = SystemUtil.getNowDateFormat();
+                    String data = nowDateFormat.substring(0, 11);
+                    takeTime = data + hourMinute + ":00";
+                    tvTakeYourselfTime.setText("大约 " + takeTime.substring(11, 16) + " 到店");
+                } else {
+                    long l = System.currentTimeMillis() + 86400000;
+                    String time = SystemUtil.getTime(l);
+                    LogUtil.d("devon", "-----------" + time + "-------------");
+                    String data = time.substring(0, 11);
+                    takeTime = data + hourMinute + ":00";
+                    tvTakeYourselfTime.setText("大约" + takeTime.substring(11, 16) + "到店");
+                }
+
+                paramMap.put("selfTime", takeTime);
+                try {
+                    paramJson.put("selfTime", takeTime);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+    }
+
+    private void showActImage(TextView tvEnjoyAct, ValidActivityListBean validActivityListBean) {
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
+        switch (validActivityListBean.activityType) {
+            case 1:
+                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_reduce), null, null, null);
+                tvEnjoyAct.setText("满减优惠");
+                break;
+//            case 2:
+//                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_fracture), null, null, null);
+//                tvEnjoyAct.setText("打折优惠");
+//                break;
+//            case 4:
+//                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_special), null, null, null);
+//                tvEnjoyAct.setText("特价优惠");
+//                break;
+            case 5:
+                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_free), null, null, null);
+                tvEnjoyAct.setText("减免运费");
+                break;
+            case 7:
+                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_free), null, null, null);
+                tvEnjoyAct.setText("减免运费");
+                break;
+//            case 8:
+//                tvEnjoyAct.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_new), null, null, null);
+//                tvEnjoyAct.setText("首单优惠");
+//                break;
+        }
     }
 
     private void fillOrderView() {
@@ -420,19 +534,26 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 tvJustSendNameAndMobile.setVisibility(View.GONE);
             }
         } else {
+            String gender;
+            if (shopCartBean.userAddressGender == null) {
+                gender = "先生";
+            } else {
+                gender = shopCartBean.userAddressGender == 0 ? "女士" : "先生";
+            }
 
             if (isSuportSelf) {
                 tvSendAddressDetail.setText(shopCartBean.userAddress + shopCartBean.address);
-                tvSendNameAndMobile.setText(shopCartBean.userName + "     " + shopCartBean.userMobile);
+                tvSendNameAndMobile.setText(shopCartBean.userName + " " + gender + "     " + shopCartBean.userPhone);
                 tvSendNameAndMobile.setVisibility(View.VISIBLE);
             } else {
                 tvJustSendAddressDetail.setText(shopCartBean.userAddress + shopCartBean.address);
-                tvJustSendNameAndMobile.setText(shopCartBean.userName + "     " + shopCartBean.userMobile);
+                tvJustSendNameAndMobile.setText(shopCartBean.userName + " " + gender + "     " + shopCartBean.userPhone);
                 tvJustSendNameAndMobile.setVisibility(View.VISIBLE);
             }
         }
 
-
+        tvPrompt.setVisibility(TextUtils.isEmpty(shopCartBean.cartTips) ? View.GONE : View.VISIBLE);
+        tvPrompt.setText(shopCartBean.cartTips);
 //        if (isSuportSelf) {
 //            tvSendAddressTag.setVisibility(shopCartBean.userAddressTag == null || shopCartBean.userAddressTag < 0 || shopCartBean.userAddressTag > 3 ? View.GONE : View.VISIBLE);
 //        } else {
@@ -465,8 +586,7 @@ public class SubmitOrderActivity extends ToolBarActivity {
 //                tvJustSendAddressDetail.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.icon_company), null, null, null);
 //                tvJustSendAddressDetail.setCompoundDrawablePadding(8);
             } else if (shopCartBean.userAddressTag == 3) {
-
-                CenteredImageSpan span = new CenteredImageSpan(this, R.drawable.icon_home);
+                CenteredImageSpan span = new CenteredImageSpan(this, R.drawable.icon_school);
                 SpannableString ss = new SpannableString("  " + shopCartBean.userAddress + shopCartBean.address);
                 ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                 tvSendAddressDetail.setText(ss);
@@ -480,32 +600,64 @@ public class SubmitOrderActivity extends ToolBarActivity {
             }
         }
 
+        if (!suportSelf) {
+            deliveryFee = shopCartBean.deliveryFee;
+        }
+
 //        tvBusinessToTake.setVisibility(suportSelf ? View.VISIBLE : View.GONE);
         tvBusinessIsCharge.setVisibility(suportSelf ? View.GONE : View.VISIBLE);
-        tvBusinessIsCharge.setText(shopCartBean.isDeliver == 0 ? "快车转送" : "商家配送");
-        tvBusinessIsCharge.setTextColor(shopCartBean.isDeliver == 0 ? getResources().getColor(R.color.white) : getResources().getColor(R.color.bg_44be99));
-        tvBusinessIsCharge.setBackgroundResource(shopCartBean.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_44be99);
+        tvBusinessIsCharge.setText(shopCartBean.isDeliver == 0 ? "快车专送" : "商家配送");
+        tvBusinessIsCharge.setTextColor(shopCartBean.isDeliver == 0 ? getResources().getColor(R.color.white) : getResources().getColor(R.color.text_666666));
+        tvBusinessIsCharge.setBackgroundResource(shopCartBean.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_666666);
 
-        x.image().bind(ivBusinessLogo, UrlConstant.ImageBaseUrl + shopCartBean.businessImg);
+        x.image().bind(ivBusinessLogo, UrlConstant.ImageBaseUrl + shopCartBean.businessImg, NetConfig.optionsLogoImage);
         tvBusinessName.setText(shopCartBean.businessName);
-        tvPackagePrice.setText("¥" + shopCartBean.totalPackageFee);
-        tvSendPrice.setText("¥" + shopCartBean.deliveryFee);
-        tvCouponPrice.setText("¥" + shopCartBean.offAmount);
-        tvSubPrice.setText("¥" + shopCartBean.totalPay);
-        tvTotalPrice.setText("¥" + shopCartBean.totalPay);
-        tvDiscountPrice.setText("为您节省¥" + shopCartBean.offAmount);
-
+        tvPackagePrice.setText("¥" + shopCartBean.totalPackageFee.stripTrailingZeros().toPlainString());
+        tvSendPrice.setText("¥" + shopCartBean.deliveryFee.stripTrailingZeros().toPlainString());
+        tvCouponPrice.setText("¥" + shopCartBean.offAmount.stripTrailingZeros().toPlainString());
+        tvSubPrice.setText("¥" + shopCartBean.totalPay.stripTrailingZeros().toPlainString());
+        tvTotalPrice.setText("¥" + shopCartBean.totalPay.stripTrailingZeros().toPlainString());
 
         tvRedPacket.setText(TextUtils.isEmpty(userRedPrice) ? "" : "¥" + userRedPrice);
         tvCashCoupon.setText(TextUtils.isEmpty(userCouponPrice) ? "" : "¥" + userCouponPrice);
         tvTakeAddress.setText(shopCartBean.businessAddr);
         float distancM = AMapUtils.calculateLineDistance(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), new LatLng(Double.valueOf(shopCartBean.businessAddressLat), Double.valueOf(shopCartBean.businessAddressLng)));
         tvDistanceToYou.setText("商家距离当前位置" + (distancM < 1000 ? String.format("%.2f", distancM) + "m" : String.format("%.2f", distancM / 1000f) + "km"));
-        tvEatSavePackPrice.setText("为您节省餐盒费" + shopCartBean.totalPackageFee + "元");
+        if (suportSelf) {
+            if (eatInBusiness == 0) {
+                totalPackageFee = shopCartBean.totalPackageFee;
+                tvEatSavePackPrice.setText("为您节省餐盒费" + shopCartBean.totalPackageFee.stripTrailingZeros().toPlainString() + "元");
+                tvDiscountPriceDetail.setText("优惠¥" + shopCartBean.offAmount.stripTrailingZeros().toPlainString() + "+ 省配送费¥" + deliveryFee.stripTrailingZeros().toPlainString());
+                tvDiscountPrice.setText("为您节省¥" + shopCartBean.offAmount.add(deliveryFee).stripTrailingZeros().toPlainString());
+            } else {
+                tvDiscountPriceDetail.setText("优惠¥" + shopCartBean.offAmount.stripTrailingZeros().toPlainString() + "+ 省配送费¥" + deliveryFee.stripTrailingZeros().toPlainString() + "+ 省餐盒费¥" + totalPackageFee.stripTrailingZeros().toPlainString());
+                tvDiscountPrice.setText("为您节省¥" + shopCartBean.offAmount.add(deliveryFee).add(totalPackageFee).stripTrailingZeros().toPlainString());
+            }
+        } else {
+            tvDiscountPrice.setText("为您节省¥" + shopCartBean.offAmount.stripTrailingZeros().toPlainString());
+        }
 
         isSetText = true;
-        etTakeYourselfMobile.setText(shopCartBean.selfMobile);
+//        etTakeYourselfMobile.setText(shopCartBean.selfMobile);
         etTakeYourselfMobile.setCursorVisible(false);
+
+        llContainAct.removeAllViews();
+        if (shopCartBean.validActivityList != null && shopCartBean.validActivityList.size() > 0) {
+            for (int i = 0; i < shopCartBean.validActivityList.size(); i++) {
+                View view = LayoutInflater.from(this).inflate(R.layout.item_order_act, null);
+                TextView tvEnjoyAct = view.findViewById(R.id.tv_enjoy_act);
+                TextView tvEnjoyPrice = view.findViewById(R.id.tv_enjoy_price);
+                if (shopCartBean.validActivityList.get(i).activityType == 1 ||
+                        shopCartBean.validActivityList.get(i).activityType == 5 ||
+                        shopCartBean.validActivityList.get(i).activityType == 7) {
+                    showActImage(tvEnjoyAct, shopCartBean.validActivityList.get(i));
+                    tvEnjoyPrice.setText("- ¥ " + shopCartBean.validActivityList.get(i).less.stripTrailingZeros().toPlainString());
+                    llContainAct.addView(view);
+                }
+            }
+        }
+
+
     }
 
     private void dealOrderGoods() {
@@ -636,10 +788,11 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 rlEatTakeOut.setVisibility(View.VISIBLE);
                 suportSelf = true;
                 tvBusinessToTake.setVisibility(View.VISIBLE);
-                tvDiscountPriceDetail.setVisibility(View.GONE);
+                tvDiscountPriceDetail.setVisibility(View.VISIBLE);
                 if (isFromCart) {
                     try {
                         paramJson.put("suportSelf", suportSelf + "");
+                        paramJson.put("selfTime", takeTime);
                         SharePreferenceUtil.getInstance().putStringValue("paramJson", paramJson.toString());
                         requestFromCartOrderInfo();
                     } catch (JSONException e) {
@@ -647,6 +800,7 @@ public class SubmitOrderActivity extends ToolBarActivity {
                     }
                 } else {
                     paramMap.put("suportSelf", suportSelf + "");
+                    paramMap.put("selfTime", takeTime);
                     requestGetOrderInfo();
                 }
 
@@ -660,18 +814,20 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 rlEatTakeOut.setVisibility(View.GONE);
                 suportSelf = false;
                 tvBusinessToTake.setVisibility(View.GONE);
-                tvDiscountPriceDetail.setVisibility(View.VISIBLE);
+                tvDiscountPriceDetail.setVisibility(View.GONE);
 
                 if (isFromCart) {
                     try {
-                        paramJson.put("suportSelf", suportSelf + "");
+                        paramJson.put("suportSelf", TextUtils.isEmpty(shopCartBean.userAddressId) ? "" : suportSelf + "");
+                        paramJson.put("selfTime", "");
                         SharePreferenceUtil.getInstance().putStringValue("paramJson", paramJson.toString());
                         requestFromCartOrderInfo();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 } else {
-                    paramMap.put("suportSelf", suportSelf + "");
+                    paramMap.put("suportSelf", TextUtils.isEmpty(shopCartBean.userAddressId) ? "" : suportSelf + "");
+                    paramMap.put("selfTime", "");
                     requestGetOrderInfo();
                 }
                 break;
@@ -699,12 +855,15 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 break;
             case R.id.rl_just_send_time:
                 sendTimeChooseDialog.show();
+                sendTimeChooseDialog.initTodayTime(shopCartBean.disTime, businessInfo.deliveryRange);
                 break;
             case R.id.rl_send_time:
                 sendTimeChooseDialog.show();
+                sendTimeChooseDialog.initTodayTime(shopCartBean.disTime, businessInfo.deliveryRange);
                 break;
             case R.id.ll_take_yourself_time:
                 takeimeChooseDialog.show();
+                takeimeChooseDialog.initTodayTime(shopCartBean.disTime);
                 break;
             case R.id.cb_agree_deal:
                 break;
@@ -793,8 +952,13 @@ public class SubmitOrderActivity extends ToolBarActivity {
                 startActivityForResult(mIntent, REQUESTCODE_REMARK);
                 break;
             case R.id.tv_submit_order:
-                if (TextUtils.isEmpty(shopCartBean.userAddressId)) {
+                if (TextUtils.isEmpty(shopCartBean.userAddressId) && !suportSelf) {
                     ToastUtil.showToast("请先选择地址");
+                    return;
+                }
+
+                if (TextUtils.isEmpty(etTakeYourselfMobile.getText().toString().trim()) && suportSelf) {
+                    ToastUtil.showToast("请先填写自取电话");
                     return;
                 }
 

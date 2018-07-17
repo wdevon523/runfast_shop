@@ -80,7 +80,7 @@ public class ChangeNameActivity extends ToolBarActivity {
         switch (mFlags) {
             case 0:
                 if (!TextUtils.isEmpty(mInfo)) {
-                    CustomApplication.getRetrofitNew().updateUserInfo(mInfo, mUserInfo.email).enqueue(new MyCallback<String>() {
+                    CustomApplication.getRetrofitNew().updateUserNick(mInfo).enqueue(new MyCallback<String>() {
                         @Override
                         public void onSuccessResponse(Call<String> call, Response<String> response) {
                             dealChange(response.body());
@@ -98,7 +98,7 @@ public class ChangeNameActivity extends ToolBarActivity {
                 break;
             case 1:
                 if (ValidateUtil.isEmail(mInfo)) {
-                    CustomApplication.getRetrofitNew().updateUserInfo(mUserInfo.nickname, mInfo).enqueue(new MyCallback<String>() {
+                    CustomApplication.getRetrofitNew().updateUserEmail(mInfo).enqueue(new MyCallback<String>() {
                         @Override
                         public void onSuccessResponse(Call<String> call, Response<String> response) {
                             dealChange(response.body());

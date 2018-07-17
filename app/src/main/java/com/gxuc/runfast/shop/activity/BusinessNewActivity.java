@@ -61,6 +61,7 @@ import com.gxuc.runfast.shop.bean.SpecSelectInfoAll;
 import com.gxuc.runfast.shop.bean.SubOptionInfo;
 import com.gxuc.runfast.shop.bean.TypeBean;
 import com.gxuc.runfast.shop.bean.home.BusinessEvent;
+import com.gxuc.runfast.shop.bean.home.NearByBusinessInfo;
 import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.behaviors.AppBarBehavior;
 import com.gxuc.runfast.shop.config.NetConfig;
@@ -71,8 +72,8 @@ import com.gxuc.runfast.shop.fragment.FirstFragment;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
-import com.gxuc.runfast.shop.util.BlurBitmapUtil;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
+import com.gxuc.runfast.shop.util.FastBlurUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
@@ -80,6 +81,7 @@ import com.gxuc.runfast.shop.view.AddWidget;
 import com.gxuc.runfast.shop.view.AppBarStateChangeListener;
 import com.gxuc.runfast.shop.view.BusinessCouponDialog;
 import com.gxuc.runfast.shop.view.FlowRadioGroup;
+import com.gxuc.runfast.shop.view.SameBusinessDialog;
 import com.gxuc.runfast.shop.view.ShopCarView;
 import com.shizhefei.view.indicator.IndicatorViewPager;
 import com.shizhefei.view.indicator.ScrollIndicatorView;
@@ -96,6 +98,7 @@ import org.xutils.x;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -115,6 +118,10 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     RoundedImageView ivShop;
     @BindView(R.id.iv_favorite)
     ImageView ivFavorite;
+    @BindView(R.id.ll_search)
+    LinearLayout llSearch;
+    @BindView(R.id.iv_menu_more)
+    ImageView ivMenuMore;
     @BindView(R.id.tv_shop_name)
     TextView tvShopName;
     @BindView(R.id.tv_shop_describe)
@@ -123,8 +130,10 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     TextView tvShopNotice;
     @BindView(R.id.tv_send_type)
     TextView tvSendType;
-    @BindView(R.id.tv_get_coupon)
-    TextView tvGetCoupon;
+    @BindView(R.id.ll_get_coupon)
+    LinearLayout llGetCoupon;
+    @BindView(R.id.tv_max_coupon)
+    TextView tvMaxCoupon;
     @BindView(R.id.ll_contain_act)
     LinearLayout llContainAct;
     @BindView(R.id.appbar)
@@ -155,6 +164,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private TextView tvSpecTitle;
     private TextView tvSpecCount;
     private TextView tvSpecPrice;
+    private TextView tvSpecOldPrice;
     private LinearLayout llContainSpec;
     private FoodBean foodBeanOperation;
     private int standardId;
@@ -173,6 +183,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private TextView tvProductPrice;
     private TextView tvOldProductPrice;
     private TextView tvProductGiftName;
+    private TextView tvAct;
     private TextView tvProductContent;
     private LinearLayout llProductAct;
     private TextView tvProductDiscount;
@@ -191,6 +202,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private Bitmap blurBitmap;
     private ImageView ivSubNum;
     private ImageView ivAddNum;
+    private String actFullLessStr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,6 +221,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         super.onResume();
         userInfo = UserService.getUserInfo(this);
         requestBufisnessGoods();
+        requestBusinessCoupon();
     }
 
     @Override
@@ -229,6 +242,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 
         rootview = (CoordinatorLayout) findViewById(R.id.rootview);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        toolbar.setNavigationIcon(R.drawable.icon_back_white);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -262,12 +276,20 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 if (state == State.EXPANDED) {
                     toolbar.setBackgroundResource(R.color.transparent);
                     toolBarBusinessName.setText("");
+                    toolbar.setNavigationIcon(R.drawable.icon_back_white);
+                    ivFavorite.setImageResource((businessInfo != null && businessInfo.enshrined) ? R.drawable.icon_favorite : R.drawable.icon_not_favorite);
+                    ivMenuMore.setImageResource(R.drawable.icon_share_business);
+                    llSearch.setVisibility(View.GONE);
                     //展开状态
 //                    ivBack.setImageResource(R.drawable.icon_back_map);
 //                    ivBack.setAlpha(1f);
                 } else if (state == State.COLLAPSED) {
-                    toolbar.setBackground(new BitmapDrawable(blurBitmap));
-//                    toolbar.setBackgroundResource(R.color.black);
+//                    toolbar.setBackground(new BitmapDrawable(blurBitmap));
+                    toolbar.setBackgroundResource(R.color.white);
+                    toolbar.setNavigationIcon(R.drawable.icon_back_gray);
+                    ivFavorite.setImageResource((businessInfo != null && businessInfo.enshrined) ? R.drawable.icon_favorite : R.drawable.icon_not_favorite_good);
+                    ivMenuMore.setImageResource(R.drawable.icon_share_good);
+                    llSearch.setVisibility(View.VISIBLE);
 //                    toolbar.setTitle(businessInfo.name);
 //                    toolBarBusinessName.setText(businessInfo.name);
 //                    ivBack.setImageResource(R.drawable.icon_back_map);
@@ -275,6 +297,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 //                    ivBack.setAlpha(1f);
                 } else {
                     toolbar.setBackgroundResource(R.color.transparent);
+                    llSearch.setVisibility(View.GONE);
 //                    business_title.setText("");
 //                    //中间状态
 //                    Log.d("STATE", "verticalOffset =" + verticalOffset);
@@ -292,6 +315,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         tvProductSale = (TextView) findViewById(R.id.tv_food_sale);
         tvProductPrice = (TextView) findViewById(R.id.tv_food_price);
         tvOldProductPrice = (TextView) findViewById(R.id.tv_old_product_price);
+        tvAct = (TextView) findViewById(R.id.tv_act);
         tvProductGiftName = (TextView) findViewById(R.id.tv_product_gift_name);
         tvProductContent = (TextView) findViewById(R.id.tv_food_content);
 
@@ -317,6 +341,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         ImageView ivCloseSpec = (ImageView) view.findViewById(R.id.iv_close_spec);
         llContainSpec = (LinearLayout) view.findViewById(R.id.ll_contain_spec);
         tvSpecPrice = (TextView) view.findViewById(R.id.tv_spec_price);
+        tvSpecOldPrice = (TextView) view.findViewById(R.id.tv_spec_old_price);
         tvSpecGroup = (TextView) view.findViewById(R.id.tv_spec_group);
         tvSpecCount = (TextView) view.findViewById(R.id.tv_spec_count);
         ivAddNum = (ImageView) view.findViewById(R.id.iv_add_num);
@@ -334,10 +359,10 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     @Override
     public void onDialogClick(int position) {
         int couponId = businessCouponInfoList.get(position).id;
-        requestReceiveBusinessCoupon(couponId);
+        requestReceiveBusinessCoupon(position, couponId);
     }
 
-    private void requestReceiveBusinessCoupon(int couponId) {
+    private void requestReceiveBusinessCoupon(final int position, int couponId) {
 
         CustomApplication.getRetrofitNew().receiverBusinessCoupon(couponId).enqueue(new MyCallback<String>() {
             @Override
@@ -347,7 +372,10 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
                         ToastUtil.showToast("领取成功");
-                        businessCouponDialog.dismiss();
+//                        businessCouponDialog.dismiss();
+                        businessCouponInfoList.get(position).picked = true;
+                        businessCouponDialog.setData(businessCouponInfoList);
+
                     } else {
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));
                     }
@@ -371,7 +399,6 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
-                LogUtil.d("wdevon", "BusinessDetail------" + body);
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
@@ -395,24 +422,24 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     }
 
     private void fillBusinessDetailView() {
-        if (!businessInfo.isopen) {
-            showWarnDialog();
+        if (businessInfo.isopen != 1) {
+//            showWarnDialog();
+            requestSameBusiness();
         }
+
+        carAdapter.setIsOpen(businessInfo.isopen);
 
         tvShopName.setText(businessInfo.name);
 
-
-//            ivShopBg.setImageBitmap(BlurBuilder.blur(getApplicationContext(), myBitmap));
-
-//        new DownloadImageTask().execute(UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath);
-
-
-        x.image().bind(ivShopBg, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath, NetConfig.optionsLogoImage, new Callback.CommonCallback<Drawable>() {
+        x.image().bind(ivShopBg, UrlConstant.ImageBaseUrl + businessInfo.imgPath, NetConfig.optionsLogoImage, new Callback.CommonCallback<Drawable>() {
             @Override
             public void onSuccess(Drawable result) {
                 Bitmap bitmap = ((BitmapDrawable) result).getBitmap();
-                blurBitmap = BlurBitmapUtil.blurBitmap(BusinessNewActivity.this, bitmap, 2);
+//                blurBitmap = BlurBitmapUtil.blurBitmap(BusinessNewActivity.this, bitmap, 20f);
+                blurBitmap = FastBlurUtil.toBlur(bitmap, 5);
+                ivShopBg.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 ivShopBg.setImageBitmap(blurBitmap);
+//                ivShopBg.setAlpha(0.8f);
             }
 
             @Override
@@ -430,8 +457,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
             }
         });
         x.image().bind(ivShop, UrlConstant.ImageBaseUrl + businessInfo.mini_imgPath);
-//        ivShopBg.setAlpha(0.8f);
-        String shopDescrib = "¥" + (businessInfo.startPay == null ? 0 : businessInfo.startPay.stripTrailingZeros().toPlainString()) + "起送 | 配送费¥" + businessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + " | 月售" + (businessInfo.salesnum == null ? 0 : businessInfo.salesnum);
+        String shopDescrib = "¥" + (businessInfo.startPay == null ? 0 : businessInfo.startPay.stripTrailingZeros().toPlainString()) + "起送 | 配送费¥" + businessInfo.deliveryFee.stripTrailingZeros().toPlainString() + " | 月售" + (businessInfo.salesnum == null ? 0 : businessInfo.salesnum);
         int one = shopDescrib.indexOf("|");
         int two = shopDescrib.lastIndexOf("|");
 //        tvShopDescribe.setText(shopDescrib);
@@ -443,8 +469,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 
         tvShopDescribe.setText(builder);
 
-        tvShopNotice.setVisibility(TextUtils.isEmpty(businessInfo.content) ? View.GONE : View.VISIBLE);
-        tvShopNotice.setText(businessInfo.content);
+//        tvShopNotice.setVisibility(TextUtils.isEmpty(businessInfo.content) ? View.GONE : View.VISIBLE);
+        tvShopNotice.setText(TextUtils.isEmpty(businessInfo.content) ? "欢迎光临，高峰期请提前下单，谢谢" : businessInfo.content);
         if (businessInfo.isDeliver == 0) {
             tvSendType.setText("快车专送·约" + businessInfo.deliveryDuration + "分钟");
         } else {
@@ -459,7 +485,18 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 View view = LayoutInflater.from(this).inflate(R.layout.item_business_act, null);
                 ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
                 TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
-                tvAct.setText(businessInfo.activityList.get(i).name);
+                if (businessInfo.activityList.get(i).ptype == 1) {
+                    actFullLessStr = "";
+                    for (int j = 0; j < businessInfo.activityList.get(i).fullLessList.size(); j++) {
+                        actFullLessStr += ("满" + businessInfo.activityList.get(i).fullLessList.get(j).full.stripTrailingZeros().toPlainString() + "减" +
+                                businessInfo.activityList.get(i).fullLessList.get(j).less.stripTrailingZeros().toPlainString() + ", ");
+                    }
+                    actFullLessStr = actFullLessStr.substring(0, actFullLessStr.length() - 2);
+                    tvAct.setText(actFullLessStr);
+
+                } else {
+                    tvAct.setText(businessInfo.activityList.get(i).name);
+                }
                 showActImage(ivAct, businessInfo.activityList.get(i));
                 if (i == 0) {
                     TextView tvActAll = (TextView) view.findViewById(R.id.tv_act_all);
@@ -502,7 +539,60 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         });
 
         ivFavorite.setOnClickListener(this);
-        tvGetCoupon.setOnClickListener(this);
+        llGetCoupon.setOnClickListener(this);
+    }
+
+    private void requestSameBusiness() {
+        double lat = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT));
+        double lon = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON));
+        String agentId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
+        IdentityHashMap<String, String> catalogMap = new IdentityHashMap<>();
+        catalogMap.put(new String("catalogId"), businessInfo.mainTypeId);
+
+        CustomApplication.getRetrofitNew().getNearByBusiness(agentId, lon, lat, 1, new IdentityHashMap<String, Integer>(), new IdentityHashMap<String, Integer>(), catalogMap, 0, 10).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray jsonArray = jsonObject.optJSONArray("data");
+                        if (jsonArray != null && jsonArray.length() > 0) {
+                            dealSameBusiness(jsonArray.toString());
+                        } else {
+                            SameBusinessDialog sameBusinessDialog = new SameBusinessDialog(BusinessNewActivity.this, null);
+                            sameBusinessDialog.show();
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private void dealSameBusiness(String data) {
+        ArrayList<NearByBusinessInfo> nearByBusinessInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<NearByBusinessInfo>>() {
+        }.getType());
+        SameBusinessDialog sameBusinessDialog = new SameBusinessDialog(this, new SameBusinessDialog.OnDialogClickListener() {
+            @Override
+            public void onDialogClick(int position, NearByBusinessInfo nearByBusinessInfo) {
+                Intent intent = new Intent(BusinessNewActivity.this, BusinessNewActivity.class);
+                intent.putExtra("businessId", nearByBusinessInfo.id);
+                startActivity(intent);
+                finish();
+            }
+        });
+        sameBusinessDialog.show();
+        sameBusinessDialog.setData(nearByBusinessInfoList);
     }
 
     private void showWarnDialog() {
@@ -524,7 +614,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     }
 
     private void showActImage(ImageView ivAct, BusinessEvent businessEvent) {
-        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
         switch (businessEvent.ptype) {
             case 1:
                 ivAct.setImageResource(R.drawable.icon_reduce);
@@ -544,6 +634,21 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
             case 6:
                 ivAct.setImageResource(R.drawable.icon_coupon);
                 break;
+            case 7:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 8:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 9:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 10:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 11:
+                ivAct.setImageResource(R.drawable.icon_return);
+                break;
         }
     }
 
@@ -561,6 +666,8 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         if (userInfo != null && jsonArray.length() > 0) {
                             requestShopCart();
                         } else {
+                            shopCarView.updateAmount(BigDecimal.ZERO, businessInfo.deliveryFee, businessInfo.startPay == null ? new
+                                    BigDecimal(0) : businessInfo.startPay, businessInfo.suportSelf,businessInfo.isopen);
                             shopCarView.showBadge(0);
                         }
                     } else {
@@ -616,7 +723,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         foodBean.setPtype(jsonObject.optInt("ptype"));
                         foodBean.setShowprice(jsonObject.optString("showprice"));
                         foodBean.setIsonly(jsonObject.optInt("isonly"));
-                        foodBean.setPrice(new BigDecimal(TextUtils.equals("null", jsonObject.optString("price")) ? "0" : jsonObject.optString("price")));
+//                        foodBean.setPrice(new BigDecimal(TextUtils.equals("null", jsonObject.optString("price")) ? "0" : jsonObject.optString("price")));
 //                        foodBean.setDisprice(jsonObject.optString("disprice"));
                         foodBean.setSalesnum(jsonObject.optInt("salesnum"));
                         foodBean.setBusinessId(jsonObject.optInt("businessId"));
@@ -631,7 +738,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         ArrayList<GoodsSellStandardInfo> goodsSellStandardList = JsonUtil.fromJson(jsonObject.optString("goodsSellStandardList"), new TypeToken<ArrayList<GoodsSellStandardInfo>>() {
                         }.getType());
                         foodBean.setGoodsSellStandardList(goodsSellStandardList);
-                        foodBean.setDisprice(goodsSellStandardList.get(0).disprice == null ? foodBean.getPrice() : goodsSellStandardList.get(0).disprice);
+
+                        foodBean.setPrice(goodsSellStandardList.get(0).price == null || goodsSellStandardList.get(0).price.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ZERO : goodsSellStandardList.get(0).price);
+                        foodBean.setDisprice(goodsSellStandardList.get(0).disprice == null || goodsSellStandardList.get(0).disprice.compareTo(BigDecimal.ZERO) == 0 ? foodBean.getPrice() : goodsSellStandardList.get(0).disprice);
                         ArrayList<GoodsSellOptionInfo> goodsSellOptionList = JsonUtil.fromJson(jsonObject.optString("goodsSellOptionList"), new TypeToken<ArrayList<GoodsSellOptionInfo>>() {
                         }.getType());
                         foodBean.setGoodsSellOptionList(goodsSellOptionList);
@@ -699,15 +808,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 dealShopCart();
             }
 
-            if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
-                shopCarView.cart_notice.setVisibility(View.GONE);
-            } else {
-                shopCarView.cart_notice.setVisibility(TextUtils.isEmpty(shopCartBean.cartTips) ? View.GONE : View.VISIBLE);
-            }
-            shopCartNotice.setVisibility(TextUtils.isEmpty(shopCartBean.cartTips) ? View.GONE : View.VISIBLE);
-            shopCartNotice.setText(shopCartBean.cartTips);
-            shopCarView.cart_notice.setText(shopCartBean.cartTips);
-
+            showFullLessNotice();
 
         } else {
             clearCar();
@@ -729,6 +830,17 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 addWidgetDetail.setData(this, foodBeens.get(goodClickPosition));
             }
         }
+    }
+
+    private void showFullLessNotice() {
+        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            shopCarView.cart_notice.setVisibility(View.GONE);
+        } else {
+            shopCarView.cart_notice.setVisibility(TextUtils.isEmpty(shopCartBean.cartTips) && TextUtils.isEmpty(actFullLessStr) ? View.GONE : View.VISIBLE);
+        }
+        shopCartNotice.setVisibility(TextUtils.isEmpty(shopCartBean.cartTips) && TextUtils.isEmpty(actFullLessStr) ? View.GONE : View.VISIBLE);
+        shopCartNotice.setText(TextUtils.isEmpty(shopCartBean.cartTips) ? actFullLessStr : shopCartBean.cartTips);
+        shopCarView.cart_notice.setText(TextUtils.isEmpty(shopCartBean.cartTips) ? actFullLessStr : shopCartBean.cartTips);
     }
 
     private void dealShopCart() {
@@ -756,7 +868,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 //                        foodSpecBean.setIsonly(foodBeens.get(i).getIsonly());
                         foodSpecBean.setPrice(shopCartBean.cartItems.get(j).price);
 //                        foodBean.setDisprice(jsonObject.optString("disprice"));
-                        foodSpecBean.setDisprice(shopCartBean.cartItems.get(j).disprice == null ? foodSpecBean.getPrice() : shopCartBean.cartItems.get(j).disprice);
+                        foodSpecBean.setDisprice(shopCartBean.cartItems.get(j).disprice == null || shopCartBean.cartItems.get(j).disprice.compareTo(BigDecimal.ZERO) == 0 ? foodSpecBean.getPrice() : shopCartBean.cartItems.get(j).disprice);
                         foodSpecBean.setSalesnum(foodBeens.get(i).getSalesnum());
                         foodSpecBean.setBusinessId(foodBeens.get(i).getBusinessId());
                         foodSpecBean.setBusinessName(foodBeens.get(i).getBusinessName());
@@ -777,7 +889,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         foodSpecBean.getSpecInfo().num = shopCartBean.cartItems.get(j).num;
                         foodSpecBean.getSpecInfo().standardId = shopCartBean.cartItems.get(j).key.standarId;
                         foodSpecBean.getSpecInfo().standarOptionName = shopCartBean.cartItems.get(j).standarOptionName;
-                        foodSpecBean.getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice + "");
+                        foodSpecBean.getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice);
 //                        foodSpecBean.getSpecInfo().isLimited = shopCartBusinessInfoList.get(j).key.standarId;
 
                         foodSpecBean.getSpecInfo().optionIdMap = new HashMap<>();
@@ -820,7 +932,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                     } else {
                         foodBeens.get(i).setSelectCount(shopCartBean.cartItems.get(j).num);
                         foodBeens.get(i).getSpecInfo().num = shopCartBean.cartItems.get(j).num;
-                        foodBeens.get(i).getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice + "");
+                        foodBeens.get(i).getSpecInfo().totalPrice = shopCartBean.cartItems.get(j).totalDisprice == null ? shopCartBean.cartItems.get(j).totalPrice : (shopCartBean.cartItems.get(j).totalDisprice);
                         boolean isContain = false;
                         for (int k = 0; k < carFoods.size(); k++) {
                             if (carFoods.get(k).getId() == foodBeens.get(i).getId()) {
@@ -855,9 +967,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 //            totalNum += shopCartBean.cartItems.get(i).num;
 //        }
 //        shopCarView.showBadge(totalNum);
-        shopCarView.updateAmount(shopCartBean.totalPay, businessInfo.startPay == null ? new
+        shopCarView.updateAmount(shopCartBean.totalPay, businessInfo.deliveryFee, businessInfo.startPay == null ? new
 
-                BigDecimal(0) : businessInfo.startPay);
+                BigDecimal(0) : businessInfo.startPay, businessInfo.suportSelf, businessInfo.isopen);
 
     }
 
@@ -947,7 +1059,17 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
             specSelectInfo.isLimited = goodsSellStandardInfo.isLimited;
             specSelectInfo.limitNum = goodsSellStandardInfo.limitNum;
 //            ToastUtil.showToast("--goodId--" + foodBeanOperation.getId());
-            tvSpecPrice.setText(goodsSellStandardInfo.price + "");
+
+            if (goodsSellStandardInfo.disprice == null || goodsSellStandardInfo.disprice.compareTo(BigDecimal.ZERO) == 0) {
+                tvSpecPrice.setText(goodsSellStandardInfo.price + "");
+                tvSpecOldPrice.setVisibility(View.GONE);
+            } else {
+                tvSpecOldPrice.setVisibility(View.VISIBLE);
+                tvSpecPrice.setText(goodsSellStandardInfo.disprice + "");
+                tvSpecOldPrice.setText("¥" + goodsSellStandardInfo.price);
+                tvSpecOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
 
 //            if (specSelectInfo.optionIdMap == null || specSelectInfo.optionIdMap.size() == 0) {
 //                return;
@@ -1161,9 +1283,14 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                 //收藏按钮
                 requestFavorite();
                 break;
-            case R.id.tv_get_coupon:
+            case R.id.ll_get_coupon:
                 //领券
-                requestBusinessCoupon();
+                if (businessCouponInfoList != null && businessCouponInfoList.size() > 0) {
+                    businessCouponDialog.show();
+                    businessCouponDialog.setData(businessCouponInfoList);
+                } else {
+                    ToastUtil.showToast("暂无可领取优惠券");
+                }
                 break;
             case R.id.iv_close_spec:
                 //关闭规格dialog
@@ -1195,6 +1322,9 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     }
 
     private void requestBusinessCoupon() {
+        if (userInfo == null) {
+            return;
+        }
         CustomProgressDialog.startProgressDialog(this);
 
         CustomApplication.getRetrofitNew().getBusinessCoupon(businessId).enqueue(new MyCallback<String>() {
@@ -1210,9 +1340,11 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                             fillBusinessCouponDialog(data);
                         } else {
                             ToastUtil.showToast("暂无可领取优惠券");
+                            llGetCoupon.setVisibility(View.GONE);
                         }
                     } else {
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                        llGetCoupon.setVisibility(View.GONE);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -1231,12 +1363,23 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     private void fillBusinessCouponDialog(String data) {
         businessCouponInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<BusinessCouponInfo>>() {
         }.getType());
-
         if (businessCouponInfoList != null && businessCouponInfoList.size() > 0) {
-            businessCouponDialog.show();
-            businessCouponDialog.setData(businessCouponInfoList);
+            llGetCoupon.setVisibility(View.VISIBLE);
+            BigDecimal maxLess = BigDecimal.ZERO;
+            for (int i = 0; i < businessCouponInfoList.size(); i++) {
+                if (!TextUtils.isEmpty(businessCouponInfoList.get(i).redAmount)) {
+                    if (businessCouponInfoList.get(i).redAmount.contains(",")) {
+                        String[] split = businessCouponInfoList.get(i).redAmount.split(",");
+                        maxLess = new BigDecimal(split[1]).compareTo(maxLess) > 0 ? new BigDecimal(split[1]) : maxLess;
+                    } else {
+                        maxLess = new BigDecimal(businessCouponInfoList.get(i).redAmount).compareTo(maxLess) > 0 ? new BigDecimal(businessCouponInfoList.get(i).redAmount) : maxLess;
+                    }
+                }
+            }
+            tvMaxCoupon.setText(maxLess.stripTrailingZeros().toPlainString() + "");
         } else {
-            ToastUtil.showToast("暂无可领取优惠券");
+//            ToastUtil.showToast("暂无可领取优惠券");
+            llGetCoupon.setVisibility(View.GONE);
         }
 
     }
@@ -1618,7 +1761,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         firstFragment.getTypeAdapter().updateBadge(typeSelect);
 //        firstFragment.getFoodAdapter().notifyDataSetChanged();
         updatePackingPrice();
-        shopCarView.updateAmount(amount, businessInfo.startPay);
+        shopCarView.updateAmount(amount, businessInfo.deliveryFee, businessInfo.startPay, businessInfo.suportSelf, businessInfo.isopen);
     }
 
     private void dealCarSpec(FoodBean foodBean) {
@@ -1709,7 +1852,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         firstFragment.getTypeAdapter().updateBadge(typeSelect);
         firstFragment.getFoodAdapter().notifyDataSetChanged();
         updatePackingPrice();
-        shopCarView.updateAmount(amount, businessInfo.startPay);
+        shopCarView.updateAmount(amount, businessInfo.deliveryFee, businessInfo.startPay, businessInfo.suportSelf, businessInfo.isopen);
     }
 
     public void expendCut(View view) {
@@ -1778,12 +1921,22 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         shopCarView.showBadge(0);
         firstFragment.getTypeAdapter().updateBadge(new HashMap<String, Integer>());
         updatePackingPrice();
-        shopCarView.updateAmount(new BigDecimal(0), businessInfo.startPay);
+        shopCarView.updateAmount(new BigDecimal(0), businessInfo.deliveryFee, businessInfo.startPay, businessInfo.suportSelf, businessInfo.isopen);
         if (foodBeens.size() != 0) {
             addWidgetDetail.setData(this, firstFragment.getFoodAdapter().getItem(goodClickPosition));
             tvSpecNum.setText(foodBeens.get(goodClickPosition).getSelectCount() + "");
             tvSpecNum.setVisibility(foodBeens.get(goodClickPosition).getSelectCount() > 0 ? View.VISIBLE : View.GONE);
         }
+
+        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            shopCarView.cart_notice.setVisibility(View.GONE);
+        } else {
+            shopCarView.cart_notice.setVisibility(TextUtils.isEmpty(actFullLessStr) ? View.GONE : View.VISIBLE);
+        }
+        shopCartNotice.setVisibility(TextUtils.isEmpty(actFullLessStr) ? View.GONE : View.VISIBLE);
+        shopCartNotice.setText(actFullLessStr);
+        shopCarView.cart_notice.setText(actFullLessStr);
+
     }
 
     public void toShopDetail(View view) {
@@ -1822,7 +1975,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     }
 
     public void showGoodDetail(int position) {
-        if (!businessInfo.isopen) {
+        if (businessInfo.isopen != 1) {
             layoutSpec.setVisibility(View.GONE);
             addWidgetDetail.setVisibility(View.GONE);
         }
@@ -1848,7 +2001,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         rotateyAnimShow(layoutProductDetail);
         appbar.setVisibility(View.GONE);
 
-        if (!businessInfo.isopen) {
+        if (businessInfo.isopen != 1 || foodBeanDetail.getNum() == null || foodBeanDetail.getNum() == 0) {
             layoutSpec.setVisibility(View.GONE);
             addWidgetDetail.setVisibility(View.GONE);
         }
@@ -1861,7 +2014,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         tvProductSale.setText("月售" + foodBeanDetail.getSalesnum());
 //        tvProductPrice.setText(foodBeanDetail.getPrice() + "");
         tvProductContent.setText(foodBeanDetail.getContent());
-        x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + foodBeanDetail.getImgPath());
+        x.image().bind(ivGoodsHead, UrlConstant.ImageBaseUrl + foodBeanDetail.getImgPath(), NetConfig.optionsLogoImage);
 
 //        if (foodBeanDetail.getIslimited() == 1 || (!TextUtils.isEmpty(foodBeanDetail.getShowprice()) && !TextUtils.equals("null", foodBeanDetail.getShowprice()))) {
 //            llProductAct.setVisibility(View.VISIBLE);
@@ -1894,17 +2047,21 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
         if (foodBeanDetail.getGoodsSellStandardList().get(0).activityType != null) {
             if (foodBeanDetail.getGoodsSellStandardList().get(0).activityType == 2) {
                 actStr = foodBeanDetail.getGoodsSellStandardList().get(0).discount.multiply(new BigDecimal(10)).stripTrailingZeros().toPlainString() + "折";
+            } else if (foodBeanDetail.getGoodsSellStandardList().get(0).activityType == 4) {
+                actStr = "特价";
             }
         }
-
+        String limitStr = "";
         if (foodBeanDetail.getGoodsSellStandardList().get(0).isLimited != null) {
             if (foodBeanDetail.getGoodsSellStandardList().get(0).isLimited == 1) {
-                actStr += "每单限购" + foodBeanDetail.getGoodsSellStandardList().get(0).limitNum + "件";
+                limitStr += "每单限购" + foodBeanDetail.getGoodsSellStandardList().get(0).limitNum + "件";
             }
         }
+        tvAct.setVisibility(TextUtils.isEmpty(actStr) ? View.GONE : View.VISIBLE);
+        tvAct.setText(actStr);
 
-        tvProductGiftName.setVisibility(TextUtils.isEmpty(actStr) ? View.GONE : View.VISIBLE);
-        tvProductGiftName.setText(actStr);
+        tvProductGiftName.setVisibility(TextUtils.isEmpty(limitStr) ? View.GONE : View.VISIBLE);
+        tvProductGiftName.setText(limitStr);
 
         if (foodBeanDetail.getDisprice() != null && foodBeanDetail.getDisprice().compareTo(foodBeanDetail.getPrice()) != 0) {
             tvProductPrice.setText("" + foodBeanDetail.getDisprice());

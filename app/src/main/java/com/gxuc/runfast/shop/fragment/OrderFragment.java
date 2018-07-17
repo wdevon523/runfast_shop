@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ import com.gxuc.runfast.shop.adapter.OrderListAdapter;
 import com.gxuc.runfast.shop.bean.user.User;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.view.recyclerview.EmptyRecyclerView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
@@ -57,13 +59,14 @@ import retrofit2.Response;
  */
 public class OrderFragment extends Fragment implements OrderListAdapter.OnClickListener {
 
-//    @BindView(R.id.toolbar_title)
+    //    @BindView(R.id.toolbar_title)
 //    TextView toolbarTitle;
-
+    @BindView(R.id.iv_empty)
+    ImageView ivEmpty;
     @BindView(R.id.refreshLayout)
     SmartRefreshLayout smartRefreshLayout;
     @BindView(R.id.recycler_order)
-    RecyclerView recyclerView;
+    EmptyRecyclerView recyclerView;
 
     @BindView(R.id.ll_not_order)
     LinearLayout llNotOrder;
@@ -217,9 +220,11 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
-                    if (!body.contains("{\"relogin\":1}") && jsonObject.optBoolean("success")) {
-                        dealOrderList(jsonObject);
-                        llNotLogin.setVisibility(View.GONE);
+                    if (!body.contains("{\"relogin\":1}")) {
+                        if (jsonObject.optBoolean("success")) {
+                            dealOrderList(jsonObject);
+                            llNotLogin.setVisibility(View.GONE);
+                        }
                     } else {
                         mOrderInfos.clear();
                         orderListAdapter.notifyDataSetChanged();
@@ -227,7 +232,7 @@ public class OrderFragment extends Fragment implements OrderListAdapter.OnClickL
                         llNotOrder.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                     }
-
+                    recyclerView.setEmptyView(ivEmpty);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

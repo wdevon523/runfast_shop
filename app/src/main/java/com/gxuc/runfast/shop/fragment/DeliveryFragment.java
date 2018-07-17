@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.PayChannelActivity;
 import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
@@ -23,6 +24,7 @@ import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.PurchaseInfo;
 import com.gxuc.runfast.shop.bean.PurchaseOrderInfo;
 import com.gxuc.runfast.shop.bean.address.AddressBean;
+import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
@@ -134,6 +136,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
     private int goodsWeight = 5;
     private String lat;
     private String lng;
+    private String addressType;
 
     @Nullable
     @Override
@@ -169,24 +172,40 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
                 ((PurchasesActivity) getActivity()).setViewPagerCurrentItem(0);
                 break;
             case R.id.tv_where_from:
-                Intent intent = new Intent(getContext(), AddressSelectActivity.class);
-                intent.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(intent, 1001);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent intent = new Intent(getContext(), AddressSelectActivity.class);
+                    intent.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(intent, 1001);
+                }
                 break;
             case R.id.rl_where_from:
-                Intent intentFrom = new Intent(getContext(), AddressSelectActivity.class);
-                intentFrom.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(intentFrom, 1001);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent intentFrom = new Intent(getContext(), AddressSelectActivity.class);
+                    intentFrom.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(intentFrom, 1001);
+                }
                 break;
             case R.id.tv_where_to:
-                Intent data = new Intent(getContext(), AddressSelectActivity.class);
-                data.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(data, 1002);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent data = new Intent(getContext(), AddressSelectActivity.class);
+                    data.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(data, 1002);
+                }
                 break;
             case R.id.rl_where_to:
-                Intent intentTo = new Intent(getContext(), AddressSelectActivity.class);
-                intentTo.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(intentTo, 1002);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent intentTo = new Intent(getContext(), AddressSelectActivity.class);
+                    intentTo.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(intentTo, 1002);
+                }
                 break;
             case R.id.rl_choose_time:
                 timeChooseDialog.show();
@@ -275,7 +294,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
 
     private void requestDeliverInfo() {
 
-        if (addressInfoFrom == null || addressInfoTo == null || TextUtils.isEmpty(goodsType)) {
+        if (addressInfoFrom == null || addressInfoTo == null) {
             return;
         }
 
@@ -289,10 +308,21 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
                         String data = jsonObject.optString("data");
                         PurchaseInfo purchaseInfo = GsonUtil.fromJson(data, PurchaseInfo.class);
                         tvSendPrice.setText("¥ " + purchaseInfo.baseFee / 100);
-                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + "元");
+                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal("100")).stripTrailingZeros().toPlainString() + "元");
                         tvDistance.setText(purchaseInfo.distance + "米");
                         tvSendTime.setText("预计" + purchaseInfo.deliveryDuration + "分钟内送达");
                     } else {
+                        if (!TextUtils.isEmpty(addressType)) {
+                            if (TextUtils.equals("FROM", addressType)) {
+                                addressInfoFrom = null;
+                                tvWhereFrom.setVisibility(View.VISIBLE);
+                                rlWhereFrom.setVisibility(View.GONE);
+                            } else {
+                                addressInfoTo = null;
+                                tvWhereTo.setVisibility(View.VISIBLE);
+                                rlWhereTo.setVisibility(View.GONE);
+                            }
+                        }
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));
                     }
 
@@ -315,6 +345,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             return;
         }
         if (requestCode == 1001) {
+            addressType = "FROM";
             addressInfoFrom = (AddressBean) data.getSerializableExtra("addressInfo");
             tvWhereFrom.setVisibility(View.GONE);
             rlWhereFrom.setVisibility(View.VISIBLE);
@@ -322,9 +353,10 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             tvFromMobile.setText(addressInfoFrom.phone);
             tvFromAddress.setText(addressInfoFrom.userAddress + addressInfoFrom.address);
         } else if (requestCode == 1002) {
+            addressType = "TO";
+            addressInfoTo = (AddressBean) data.getSerializableExtra("addressInfo");
             tvWhereTo.setVisibility(View.GONE);
             rlWhereTo.setVisibility(View.VISIBLE);
-            addressInfoTo = (AddressBean) data.getSerializableExtra("addressInfo");
             tvToName.setText(addressInfoTo.name);
             tvToMobile.setText(addressInfoTo.phone);
             tvToAddress.setText(addressInfoTo.userAddress + addressInfoTo.address);
@@ -367,6 +399,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
             pickTime = data + hourMinute + ":00";
             tvChooseTime.setText(pickTime);
         }
+        addressType = "";
         requestDeliverInfo();
     }
 
@@ -375,6 +408,7 @@ public class DeliveryFragment extends Fragment implements TipDialog.OnDialogClic
         this.goodsType = goodsType;
         this.goodsWeight = goodsWeight;
         tvGoodsType.setText(TextUtils.isEmpty(goodsType) ? getString(R.string.get_default) : goodsType + " " + goodsWeight + "公斤");
+        addressType = "";
         requestDeliverInfo();
     }
 

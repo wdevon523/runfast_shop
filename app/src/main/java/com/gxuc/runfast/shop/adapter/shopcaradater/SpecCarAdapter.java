@@ -27,6 +27,7 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
     private List<FoodBean> carFoods;
 
     private Context context;
+    private Integer isOpen;
 
     private UpdateSpecCountImp specCountImp;
 
@@ -34,6 +35,10 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
         this.carFoods = carFoods;
         this.context = context;
         this.specCountImp = specCountImp;
+    }
+
+    public void setIsOpen(Integer isOpen) {
+        this.isOpen = isOpen;
     }
 
     public interface UpdateSpecCountImp {
@@ -85,7 +90,7 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
 //                }
 //            }
 
-            holder.tvCarPrice.setText("¥" + foodBean.getSpecInfo().totalPrice);
+            holder.tvCarPrice.setText("¥" + foodBean.getSpecInfo().totalPrice.stripTrailingZeros().toPlainString());
 
             holder.tvCount.setText(foodBean.getSpecInfo().num + "");
 
@@ -149,6 +154,13 @@ public class SpecCarAdapter extends RecyclerView.Adapter<SpecCarAdapter.SpecCarV
                     specCountImp.sub(foodBean, position);
                 }
             });
+            if (isOpen != 1) {
+                holder.tvSpec.setVisibility(View.GONE);
+                holder.ivAdd.setVisibility(View.GONE);
+                holder.ivSub.setVisibility(View.GONE);
+                holder.tvCount.setVisibility(View.GONE);
+            }
+
         }
     }
 

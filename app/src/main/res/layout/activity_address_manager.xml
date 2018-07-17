@@ -88,6 +88,7 @@
                         android:text="定位地址"
                         android:textColor="@color/color_text_gray"
                         android:textSize="14sp" />
+
                 </LinearLayout>
 
                 <TextView
@@ -150,8 +151,10 @@
                     android:id="@+id/view_nearby_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/color_line_back" />
+                    android:background="@color/white" />
+
             </LinearLayout>
+
         </LinearLayout>
 
         <LinearLayout
@@ -243,9 +246,12 @@
                         android:id="@+id/view_address_list"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/color_line_back" />
+                        android:background="@color/white" />
+
                 </LinearLayout>
+
             </RelativeLayout>
+
         </LinearLayout>
 
     </RelativeLayout>

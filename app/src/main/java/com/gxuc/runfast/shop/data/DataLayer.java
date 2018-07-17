@@ -250,7 +250,7 @@ public final class DataLayer {
 
                 newRequest = oldRequest.newBuilder()
                         .url(oldRequest.url().toString() + "?businessId=" + businessId + "&userLng=" + lon + "&userLat=" + lat
-                                + "&toAddressId=" + jsonObject.optString("toAddressId") + "&userRedId=" + jsonObject.optString("userRedId")
+                                + "&toAddressId=" + jsonObject.optString("toAddressId")+ "&bookTime=" + jsonObject.optString("bookTime") + "&userRedId=" + jsonObject.optString("userRedId")
                                 + "&suportSelf=" + jsonObject.optString("suportSelf") + "&eatInBusiness=" + jsonObject.optString("eatInBusiness")
                                 + "&selfTime=" + jsonObject.optString("selfTime") + "&selfMobile=" + jsonObject.optString("selfMobile") + "&userCouponId=" + jsonObject.optString("userCouponId"))
                         .method(oldRequest.method(), oldRequest.body())

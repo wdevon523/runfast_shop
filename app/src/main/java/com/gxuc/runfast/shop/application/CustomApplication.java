@@ -14,7 +14,7 @@ import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.gxuc.runfast.shop.util.SystemUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
-//import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
 
@@ -61,6 +61,7 @@ public class CustomApplication extends BaseApplication {
         //初始化 xutils的网络请求部分
         x.Ext.init(this);
 //        Config.DEBUG = true;
+//        Config.isNeedAuth = true;
         UMShareAPI.get(this);
 
         JPushInterface.setDebugMode(true);
@@ -68,7 +69,8 @@ public class CustomApplication extends BaseApplication {
 
 //        JAnalyticsInterface.init(this);
 
-        PlatformConfig.setWeixin(Contants.WEI_XIN_ID, "dkehfeuu38575uydhj3Y75u3yei2o45h");
+//        PlatformConfig.setWeixin(Contants.WEI_XIN_ID, "dkehfeuu38575uydhj3Y75u3yei2o45h");
+        PlatformConfig.setWeixin(Contants.WEI_XIN_ID, Contants.WEI_XIN_SECRET);
         PlatformConfig.setQQZone("1106021946", "2SWJL1R0L380FtAS");
 
 //        regToWx();

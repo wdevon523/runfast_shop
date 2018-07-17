@@ -38,7 +38,7 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
     TextView tvDeliveryOrderStatus;
     @BindView(R.id.tv_delivery_order_goods)
     TextView tvDeliveryOrderGoods;
-    @BindView(R.id.tv_buy_address)
+    @BindView(R.id.tv_buy_name)
     TextView tvBuyAddress;
     @BindView(R.id.tv_send_address)
     TextView tvSendAddress;
@@ -52,6 +52,10 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
     RelativeLayout rlQuestion;
     @BindView(R.id.tv_delivery_price)
     TextView tvDeliveryPrice;
+    @BindView(R.id.rl_tip)
+    RelativeLayout rlTip;
+    @BindView(R.id.tv_tip_price)
+    TextView tvTipPrice;
     @BindView(R.id.tv_total_price)
     TextView tvTotalPrice;
     @BindView(R.id.tv_actual_pay)
@@ -131,11 +135,14 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
         tvSendName.setText(deliveryOrderDetailInfo.toName);
         tvSendMobile.setText(deliveryOrderDetailInfo.toMobile);
         tvDeliveryPrice.setText("¥ " + deliveryOrderDetailInfo.deliveryCost.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
+        rlTip.setVisibility(deliveryOrderDetailInfo.tip == null || deliveryOrderDetailInfo.tip == 0 ? View.GONE : View.VISIBLE);
+        tvTipPrice.setText("¥ " + deliveryOrderDetailInfo.tip);
+
         tvTotalPrice.setText("总计 ¥" + deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
         tvActualPay.setText("实付 ¥" + (deliveryOrderDetailInfo.amountPayable == null ? "0" : deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
-        tvExpectedTime.setText(deliveryOrderDetailInfo.pickTime);
+        tvExpectedTime.setText(TextUtils.isEmpty(deliveryOrderDetailInfo.pickTime) ? "立即配送" : deliveryOrderDetailInfo.pickTime);
         tvDeliveryDistance.setText(deliveryOrderDetailInfo.distance + "米");
-//        tvDeliveryDriver.setText(deliveryOrderDetailInfo.);
+
         tvDeliveryOrderNum.setText(deliveryOrderDetailInfo.orderNo);
         tvDeliveryOrderTime.setText(deliveryOrderDetailInfo.createTime);
         tvDeliveryDriver.setText(deliveryOrderDetailInfo.driverName);

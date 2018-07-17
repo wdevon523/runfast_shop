@@ -13,11 +13,10 @@ import com.gxuc.runfast.shop.R;
 import java.util.List;
 
 /**
- *
  * Created by 天上白玉京 on 2017/7/28.
  */
 
-public class AddressSearchAdapter extends RecyclerView.Adapter<AddressSearchAdapter.AddressManagerViewHolder>{
+public class AddressSearchAdapter extends RecyclerView.Adapter<AddressSearchAdapter.AddressManagerViewHolder> {
 
     private List<Address> addresses;
 
@@ -33,7 +32,7 @@ public class AddressSearchAdapter extends RecyclerView.Adapter<AddressSearchAdap
 
     @Override
     public AddressManagerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_address_name,parent,false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_search_address, parent, false);
         AddressManagerViewHolder viewHolder = new AddressManagerViewHolder(view);
         return viewHolder;
     }
@@ -42,7 +41,8 @@ public class AddressSearchAdapter extends RecyclerView.Adapter<AddressSearchAdap
     public void onBindViewHolder(AddressManagerViewHolder holder, int position) {
         Address address = addresses.get(position);
         if (address != null) {
-            holder.title.setText(address.title);
+            holder.tvTitle.setText(address.title);
+            holder.tvAddressDetail.setText(address.address);
             holder.itemView.setTag(position);
             holder.itemView.setOnClickListener(listener);
         }
@@ -51,16 +51,17 @@ public class AddressSearchAdapter extends RecyclerView.Adapter<AddressSearchAdap
 
     @Override
     public int getItemCount() {
-        return addresses == null?0:addresses.size();
+        return addresses == null ? 0 : addresses.size();
     }
 
-    public class AddressManagerViewHolder extends RecyclerView.ViewHolder{
+    public class AddressManagerViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView title;
+        public TextView tvTitle, tvAddressDetail;
 
         public AddressManagerViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.tv_address_title);
+            tvTitle = (TextView) itemView.findViewById(R.id.tv_search_address_name);
+            tvAddressDetail = (TextView) itemView.findViewById(R.id.tv_search_address_detail);
         }
     }
 }

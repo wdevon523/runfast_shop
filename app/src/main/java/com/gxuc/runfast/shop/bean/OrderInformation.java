@@ -1,34 +1,37 @@
 package com.gxuc.runfast.shop.bean;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 public class OrderInformation {
 
-
     /**
-     * orderId : 528745
-     * businessImg : /upload/1526282220217.jpg
-     * isDeliver : 0
-     * businessId : 4166
-     * businessName : 古茗
-     * businessAddr : 武汉市
-     * businessAddressLat : 30.59081
-     * businessAddressLng : 114.361361
-     * businessMobile : 13125195992
-     * deliveryDuration : 25
+     * orderId : 18
+     * businessImg : upload/1530529193262.jpg
+     * isDeliver : 1
+     * businessId : 13420
+     * businessName : 全聚福小炒菜馆
+     * businessAddr : 徐家棚街办事处秦园中路
+     * businessAddressLat : 30.582476
+     * businessAddressLng : 114.33965599999999
+     * businessMobile : 15623252111
+     * deliveryDuration : 40
      * validActivityList : []
-     * toAddressId : 145286
-     * userId : 471551
-     * userName : 啦啦啊了
-     * userMobile : null
-     * userPhone : null
-     * userAddress : 万科金域华府(友谊大道)
-     * address : 10085
-     * userAddressId : 145286
-     * userAddressLat : 30.60667855971042
-     * userAddressLng : 114.35815602441797
-     * deliveryFee : 2.0
-     * finalDeliveryFee : 2.0
+     * userId : 489002
+     * userName : 哦哦啦啦
+     * userMobile : 18602728198
+     * userPhone : 15607205410
+     * userAddress : 都市经典(徐东大街)
+     * address : 这
+     * userAddressId : 145418
+     * userAddressLat : 30.585778
+     * userAddressLng : 114.361249
+     * userAddressTag : 1
+     * userAddressGender : 1
+     * deliveryFee : 3.0
+     * finalDeliveryFee : 0.0
      * oldShopper : null
      * oldShopperId : null
      * oldShopperMobile : null
@@ -36,34 +39,40 @@ public class OrderInformation {
      * shopper : null
      * shopperId : null
      * shopperMobile : null
-     * createTime : 2018-06-07 14:02:49
-     * status : 0
-     * statStr : 客户下单
+     * createTime : 2018-07-03 12:03:48
+     * status : 2
+     * statStr : 商家接单
      * isReceive : null
-     * isPay : null
+     * isPay : 1
      * isRefund : null
      * isComent : null
      * isCancel : null
      * refund : null
      * refundcontext : null
-     * payTime : null
-     * payType : null
-     * orderNo : nw20180607672317
-     * orderNumber : 2
-     * totalPay : 12.0
-     * totalPackageFee : 0.0
-     * cartPrice : 10.0
-     * cartDisprice : 0
-     * offAmount : 0.0
+     * booked : true
+     * bookTime : null
+     * disTime : 2018-07-03 12:43:48
+     * payTime : 2018-07-03 12:03:53
+     * payType : 2
+     * orderNo : nw20180703187288
+     * orderNumber : 9
+     * totalPay : 16.8
+     * totalPackageFee : 2.0
+     * cartPrice : 19.8
+     * cartDisprice : 19.8
+     * offAmount : 8.0
      * cartTips : null
-     * cartItems : [{"key":{"goodsId":57999,"standarId":137988,"optionIdPairList":[{"optionId":33569,"subOptionId":56111}]},"num":1,"goodsName":"桂林卤粉","goodsImg":"/upload/1492001362040.jpg","standarName":"三两","standarOptionName":null,"price":8,"totalPrice":8,"activityId":null,"activityName":"","activityType":null,"disprice":8,"totalDisprice":null,"createTime":"2017-07-29 12:08:23","checked":null},{"key":{"goodsId":197635,"standarId":380448,"optionIdPairList":[]},"num":1,"goodsName":"丝袜奶茶","goodsImg":"/upload/1526300308927.jpg","standarName":"一杯","standarOptionName":"一杯","price":10,"totalPrice":10,"activityId":null,"activityName":null,"activityType":null,"disprice":null,"totalDisprice":null,"createTime":"2018-06-07 14:02:49","checked":null}]
-     * distance : 1790
-     * totalNum : 1
-     * remark :
+     * limitTips : null
+     * cartItems : [{"id":1765067,"key":{"goodsId":649457,"standarId":1149907,"optionIdPairList":[]},"num":2,"goodsName":"酸辣土豆丝","goodsImg":"upload/1530529831156.jpg","standarName":"份","standarOptionName":"份","price":9.9,"totalPrice":19.8,"activityId":null,"activityName":null,"activityType":null,"disprice":null,"totalDisprice":null,"createTime":"2018-07-03 12:03:48","checked":null}]
+     * distance : 2099
+     * totalNum : 2
+     * remark : null
      * userRedId : null
+     * userCouponId : null
      * selfTime : null
      * selfMobile : null
-     * suportSelf : false
+     * suportSelf : true
+     * userSuportSelf : false
      */
 
     public int orderId;
@@ -76,21 +85,22 @@ public class OrderInformation {
     public double businessAddressLng;
     public String businessMobile;
     public int deliveryDuration;
-    public int toAddressId;
     public int userId;
     public String userName;
-    public Object userMobile;
-    public Object userPhone;
+    public String userMobile;
+    public String userPhone;
     public String userAddress;
     public String address;
     public int userAddressId;
     public double userAddressLat;
     public double userAddressLng;
-    public double deliveryFee;
-    public double finalDeliveryFee;
-    public String oldShopper;
-    public String oldShopperId;
-    public String oldShopperMobile;
+    public Integer userAddressTag;
+    public Integer userAddressGender;
+    public BigDecimal deliveryFee;
+    public BigDecimal finalDeliveryFee;
+    public Object oldShopper;
+    public Object oldShopperId;
+    public Object oldShopperMobile;
     public Object agree;
     public String shopper;
     public String shopperId;
@@ -101,28 +111,33 @@ public class OrderInformation {
     public Object isReceive;
     public Integer isPay;
     public Integer isRefund;
-    public Integer isComent;
+    public Object isComent;
     public Integer isCancel;
     public Object refund;
-    public String refundcontext;
+    public Object refundcontext;
+    public boolean booked;
+    public String bookTime;
+    public String disTime;
     public String payTime;
     public int payType;
     public String orderNo;
     public int orderNumber;
-    public double totalPay;
-    public double totalPackageFee;
-    public double cartPrice;
-    public double cartDisprice;
-    public double offAmount;
+    public BigDecimal totalPay;
+    public BigDecimal totalPackageFee;
+    public BigDecimal cartPrice;
+    public BigDecimal cartDisprice;
+    public BigDecimal offAmount;
     public Object cartTips;
+    public Object limitTips;
     public int distance;
     public int totalNum;
     public String remark;
     public Object userRedId;
+    public String userCouponId;
     public String selfTime;
     public String selfMobile;
     public boolean suportSelf;
+    public boolean userSuportSelf;
     public List<?> validActivityList;
     public List<CartItemsBean> cartItems;
-
 }

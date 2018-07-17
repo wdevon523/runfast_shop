@@ -99,15 +99,17 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     private double lat;
     private double lon;
     private String url;
-    private MiddleSort mSort;
     private Integer mPosition;
     private Integer mPositionSort = 1;
     private String mName = "";
     private int mTotalpage;
-    private String typeId;
+    private String catalogId;
     private int sortId;
     private BusinessCategoryAdapter businessCategoryAdapter;
     private String agentId;
+    private int commonId;
+    private String typeName;
+    private IdentityHashMap<String, String> catalogMap = new IdentityHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +123,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
     @Override
     protected void onTitleChanged(CharSequence title, int color) {
         super.onTitleChanged(title, color);
-        tvToolbarTitle.setText(mName);
+        tvToolbarTitle.setText(typeName);
     }
 
     private void setData() {
@@ -139,11 +141,9 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
      */
     private void initData() {
 
-        mName = getIntent().getStringExtra("typeName");
-        if (TextUtils.isEmpty(mName)) {
-            mSort = getIntent().getParcelableExtra("middleData");
-            mName = mSort.getTypename();
-        }
+        commonId = getIntent().getIntExtra("commonId", 0);
+        typeName = getIntent().getStringExtra("typeName");
+        catalogId = commonId + "";
 
         lat = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT));
         lon = Double.valueOf(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON));
@@ -216,7 +216,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
      * 获取商品分类
      */
     private void getBusinessCategory() {
-        CustomApplication.getRetrofitNew().getBusinessCategory().enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getBusinessCategory(commonId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -245,10 +245,12 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
         }.getType());
 
         for (int i = 0; i < businessCategoryInfoList.size(); i++) {
+            catalogMap.put(new String("catalogId"), businessCategoryInfoList.get(i).id);
+
             if (!TextUtils.isEmpty(mName) && TextUtils.equals(businessCategoryInfoList.get(i).name, mName)) {
                 businessCategoryInfoList.get(i).isSelect = true;
-                typeId = businessCategoryInfoList.get(i).id + "";
-                break;
+                catalogId = businessCategoryInfoList.get(i).id;
+//                break;
             }
         }
 
@@ -268,7 +270,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
 //            info.name = listTypeInfos.get(i).getName();
 //            if (!TextUtils.isEmpty(mName) && TextUtils.equals(info.name, mName)) {
 //                info.isSelect = true;
-//                typeId = info.id;
+//                catalogId = info.id;
 //            }
 //            info.imgId = R.drawable.icon_class_all;
 //            this.typeInfos.add(info);
@@ -287,7 +289,7 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
             return;
         }
 
-        CustomApplication.getRetrofitNew().getNearByBusiness(agentId, lon, lat, sortId, new IdentityHashMap<String, Integer>(), new IdentityHashMap<String, Integer>(), typeId, currentPage, 10).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getNearByBusiness(agentId, lon, lat, sortId, new IdentityHashMap<String, Integer>(), new IdentityHashMap<String, Integer>(), catalogMap, currentPage, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
@@ -398,10 +400,12 @@ public class BreakfastActivity extends ToolBarActivity implements View.OnClickLi
 //                    if (mPosition == 0) {
 //                        mName = mSort.getTypename();
 //                    } else {
-                    typeId = businessCategoryInfoList.get(mPosition).id + "";
+                    catalogId = businessCategoryInfoList.get(mPosition).id;
 //                    }
                     tvClassName.setText(businessCategoryInfoList.get(mPosition).name);
                     tvToolbarTitle.setText(businessCategoryInfoList.get(mPosition).name);
+                    catalogMap.clear();
+                    catalogMap.put(new String("catalogId"), catalogId);
                     refreshData();
                     uiHide();
                     break;

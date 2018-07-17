@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 
 import com.example.supportv1.utils.JsonUtil;
 import com.google.gson.reflect.TypeToken;
@@ -146,7 +147,7 @@ public class ShopCartActivity extends ToolBarActivity {
             for (int i = 0; i < shopCartArray.length(); i++) {
                 if (shopCartArray.getJSONObject(i).optInt("businessId") == businessId) {
                     checkBusinessPosition = i;
-                    shopCartArray.getJSONObject(i).optJSONArray("cartItems").getJSONObject(position).put("num", 0);
+                    shopCartArray.getJSONObject(i).optJSONArray("cartItems").getJSONObject(position).put("num", "");
                     jsonArray.put(shopCartArray.getJSONObject(i).optJSONArray("cartItems").getJSONObject(position));
                     break;
                 }
@@ -162,8 +163,12 @@ public class ShopCartActivity extends ToolBarActivity {
                     try {
                         JSONObject jsonObject = new JSONObject(body);
                         if (jsonObject.optBoolean("success")) {
-                            dealChecked(jsonObject.optString("data"));
-                            shopCartArray.put(checkBusinessPosition, jsonObject.optJSONObject("data"));
+                            if (!TextUtils.equals("null", jsonObject.optString("data")) && !TextUtils.isEmpty(jsonObject.optString("data"))) {
+                                dealChecked(jsonObject.optString("data"));
+                                shopCartArray.put(checkBusinessPosition, jsonObject.optJSONObject("data"));
+                            } else {
+                                requestAllShopCart();
+                            }
                         } else {
                             ToastUtil.showToast(jsonObject.optString("errorMsg"));
                             requestAllShopCart();

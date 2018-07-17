@@ -44,7 +44,7 @@ public class TypeNewAdapter extends BaseQuickAdapter<TypeBean, BaseViewHolder> {
     protected void convert(BaseViewHolder helper, TypeBean item) {
         helper.setText(R.id.tv_name, item.getName())
                 .setTag(R.id.item_main, item.getName());
-        if (TextUtils.equals(item.getName(), "打折")) {
+        if (TextUtils.equals(item.getName(), "折扣")) {
             ((TextView) helper.getView(R.id.tv_name)).setCompoundDrawablesWithIntrinsicBounds(mContext.getResources().getDrawable(R.drawable.icon_business_discount), null, null, null);
             ((TextView) helper.getView(R.id.tv_name)).setCompoundDrawablePadding(10);
         } else {

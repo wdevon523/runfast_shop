@@ -37,7 +37,6 @@ public class HourMinuteChooseAdapter extends RecyclerView.Adapter implements Vie
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(context).inflate(R.layout.item_hour_minute, parent, false);
         return new ViewHolder(view);
     }

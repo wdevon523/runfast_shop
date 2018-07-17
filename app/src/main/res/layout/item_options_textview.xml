@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/dimen_5_dp"
+    android:layout_width="@dimen/dimen_100_dp"
+    android:layout_height="@dimen/dimen_30_dp"
+    android:gravity="center"
+    android:layout_margin="@dimen/dimen_7_dp"
     android:background="@drawable/select_bg_options"
-    android:paddingBottom="@dimen/dimen_5_dp"
-    android:paddingLeft="@dimen/dimen_10_dp"
-    android:paddingRight="@dimen/dimen_10_dp"
-    android:paddingTop="@dimen/dimen_5_dp"
     android:textColor="@drawable/select_text_color_options"
     android:textSize="@dimen/dimen_12_dp">
+    <!--android:paddingBottom="@dimen/dimen_5_dp"-->
+    <!--android:paddingLeft="@dimen/dimen_10_dp"-->
+    <!--android:paddingRight="@dimen/dimen_10_dp"-->
+    <!--android:paddingTop="@dimen/dimen_5_dp"-->
 
 </TextView>

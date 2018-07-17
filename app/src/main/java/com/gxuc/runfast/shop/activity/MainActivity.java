@@ -177,12 +177,13 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
                     String body = response.body();
                     try {
                         JSONObject jsonObject = new JSONObject(body);
-                        viewNewVersion.setVisibility(jsonObject.optBoolean("update") ? View.VISIBLE : View.GONE);
-                        if (jsonObject.optBoolean("update")) {
+                        viewNewVersion.setVisibility(jsonObject.optBoolean("success") ? View.VISIBLE : View.GONE);
+                        if (jsonObject.optBoolean("success")) {
+                            JSONObject data = jsonObject.optJSONObject("data");
                             MyAutoUpdate myAutoUpdate = new MyAutoUpdate(MainActivity.this);
-                            myAutoUpdate.showNoticeDialog(jsonObject.optString("msg"), jsonObject.optString("downloadUrl"));
+                            myAutoUpdate.showNoticeDialog(data.optString("serverDescription"), data.optString("serverUrl"));
                         }
-                        CustomApplication.isNeedUpdate = jsonObject.optBoolean("update");
+                        CustomApplication.isNeedUpdate = jsonObject.optBoolean("success");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

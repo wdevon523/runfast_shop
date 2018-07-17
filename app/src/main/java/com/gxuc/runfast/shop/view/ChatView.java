@@ -64,8 +64,8 @@ public class ChatView extends RelativeLayout {
         wmParams.gravity = Gravity.LEFT | Gravity.TOP;
         // 设置Window flag
         wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        wmParams.width = 440;
-        wmParams.height = 188;
+        wmParams.width = (int) (activity.getWindowManager().getDefaultDisplay().getWidth() * 0.4);
+        wmParams.height = 147;
         wmParams.x = screenWidth - wmParams.width;
         wmParams.y = screenHeight - wmParams.width * 2;
 //        wmParams.y = (screenHeight - dpi) >> 1;
@@ -178,7 +178,8 @@ public class ChatView extends RelativeLayout {
                 wmParams.x = 0;
                 break;
             case RIGHT:
-                int x = screenWidth - dpi;
+//                int x = screenWidth - dpi;
+                int x = screenWidth - wmParams.width;
                 wmParams.x = x;
                 break;
             case TOP:

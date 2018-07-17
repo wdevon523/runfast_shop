@@ -17,15 +17,11 @@ import android.widget.TextView;
 import com.example.supportv1.utils.JsonUtil;
 import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.adapter.BreakfastAdapter;
-import com.gxuc.runfast.shop.adapter.LoadMoreAdapter;
-import com.gxuc.runfast.shop.bean.BusinessExercise;
-import com.gxuc.runfast.shop.bean.BusinessInfo;
+import com.gxuc.runfast.shop.adapter.SearchBusinessAdapter;
 import com.gxuc.runfast.shop.bean.SearchBusinessInfo;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.util.CustomProgressDialog;
-import com.gxuc.runfast.shop.util.GsonUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
@@ -36,7 +32,6 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,12 +42,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.bingoogolapple.refreshlayout.BGAMeiTuanRefreshViewHolder;
-import cn.bingoogolapple.refreshlayout.BGARefreshLayout;
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class SearchProductActivity extends ToolBarActivity implements View.OnClickListener {
+public class SearchProductActivity extends ToolBarActivity {
 
     @BindView(R.id.et_search_name)
     EditText etSearchName;
@@ -66,6 +59,8 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
     LinearLayout search_history;
     @BindView(R.id.iv_search_back)
     ImageView mIvSearchBack;
+    @BindView(R.id.tv_clear_history)
+    TextView mTvClearHistory;
     @BindView(R.id.tv_cancel_search)
     TextView mTvCancelSearch;
 
@@ -80,7 +75,7 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
     private String mSearch;
     private String lat;
     private String lon;
-    private BreakfastAdapter breakfastAdapert;
+    private SearchBusinessAdapter searchAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,9 +93,9 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
 
         mUtil = new SharedPreferencesUtil(this, SEARCH_HISTORY);
         smartRefreshLayout.setVisibility(View.GONE);
-        breakfastAdapert = new BreakfastAdapter(businessInfos, this, this);
+        searchAdapter = new SearchBusinessAdapter(businessInfos, this);
         recyclerViewList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerViewList.setAdapter(breakfastAdapert);
+        recyclerViewList.setAdapter(searchAdapter);
 
         smartRefreshLayout.setOnRefreshLoadMoreListener(new OnRefreshLoadMoreListener() {
 
@@ -131,13 +126,24 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
             }
 
         });
+
+        searchAdapter.setOnItemClickListener(new SearchBusinessAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position, SearchBusinessInfo searchBusinessInfo) {
+                Intent intent = new Intent(SearchProductActivity.this, BusinessNewActivity.class);
+                intent.putExtra(IntentFlag.KEY, IntentFlag.SEARCH_VIEW);
+                intent.putExtra("businessId", businessInfos.get(position).id);
+                startActivity(intent);
+            }
+        });
+
     }
 
     @SuppressWarnings("ResourceType")
     public void addItem(final List<String> data) {
         flowLayout.removeAllViews();
         ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 10, 10);// 设置边距
+        layoutParams.setMargins(0, 0, 20, 10);// 设置边距
 
         for (int i = 0; i < data.size(); i++) {
             final TextView textView = new TextView(this);
@@ -152,7 +158,7 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
                     Integer tag = (Integer) textView.getTag();
                     mSearch = data.get(tag);
                     etSearchName.setText(mSearch);
-                    searchGoods(mSearch);
+                    refreshData();
                 }
             });
             flowLayout.addView(textView, layoutParams);
@@ -168,7 +174,7 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
 
     private void clearRecyclerViewData() {
         businessInfos.clear();
-        breakfastAdapert.setList(businessInfos);
+        searchAdapter.setList(businessInfos);
     }
 
     /**
@@ -225,25 +231,16 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
         search_history.setVisibility(View.GONE);
         smartRefreshLayout.setVisibility(View.VISIBLE);
         businessInfos.addAll(searchBusinessInfoList);
-        breakfastAdapert.setList(businessInfos);
+        searchAdapter.setList(businessInfos);
     }
 
-    @Override
-    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case R.id.layout_breakfast_item:
-        Integer positionBusiness = (Integer) v.getTag();
-        Intent intent = new Intent(this, BusinessNewActivity.class);
-        intent.putExtra(IntentFlag.KEY, IntentFlag.SEARCH_VIEW);
-        intent.putExtra("businessId", businessInfos.get(positionBusiness).id);
-        startActivity(intent);
-//                break;
-//        }
-    }
-
-    @OnClick({R.id.iv_search_back, R.id.tv_cancel_search})
+    @OnClick({R.id.tv_clear_history, R.id.iv_search_back, R.id.tv_cancel_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tv_clear_history:
+                mUtil.setData(SEARCH_HISTORY, "");
+                updateData();
+                break;
             case R.id.iv_search_back:
                 finish();
                 break;
@@ -252,7 +249,7 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
                 mSearch = etSearchName.getText().toString().trim();
                 if (!TextUtils.isEmpty(mSearch)) {
                     saveHistory(mSearch);
-                    searchGoods(mSearch);
+                    refreshData();
                 } else {
                     ToastUtil.showToast("请输入搜索内容");
                 }
@@ -283,6 +280,8 @@ public class SearchProductActivity extends ToolBarActivity implements View.OnCli
             String[] split = history.split(",");
             Collections.addAll(data, split);
             addItem(data);
+        } else {
+            flowLayout.removeAllViews();
         }
     }
 }

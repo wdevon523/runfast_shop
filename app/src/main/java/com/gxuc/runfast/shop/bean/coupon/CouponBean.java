@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.bean.coupon;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * Created by huiliu on 2017/9/13.
@@ -35,7 +36,7 @@ public class CouponBean implements Serializable {
     public int businessId;
     public String businessName;
     public boolean used;
-    public double less;
+    public BigDecimal less;
     public int userId;
     public int activityId;
     public String createTime;

@@ -3,6 +3,6 @@
 
     <corners android:radius="20dp"/>
 
-    <solid android:color="@color/color_coupon_number" />
+    <solid android:color="@color/pink" />
 
 </shape>

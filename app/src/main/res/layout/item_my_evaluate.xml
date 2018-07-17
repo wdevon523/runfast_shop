@@ -6,6 +6,38 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/rl_business"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_45_dp"
+        android:baselineAligned="false">
+
+        <TextView
+            android:id="@+id/tv_business_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_15_dp"
+            android:drawableLeft="@drawable/icon_evaluate_business_logo"
+            android:drawablePadding="@dimen/dimen_10_dp"
+            android:textColor="@color/text_666666"
+            android:textSize="@dimen/dimen_15_dp" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_15_dp"
+            android:src="@drawable/icon_right_black" />
+
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1_dp"
+        android:background="@color/view_e5e5e5" />
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dimen_15_dp">
@@ -36,7 +68,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/iv_head"
             android:includeFontPadding="false"
-            android:text="2017-01-22"
+            android:text="2018-06-22"
             android:textSize="@dimen/dimen_12_dp" />
 
 
@@ -52,7 +84,7 @@
             app:srb_starPadding="1dp" />
 
         <TextView
-            android:id="@+id/tv_content"
+            android:id="@+id/tv_taste_and_package"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/tv_user_name"
@@ -60,15 +92,38 @@
             android:layout_marginTop="@dimen/dimen_10_dp"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="46asdaiodjaljalsjdklajdaskljdaklsdjlaksdjaskljdklasfj"
-            android:textColor="@color/color_text_gray_two" />
+            android:textColor="@color/text_666666"
+            android:textSize="@dimen/dimen_12_dp" />
 
-        <LinearLayout
-            android:id="@+id/layout_business"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_user_name"
+            android:layout_below="@+id/tv_taste_and_package"
+            android:layout_marginTop="@dimen/dimen_10_dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="@color/text_666666"
+            android:textSize="@dimen/dimen_12_dp" />
+
+        <TextView
+            android:id="@+id/tv_content_more"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/tv_user_name"
             android:layout_below="@+id/tv_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="@dimen/dimen_5_dp"
+            android:textColor="@color/text_999999"
+            android:textSize="@dimen/dimen_12_dp" />
+
+        <LinearLayout
+            android:id="@+id/layout_business_reply"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_user_name"
+            android:layout_below="@+id/tv_content_more"
             android:layout_marginTop="@dimen/dimen_5_dp"
             android:background="@color/bg_f4f4f4"
             android:orientation="horizontal"
@@ -100,7 +155,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dimen_1_dp"
             android:layout_alignLeft="@+id/tv_user_name"
-            android:layout_below="@+id/layout_business"
+            android:layout_below="@+id/layout_business_reply"
             android:layout_marginBottom="@dimen/dimen_10_dp"
             android:layout_marginTop="@dimen/dimen_10_dp"
             android:background="@color/view_e5e5e5" />

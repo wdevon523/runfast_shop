@@ -25,7 +25,7 @@ public class VaUtils {
         if (null == mobileNo) {
             return false;
         }
-        Pattern p = Pattern.compile("^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(18[0,5-9]))\\d{8}$");
+        Pattern p = Pattern.compile("^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$");
         return p.matcher(mobileNo).matches();
     }
 

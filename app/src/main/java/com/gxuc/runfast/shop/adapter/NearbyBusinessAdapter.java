@@ -109,89 +109,89 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
                 thirdHolder.recyclerView.setVisibility(View.GONE);
             }
         } else if (holder instanceof BusinessViewHolder) {
-            final BusinessViewHolder businessHolder = (BusinessViewHolder) holder;
-            final BusinessInfo businessInfos = itemBean.businessInfos;
-            businessHolder.tv_business_name.setText(businessInfos.name);
-            businessHolder.tv_business_levelId.setText(String.valueOf(businessInfos.levelId));
-            businessHolder.rb_order_evaluate.setRating(businessInfos.levelId);
-            businessHolder.rb_order_evaluate.setClickable(false);
-            businessHolder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfos.distance)) + "km");
-            businessHolder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfos.salesnum) + "单");
-            businessHolder.tv_sale_startPay.setText(businessInfos.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfos.startPay));
-            businessHolder.tv_sale_time.setText(businessInfos.speed);
-            businessHolder.tv_new_business.setVisibility((businessInfos.news != null && businessInfos.news == 1) ? View.VISIBLE : View.GONE);
-
-            businessHolder.ll_business_open.setVisibility(businessInfos.isopen == 0 ? View.VISIBLE : View.GONE);
-            businessHolder.ll_business_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
-            businessHolder.view_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
-            businessHolder.iv_gold_business.setVisibility(businessInfos.goldBusiness ? View.VISIBLE : View.GONE);
-
-            if (businessInfos.isDeliver == 0) {
-                businessHolder.tv_sale_price.setText(businessInfos.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfos.charge));
-                businessHolder.iv_is_charge.setVisibility(View.VISIBLE);
-            } else {
-                businessHolder.tv_sale_price.setText(businessInfos.busshowps.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfos.busshowps));
-                businessHolder.iv_is_charge.setVisibility(View.GONE);
-            }
-
-            final List<BusinessExercise> alist = businessInfos.alist;
-            businessHolder.ll_contain_act.removeAllViews();
-            businessHolder.ll_contain_act.setTag(false);
-            if (alist != null && alist.size() > 0) {
-                for (int i = 0; i < alist.size(); i++) {
-                    View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
-                    ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
-                    TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
-                    tvAct.setText(alist.get(i).showname);
-                    showActImage(ivAct, alist.get(i));
-                    if (i > 1) {
-                        view.setVisibility(View.GONE);
-                    }
-                    businessHolder.ll_contain_act.addView(view);
-                }
-
-                if (alist.size() > 2) {
-                    businessHolder.ll_contain_act.getChildAt(0).findViewById(R.id.tv_act_all).setVisibility(View.VISIBLE);
-                }
-
-            }
-
-            businessHolder.ll_contain_act.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (alist.size() > 2) {
-                        boolean showStatus = false;
-                        for (int i = 0; i < alist.size(); i++) {
-                            businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
-                            if (i > 1) {
-                                if ((boolean) businessHolder.ll_contain_act.getTag()) {
-                                    businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.GONE);
-                                    showStatus = false;
-                                } else {
-                                    businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
-                                    showStatus = true;
-                                }
-                            }
-                        }
-                        businessHolder.ll_contain_act.setTag(showStatus);
-                    }
-
-                }
-            });
-
-            x.image().bind(businessHolder.iv_business_logo, UrlConstant.ImageBaseUrl + businessInfos.mini_imgPath, NetConfig.optionsPagerCache);
-            //GlideUtils.loadImage(3,item.getImages().getLarge(), (ImageView) helper.getView(R.id.iv_item_movie_top));
-            businessHolder.layout_breakfast_item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemClickListener.onItemClickListener(businessInfos, v);
-                }
-            });
+//            final BusinessViewHolder businessHolder = (BusinessViewHolder) holder;
+//            final BusinessInfo businessInfos = itemBean.businessInfos;
+//            businessHolder.tv_business_name.setText(businessInfos.name);
+//            businessHolder.tv_business_levelId.setText(String.valueOf(businessInfos.levelId));
+//            businessHolder.rb_order_evaluate.setRating(businessInfos.levelId);
+//            businessHolder.rb_order_evaluate.setClickable(false);
+//            businessHolder.tv_sale_distance.setText(String.valueOf(new DecimalFormat("#0.0").format(businessInfos.distance)) + "km");
+//            businessHolder.tv_business_sales_num.setText("月售" + String.valueOf(businessInfos.salesnum) + "单");
+//            businessHolder.tv_sale_startPay.setText(businessInfos.startPay.isNaN() ? "起送 ¥ 0元" : "起送 ¥ " + String.valueOf(businessInfos.startPay));
+//            businessHolder.tv_sale_time.setText(businessInfos.speed);
+//            businessHolder.tv_new_business.setVisibility((businessInfos.news != null && businessInfos.news == 1) ? View.VISIBLE : View.GONE);
+//
+//            businessHolder.ll_business_open.setVisibility(businessInfos.isopen == 0 ? View.VISIBLE : View.GONE);
+//            businessHolder.ll_business_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
+//            businessHolder.view_close.setVisibility(businessInfos.isopen == 0 ? View.GONE : View.VISIBLE);
+//            businessHolder.iv_gold_business.setVisibility(businessInfos.goldBusiness ? View.VISIBLE : View.GONE);
+//
+//            if (businessInfos.isDeliver == 0) {
+//                businessHolder.tv_sale_price.setText(businessInfos.charge.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfos.charge));
+//                businessHolder.iv_is_charge.setVisibility(View.VISIBLE);
+//            } else {
+//                businessHolder.tv_sale_price.setText(businessInfos.busshowps.isNaN() ? "配送费¥0" : "配送费¥" + String.valueOf(businessInfos.busshowps));
+//                businessHolder.iv_is_charge.setVisibility(View.GONE);
+//            }
+//
+//            final List<BusinessExercise> alist = businessInfos.alist;
+//            businessHolder.ll_contain_act.removeAllViews();
+//            businessHolder.ll_contain_act.setTag(false);
+//            if (alist != null && alist.size() > 0) {
+//                for (int i = 0; i < alist.size(); i++) {
+//                    View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
+//                    ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
+//                    TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
+//                    tvAct.setText(alist.get(i).showname);
+//                    showActImage(ivAct, alist.get(i));
+//                    if (i > 1) {
+//                        view.setVisibility(View.GONE);
+//                    }
+//                    businessHolder.ll_contain_act.addView(view);
+//                }
+//
+//                if (alist.size() > 2) {
+//                    businessHolder.ll_contain_act.getChildAt(0).findViewById(R.id.tv_act_all).setVisibility(View.VISIBLE);
+//                }
+//
+//            }
+//
+//            businessHolder.ll_contain_act.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    if (alist.size() > 2) {
+//                        boolean showStatus = false;
+//                        for (int i = 0; i < alist.size(); i++) {
+//                            businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
+//                            if (i > 1) {
+//                                if ((boolean) businessHolder.ll_contain_act.getTag()) {
+//                                    businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.GONE);
+//                                    showStatus = false;
+//                                } else {
+//                                    businessHolder.ll_contain_act.getChildAt(i).setVisibility(View.VISIBLE);
+//                                    showStatus = true;
+//                                }
+//                            }
+//                        }
+//                        businessHolder.ll_contain_act.setTag(showStatus);
+//                    }
+//
+//                }
+//            });
+//
+//            x.image().bind(businessHolder.iv_business_logo, UrlConstant.ImageBaseUrl + businessInfos.mini_imgPath, NetConfig.optionsLogoImage);
+//            //GlideUtils.loadImage(3,item.getImages().getLarge(), (ImageView) helper.getView(R.id.iv_item_movie_top));
+//            businessHolder.layout_breakfast_item.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    onItemClickListener.onItemClickListener(businessInfos, v);
+//                }
+//            });
         }
     }
 
     private void showActImage(ImageView ivAct, BusinessExercise businessExercise) {
-        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
         switch (businessExercise.ptype) {
             case 1:
                 ivAct.setImageResource(R.drawable.icon_reduce);
@@ -210,6 +210,21 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
                 break;
             case 6:
                 ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 7:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 8:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 9:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 10:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 11:
+                ivAct.setImageResource(R.drawable.icon_return);
                 break;
         }
     }
@@ -277,25 +292,25 @@ public class NearbyBusinessAdapter extends RecyclerView.Adapter {
 
         BusinessViewHolder(View itemView) {
             super(itemView);
-            tv_business_name = (TextView) itemView.findViewById(R.id.tv_business_name);
-            tv_new_business = (TextView) itemView.findViewById(R.id.tv_new_business);
-            tv_business_levelId = (TextView) itemView.findViewById(R.id.tv_business_levelId);
-            tv_sale_distance = (TextView) itemView.findViewById(R.id.tv_sale_distance);
-            tv_business_sales_num = (TextView) itemView.findViewById(R.id.tv_business_sales_num);
-            tv_sale_startPay = (TextView) itemView.findViewById(R.id.tv_sale_startPay);
-            tv_sale_time = (TextView) itemView.findViewById(R.id.tv_sale_time);
-            tv_sale_price = (TextView) itemView.findViewById(R.id.tv_sale_price);
-            iv_is_charge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
-            iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
-            iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
-
-            rb_order_evaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
-
-            ll_business_open = (LinearLayout) itemView.findViewById(R.id.ll_business_open);
-            ll_business_close = (LinearLayout) itemView.findViewById(R.id.ll_business_close);
-            ll_contain_act = (LinearLayout) itemView.findViewById(R.id.ll_contain_act);
-            layout_breakfast_item = (LinearLayout) itemView.findViewById(R.id.layout_breakfast_item);
-            view_close = (View) itemView.findViewById(R.id.view_close);
+//            tv_business_name = (TextView) itemView.findViewById(R.id.tv_business_name);
+//            tv_new_business = (TextView) itemView.findViewById(R.id.tv_new_business);
+//            tv_business_levelId = (TextView) itemView.findViewById(R.id.tv_business_levelId);
+//            tv_sale_distance = (TextView) itemView.findViewById(R.id.tv_sale_distance);
+//            tv_business_sales_num = (TextView) itemView.findViewById(R.id.tv_business_sales_num);
+//            tv_sale_startPay = (TextView) itemView.findViewById(R.id.tv_sale_startPay);
+//            tv_sale_time = (TextView) itemView.findViewById(R.id.tv_sale_time);
+//            tv_sale_price = (TextView) itemView.findViewById(R.id.tv_sale_price);
+//            iv_is_charge = (ImageView) itemView.findViewById(R.id.iv_is_charge);
+//            iv_gold_business = (ImageView) itemView.findViewById(R.id.iv_gold_business);
+//            iv_business_logo = (ImageView) itemView.findViewById(R.id.iv_business_logo);
+//
+//            rb_order_evaluate = (BaseRatingBar) itemView.findViewById(R.id.rb_order_evaluate);
+//
+//            ll_business_open = (LinearLayout) itemView.findViewById(R.id.ll_business_open);
+//            ll_business_close = (LinearLayout) itemView.findViewById(R.id.ll_business_close);
+//            ll_contain_act = (LinearLayout) itemView.findViewById(R.id.ll_contain_act);
+//            layout_breakfast_item = (LinearLayout) itemView.findViewById(R.id.layout_breakfast_item);
+//            view_close = (View) itemView.findViewById(R.id.view_close);
         }
     }
 

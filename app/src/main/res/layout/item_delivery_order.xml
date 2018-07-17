@@ -76,7 +76,7 @@
                     android:src="@drawable/icon_selected" />
 
                 <TextView
-                    android:id="@+id/tv_buy_address"
+                    android:id="@+id/tv_buy_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dimen_17_dp"
@@ -86,6 +86,18 @@
                     android:text="卡布奇诺 拿铁"
                     android:textColor="@color/text_333333"
                     android:textSize="@dimen/dimen_15_dp" />
+
+                <TextView
+                    android:id="@+id/tv_buy_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/tv_buy_name"
+                    android:layout_below="@+id/tv_buy_name"
+                    android:layout_marginTop="@dimen/dimen_10_dp"
+                    android:text="卡布奇诺 拿铁"
+                    android:textColor="@color/text_999999"
+                    android:textSize="@dimen/dimen_13_dp" />
+
 
                 <ImageView
                     android:id="@+id/image_one"

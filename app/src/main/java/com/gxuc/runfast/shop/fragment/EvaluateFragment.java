@@ -22,6 +22,7 @@ import com.gxuc.runfast.shop.bean.BusinessEvaluationInfo;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.shizhefei.fragment.LazyFragment;
+import com.willy.ratingbar.BaseRatingBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +54,10 @@ public class EvaluateFragment extends LazyFragment {
 
     private List<BusinessEvaluationInfo> businessEvaluationInfoList = new ArrayList<>();
     private EvaluateAdapter evaluateAdapter;
+    private BaseRatingBar rbTaste;
+    private BaseRatingBar rbPackage;
+    private TextView tvTaste;
+    private TextView tvPackage;
     //    private LoadMoreAdapter loadMoreAdapter;
 
     public EvaluateFragment() {
@@ -72,6 +77,11 @@ public class EvaluateFragment extends LazyFragment {
 //        Log.d("initView", "EvaluateFragment");
         recycler = (RecyclerView) findViewById(R.id.recycler);
         tvScore = (TextView) findViewById(R.id.tv_score);
+        rbTaste = (BaseRatingBar) findViewById(R.id.rb_taste);
+        tvTaste = (TextView) findViewById(R.id.tv_taste);
+        rbPackage = (BaseRatingBar) findViewById(R.id.rb_package);
+        tvPackage = (TextView) findViewById(R.id.tv_package);
+
         tvUserScore = (TextView) findViewById(R.id.tv_user_score);
         tvUserNum = (TextView) findViewById(R.id.tv_user_num);
     }
@@ -97,6 +107,10 @@ public class EvaluateFragment extends LazyFragment {
                         JSONObject data = jsonObject.optJSONObject("data");
 //                        tvScore.setText(data.optString("satisfactionDegreen"));
                         tvScore.setText(data.optString("avgScore"));
+                        rbTaste.setRating((float) data.optDouble("avgTastescore"));
+                        tvTaste.setText(data.optString("avgTastescore"));
+                        rbPackage.setRating((float) data.optDouble("avgPackagesScore"));
+                        tvPackage.setText(data.optString("avgPackagesScore"));
 //                        tvUserScore.setText("购买此产品的用户满意度为" + data.optString("satisfactionDegreen"));
                         tvUserNum.setText("已有" + data.optString("commentCount") + "人点评");
                         dealBusinessEvaluation(data.optJSONArray("commentList"));

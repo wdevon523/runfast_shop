@@ -49,22 +49,23 @@ public class CouponsAdapter extends RecyclerView.Adapter<CouponsAdapter.CouponsV
     public void onBindViewHolder(CouponsViewHolder holder, int position) {
         CouponBean couponBean = data.get(position);
         holder.itemView.setTag(couponBean);
-        holder.mTvCouponType.setText(couponBean.activityName);
-        holder.mTvCouponNumber.setText(String.valueOf(couponBean.less));
+        holder.mTvCouponName.setText(couponBean.activityName);
+        holder.mTvCouponNumber.setText(couponBean.less.stripTrailingZeros().toPlainString() + "");
         holder.mTvCouponMin.setText("满" + String.valueOf(couponBean.full) + "可用");
         //TODO 无配送类型字段
 //        holder.mTvCouponDeliver.setText(String.valueOf(couponBean.getPrice()));
         String startTime = couponBean.createTime;
         String endTime = couponBean.endTime;
-        if (startTime.contains(" ")) {
-            startTime = startTime.substring(0, startTime.indexOf(" "));
-        }
+//        if (startTime.contains(" ")) {
+//            startTime = startTime.substring(0, startTime.indexOf(" "));
+//        }
         if (endTime.contains(" ")) {
             endTime = endTime.substring(0, endTime.indexOf(" "));
         }
-        holder.mTvCouponDate.setText(startTime + " 至 " + endTime);
+        holder.mTvCouponDate.setText("有效期至: " + endTime);
         //TODO 已过期需要服务器返回 用户端存在手机系统时间非国际时间
         holder.mTvCouponState.setText(couponBean.used ? "已使用" : "未使用");
+        holder.mIvCouponType.setImageResource(couponBean.shared ? R.drawable.icon_share_coupon : R.drawable.icon_not_share_coupon);
 
 //        if (TextUtils.isEmpty(couponBean.getEnduse())) {
 //            holder.mTvCouponLimitDate.setText("限时段：无");
@@ -107,22 +108,20 @@ public class CouponsAdapter extends RecyclerView.Adapter<CouponsAdapter.CouponsV
     public class CouponsViewHolder extends RecyclerView.ViewHolder {
         TextView mTvCouponNumber;
         TextView mTvCouponMin;
-        TextView mTvCouponDeliver;
-        TextView mTvCouponLimitDate;
         TextView mTvCouponState;
         TextView mTvCouponDate;
-        TextView mTvCouponType;
+        TextView mTvCouponName;
         ImageView mIvExpired;
+        ImageView mIvCouponType;
 
         public CouponsViewHolder(View itemView) {
             super(itemView);
             mTvCouponNumber = (TextView) itemView.findViewById(R.id.tv_coupon_price);
             mTvCouponMin = (TextView) itemView.findViewById(R.id.tv_coupon_min);
-            mTvCouponDeliver = (TextView) itemView.findViewById(R.id.tv_coupon_deliver);
-            mTvCouponLimitDate = (TextView) itemView.findViewById(R.id.tv_coupon_limit_date);
             mTvCouponState = (TextView) itemView.findViewById(R.id.tv_coupon_state);
             mTvCouponDate = (TextView) itemView.findViewById(R.id.tv_coupon_date);
-            mTvCouponType = (TextView) itemView.findViewById(R.id.tv_coupon_type);
+            mTvCouponName = (TextView) itemView.findViewById(R.id.tv_coupon_name);
+            mIvCouponType = (ImageView) itemView.findViewById(R.id.iv_coupon_type);
             mIvExpired = (ImageView) itemView.findViewById(R.id.iv_expired);
         }
     }

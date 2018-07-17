@@ -24,12 +24,13 @@ public class CartItemsBean implements Serializable {
 
     public KeyBean key;
     public int num;
+    public String id;
     public String goodsName;
     public String goodsImg;
     public String standarName;
     public String standarOptionName;
     public BigDecimal price;
-    public String totalPrice;
+    public BigDecimal totalPrice;
     public Object activityId;
     public Object activityName;
     public Object activityType;

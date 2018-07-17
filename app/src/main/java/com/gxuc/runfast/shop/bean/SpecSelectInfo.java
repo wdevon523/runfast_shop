@@ -17,7 +17,7 @@ public class SpecSelectInfo {
     public int standardId;
     public String standardName;
     public String standarOptionName;
-    public String totalPrice;
+    public BigDecimal totalPrice;
 
     public Integer isLimited;
     public int limitNum;

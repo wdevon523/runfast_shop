@@ -242,16 +242,15 @@
             android:textColor="@color/text_333333"
             android:textSize="@dimen/dimen_14_dp" />
 
-        <RadioGroup
-            android:id="@+id/rg_tag"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <RadioButton
-                android:id="@+id/rb_home"
+            <CheckBox
+                android:id="@+id/cb_home"
                 android:layout_width="@dimen/dimen_60_dp"
                 android:layout_height="@dimen/dimen_25_dp"
                 android:layout_marginRight="@dimen/dimen_10_dp"
@@ -262,8 +261,8 @@
                 android:textColor="@drawable/select_radion_button_text"
                 android:textSize="@dimen/dimen_12_dp" />
 
-            <RadioButton
-                android:id="@+id/rb_company"
+            <CheckBox
+                android:id="@+id/cb_company"
                 android:layout_width="@dimen/dimen_60_dp"
                 android:layout_height="@dimen/dimen_25_dp"
                 android:layout_marginRight="@dimen/dimen_10_dp"
@@ -274,8 +273,8 @@
                 android:textColor="@drawable/select_radion_button_text"
                 android:textSize="@dimen/dimen_12_dp" />
 
-            <RadioButton
-                android:id="@+id/rb_school"
+            <CheckBox
+                android:id="@+id/cb_school"
                 android:layout_width="@dimen/dimen_60_dp"
                 android:layout_height="@dimen/dimen_25_dp"
                 android:background="@drawable/filter_select"
@@ -285,7 +284,7 @@
                 android:textColor="@drawable/select_radion_button_text"
                 android:textSize="@dimen/dimen_12_dp" />
 
-        </RadioGroup>
+        </LinearLayout>
 
     </LinearLayout>
 

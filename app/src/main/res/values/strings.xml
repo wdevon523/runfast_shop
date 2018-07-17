@@ -39,7 +39,7 @@
 
     <string name="write_order_evaluation">请对商家服务打分</string>
     <string name="write_send_evaluation">评价配送服务</string>
-    <string name="hint_evaluation">亲，写点什么吧，最少评价15字，您的评价是其他用户的重要参考！</string>
+    <string name="hint_evaluation">亲，写点什么吧，您的评价是其他用户的重要参考！</string>
     <string name="publish">发表</string>
 
     <string name="where_from">物品从哪里发出</string>
@@ -60,6 +60,7 @@
     <string name="meet_question">遇到以下问题</string>
     <string name="meet_question_default">查看全部问题</string>
     <string name="delivery_price">配送费</string>
+    <string name="tip_price">小费</string>
     <string name="load_all_date">已经加载全部数据</string>
 
     <item name="tag_day" type="id"></item>

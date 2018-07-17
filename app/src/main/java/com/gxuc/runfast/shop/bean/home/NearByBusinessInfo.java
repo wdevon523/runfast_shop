@@ -85,6 +85,7 @@ public class NearByBusinessInfo {
      * isCharge : 0
      * account : 6222083202008724672
      * open : true
+     * bookable : 1
      * teamname : null
      */
 
@@ -167,6 +168,8 @@ public class NearByBusinessInfo {
     public String account;
     public boolean open;
     public Object teamname;
+    public String bookTime;
+    public boolean bookable;
     public List<BusinessEvent> activityList;
 
 }

@@ -1,6 +1,7 @@
 package com.gxuc.runfast.shop.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class ValidActivityListBean implements Serializable{
 
@@ -22,7 +23,7 @@ public class ValidActivityListBean implements Serializable{
     public int activityId;
     public int activityType;
     public boolean shared;
-    public double less;
+    public BigDecimal less;
     public Object agentId;
     public Object businessId;
     public Object goodsId;

@@ -2,16 +2,17 @@ package com.gxuc.runfast.shop.bean;
 
 public class BusinessEvaluationInfo {
 
+
     /**
      * id : 44937
      * businessId : 4156
      * businessName : 武汉测试商家
      * cost : 3.0
-     * createTime : 2018-01-17 11:16:07
+     * createTime : 2018-01-17 19:16:07
      * delicerId : 1167
      * delicerName : 李军
      * delicerTime : null
-     * orderTime : 2018-01-17 06:55:02
+     * orderTime : 2018-01-17 14:55:02
      * score : 1.0
      * userId : 471551
      * userName : 我是个傻子
@@ -26,8 +27,14 @@ public class BusinessEvaluationInfo {
      * feedTime : null
      * recontent : null
      * recreateTime : null
-     * content : null
+     * deleted : null
+     * delicerScore : null
+     * content : 在
      * feedback : null
+     * tasteScore : null
+     * packagesScore : null
+     * anonymous : null
+     * driverSatisfy : null
      */
 
     public int id;
@@ -52,8 +59,14 @@ public class BusinessEvaluationInfo {
     public String shangstr;
     public Object feedTime;
     public String recontent;
-    public Object recreateTime;
+    public String recreateTime;
+    public Object deleted;
+    public Object delicerScore;
     public String content;
-    public Object feedback;
+    public String feedback;
+    public Integer tasteScore;
+    public Integer packagesScore;
+    public boolean anonymous;
+    public boolean driverSatisfy;
 
 }

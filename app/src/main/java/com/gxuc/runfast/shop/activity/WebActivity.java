@@ -2,6 +2,7 @@ package com.gxuc.runfast.shop.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -32,6 +33,10 @@ public class WebActivity extends ToolBarActivity {
 
     private void initView() {
         String url = getIntent().getStringExtra("url");
+        String title = getIntent().getStringExtra("title");
+        if (!TextUtils.isEmpty(title)){
+            setTitle(title);
+        }
 //        WebSettings settings = webview.getSettings();
 //        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 //        settings.setJavaScriptEnabled(true);

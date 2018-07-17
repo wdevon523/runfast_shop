@@ -62,30 +62,31 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
         DeliveryOrderInfo deliveryOrderInfo = deliveryOrderInfoList.get(position);
         deliveryOrderViewHolder.tvDeliveryOrderStatus.setText(CustomUtils.getStatusStr(deliveryOrderInfo.status));
         deliveryOrderViewHolder.tvCargoName.setText(TextUtils.equals("DAIGOU", deliveryOrderInfo.type) ? deliveryOrderInfo.goodsDescription : deliveryOrderInfo.goodsType);
-        deliveryOrderViewHolder.tvBuyAddress.setText(TextUtils.equals("NEARBY", deliveryOrderInfo.fromType) ? "就近购买" : deliveryOrderInfo.fromAddress);
+        deliveryOrderViewHolder.tvBuyName.setText(TextUtils.equals("NEARBY", deliveryOrderInfo.fromType) ? "就近购买" : deliveryOrderInfo.fromName);
+        deliveryOrderViewHolder.tvBuyAddress.setVisibility(TextUtils.equals("DAIGOU", deliveryOrderInfo.type) && TextUtils.equals("NEARBY", deliveryOrderInfo.fromType) ? View.GONE : View.VISIBLE);
+        deliveryOrderViewHolder.tvBuyAddress.setText(deliveryOrderInfo.fromAddress);
         deliveryOrderViewHolder.tvSendAddress.setText(deliveryOrderInfo.toAddress);
         deliveryOrderViewHolder.tvSendName.setText(deliveryOrderInfo.toName);
         deliveryOrderViewHolder.tvSendMobile.setText(deliveryOrderInfo.toMobile);
         deliveryOrderViewHolder.tvDeliveryOrderTime.setText(deliveryOrderInfo.createTime.substring(0, 16));
         ShowHideButton(deliveryOrderViewHolder, deliveryOrderInfo);
-
     }
 
     private void ShowHideButton(DeliveryOrderViewHolder deliveryOrderViewHolder, DeliveryOrderInfo deliveryOrderInfo) {
         if (TextUtils.equals("CREATED", deliveryOrderInfo.status)) {
             //待支付
             deliveryOrderViewHolder.tvPayNow.setVisibility(View.VISIBLE);
+            deliveryOrderViewHolder.tvCancel.setVisibility(View.VISIBLE);
 
             deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.GONE);
             deliveryOrderViewHolder.tvCallDriver.setVisibility(View.GONE);
-            deliveryOrderViewHolder.tvCancel.setVisibility(View.GONE);
         } else if (TextUtils.equals("PAID", deliveryOrderInfo.status)) {
             //已支付，待骑手接单
             deliveryOrderViewHolder.tvCancel.setVisibility(View.VISIBLE);
+            deliveryOrderViewHolder.tvCallDriver.setVisibility(View.VISIBLE);
 
             deliveryOrderViewHolder.tvPayNow.setVisibility(View.GONE);
             deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.GONE);
-            deliveryOrderViewHolder.tvCallDriver.setVisibility(View.GONE);
 
         } else if (TextUtils.equals("TAKEN", deliveryOrderInfo.status)) {
             //骑手接单
@@ -97,13 +98,13 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
         } else if (TextUtils.equals("COMPLETED", deliveryOrderInfo.status)) {
             //已完成
             deliveryOrderViewHolder.tvCallDriver.setVisibility(View.VISIBLE);
-            deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.VISIBLE);
+            deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.GONE);
 
             deliveryOrderViewHolder.tvCancel.setVisibility(View.GONE);
             deliveryOrderViewHolder.tvPayNow.setVisibility(View.GONE);
         } else if (TextUtils.equals("CANCELED", deliveryOrderInfo.status)) {
             //已取消
-            deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.VISIBLE);
+            deliveryOrderViewHolder.tvBuyAgain.setVisibility(View.GONE);
 
             deliveryOrderViewHolder.tvCallDriver.setVisibility(View.GONE);
             deliveryOrderViewHolder.tvCancel.setVisibility(View.GONE);
@@ -125,6 +126,8 @@ public class DeliveryOrderAdapter extends RecyclerView.Adapter {
         TextView tvCargoName;
         @BindView(R.id.tv_delivery_order_status)
         TextView tvDeliveryOrderStatus;
+        @BindView(R.id.tv_buy_name)
+        TextView tvBuyName;
         @BindView(R.id.tv_buy_address)
         TextView tvBuyAddress;
         @BindView(R.id.tv_send_address)

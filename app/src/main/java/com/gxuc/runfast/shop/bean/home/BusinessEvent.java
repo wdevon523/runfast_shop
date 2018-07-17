@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.bean.home;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class BusinessEvent {
@@ -46,8 +47,8 @@ public class BusinessEvent {
          */
 
         public int id;
-        public double full;
-        public double less;
+        public BigDecimal full;
+        public BigDecimal less;
         public double subsidy;
         public int activity_id;
 

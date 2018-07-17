@@ -21,10 +21,12 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.activity.BusinessLicenceActivity;
 import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.activity.ShowImageActivity;
+import com.gxuc.runfast.shop.activity.WebActivity;
 import com.gxuc.runfast.shop.adapter.BusinessImageAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.BusinessNewDetail;
 import com.gxuc.runfast.shop.bean.business.BusinessDetail;
+import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessActivity;
@@ -99,9 +101,13 @@ public class BusinessInfoFragment extends LazyFragment {
         rlBusinessLicence.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), BusinessLicenceActivity.class);
-//                intent.putExtra("licence", businessDetail.getImgs());
-                startActivity(intent);
+                Intent webIntent = new Intent(getContext(), WebActivity.class);
+                webIntent.putExtra("url", ApiServiceFactory.WEB_HOST + "business/qualification.do?id=" + businessDetail.id);
+                webIntent.putExtra("title", "营业资质");
+                startActivity(webIntent);
+//                Intent intent = new Intent(getContext(), BusinessLicenceActivity.class);
+////                intent.putExtra("licence", businessDetail.getImgs());
+//                startActivity(intent);
             }
         });
 
@@ -164,8 +170,11 @@ public class BusinessInfoFragment extends LazyFragment {
             System.arraycopy(split, 0, images, imageLength, spitLength);
             businessImageAdapter.setList(images);
         }
-
-//        tvDistributionTime.setText(businessDetail.getWordTime());
+        if (TextUtils.isEmpty(businessDetail.startwork)) {
+            tvDistributionTime.setText("24小时营业");
+        } else {
+            tvDistributionTime.setText(businessDetail.startwork.substring(11, 16) + " - " + businessDetail.endwork.substring(11, 16));
+        }
 
 //        flImgContain.removeAllViews();
 //        ViewGroup.MarginLayoutParams layoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

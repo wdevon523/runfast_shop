@@ -35,15 +35,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
+                android:background="@color/bg_f3f4f5"
                 android:clickable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingLeft="@dimen/dimen_15_dp"
+                android:paddingRight="@dimen/dimen_15_dp">
 
                 <View
                     android:layout_width="4dp"
-                    android:layout_height="16dp"
+                    android:layout_height="@dimen/dimen_15_dp"
                     android:background="@color/text_ff9f14" />
 
                 <TextView
@@ -53,18 +54,20 @@
                     android:layout_weight="1"
                     android:text="已选商品"
                     android:textColor="#666666"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/dimen_12_dp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:drawablePadding="2dp"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_evaluate_delete"
+                    android:drawablePadding="@dimen/dimen_3_dp"
                     android:gravity="center"
                     android:onClick="clearCar"
                     android:text="清空购物车"
                     android:textColor="#666666"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/dimen_12_dp" />
+
             </LinearLayout>
 
             <com.gxuc.runfast.shop.view.CustomScrollView

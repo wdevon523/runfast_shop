@@ -128,13 +128,14 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
 
         poiSearch = new PoiSearch(this, query);
         poiSearch.setOnPoiSearchListener(this);
-        if (address.latLng == null) {
-            poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(39.9088600000,
-                    116.3973900000), 1000));
-        } else {
+        if (address.latLng != null) {
             poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(address.latLng.latitude,
                     address.latLng.longitude), 1000));//设置周边搜索的中心点以及半径
         }
+//        else {
+//            poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(39.9088600000,
+//                    116.3973900000), 1000));
+//        }
         poiSearch.searchPOIAsyn();
 
     }
@@ -183,7 +184,8 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
                 //keyWord表示搜索字符串
                 //第二个参数表示POI搜索类型，二者选填其一，选用POI搜索类型时建议填写类型代码，码表可以参考下方（而非文字），120000  商务住宅相关
                 //cityCode表示POI搜索区域，可以是城市编码也可以是城市名称，也可以传空字符串，空字符串代表全国在全国范围内进行搜索
-                searchQuery.setCityLimit(true);
+
+//                searchQuery.setCityLimit(true);
 //                searchQuery.setLocation(new LatLonPoint(address.latLng.latitude, address.latLng.longitude));
 //                searchQuery.setDistanceSort(true);
                 searchQuery.setPageSize(20);// 设置每页最多返回多少条poiitem
@@ -337,7 +339,8 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
                 .setFragmentManager(getSupportFragmentManager())    //此方法必须调用
                 .enableAnimation(true)    //启用动画效果
                 .setAnimationStyle(R.style.CustomAnim)    //自定义动画
-                .setLocatedCity(new LocatedCity("杭州", "浙江", "101210101")) //APP自身已定位的城市，默认为null（定位失败）
+//                .setLocatedCity(new LocatedCity("杭州", "浙江", "101210101")) //APP自身已定位的城市，默认为null（定位失败）
+                .setLocatedCity(new LocatedCity(address.address.substring(0, address.address.length() - 1), "浙江", "101210101")) //APP自身已定位的城市，默认为null（定位失败）
                 .setHotCities(hotCities)    //指定热门城市
                 .setOnPickListener(new OnPickListener() {
                     @Override
@@ -397,6 +400,7 @@ public class AddressAdminActivity extends ToolBarActivity implements PoiSearch.O
             if (i != pois.size() - 1) {
                 View view = new View(this);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 2);//宽度、高度
+                params.setMargins(40, 0, 0, 0);
                 view.setLayoutParams(params);
                 view.setBackgroundResource(R.color.view_e5e5e5);
                 llContainNearbyAddress.addView(view);

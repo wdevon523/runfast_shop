@@ -31,7 +31,7 @@ public class OffZoneGoodAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return offZoneGoodsList.size();
+        return offZoneGoodsList == null ? 0 : offZoneGoodsList.size();
     }
 
     @Override
@@ -55,10 +55,10 @@ public class OffZoneGoodAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        x.image().bind(viewHolder.ivOffZoneGoodLogo, UrlConstant.ImageBaseUrl + offZoneGoodsInfo.gs_mini_imgPath);
-        x.image().bind(viewHolder.ivOffZoneBusinessLogo, UrlConstant.ImageBaseUrl + offZoneGoodsInfo.busMiniImgPath);
+        x.image().bind(viewHolder.ivOffZoneGoodLogo, UrlConstant.ImageBaseUrl + offZoneGoodsInfo.gs_imgPath);
+        x.image().bind(viewHolder.ivOffZoneBusinessLogo, UrlConstant.ImageBaseUrl + offZoneGoodsInfo.busImgPath);
 
-        viewHolder.tvOffZoneName.setText(offZoneGoodsInfo.a_specialName);
+        viewHolder.tvOffZoneName.setText(offZoneGoodsInfo.a_name);
 
         return convertView;
     }

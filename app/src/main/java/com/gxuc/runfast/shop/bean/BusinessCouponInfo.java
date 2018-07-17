@@ -1,5 +1,7 @@
 package com.gxuc.runfast.shop.bean;
 
+import java.math.BigDecimal;
+
 public class BusinessCouponInfo {
 
     /**
@@ -10,7 +12,7 @@ public class BusinessCouponInfo {
      * discount : null
      * endTime : 2018-07-26 23:59:59
      * fulls : 30.0
-     * lesss : null
+     * lesss : 10
      * name : 商家红包
      * ptype : 10
      * startTime : 2018-05-03 00:00:44
@@ -56,16 +58,17 @@ public class BusinessCouponInfo {
      * fullReturn : null
      * stanids : null
      * activityTargetList : null
+     * picked : true
      */
 
     public int id;
     public int busId;
-    public Object busname;
+    public String busname;
     public String createTime;
     public Object discount;
     public String endTime;
     public double fulls;
-    public Object lesss;
+    public BigDecimal lesss;
     public String name;
     public int ptype;
     public String startTime;
@@ -111,5 +114,6 @@ public class BusinessCouponInfo {
     public Object fullReturn;
     public Object stanids;
     public Object activityTargetList;
+    public boolean picked;
 
 }

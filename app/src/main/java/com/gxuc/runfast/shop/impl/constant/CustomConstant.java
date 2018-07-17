@@ -34,7 +34,7 @@ public class CustomConstant {
 
     public static final String sp_name = "passenger";
 
-    public static final String sp_order_no = "orderNo";
+    public static final String RED_PACKAGE_TIME = "redPackageTime";
 
     public static final String start_address_name = "startAddressData";
 

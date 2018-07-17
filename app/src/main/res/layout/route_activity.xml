@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white" >
+    android:background="@color/white">
 
     <RelativeLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
-        android:padding="5dp"
         android:background="@drawable/bg_bottom_bar"
         android:gravity="center_vertical"
-        android:visibility="gone" >
+        android:padding="5dp"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/firstline"
@@ -32,8 +32,8 @@
             android:gravity="right"
             android:singleLine="true"
             android:textColor="#999999"
-            android:textSize="13sp" 
-            android:visibility="gone"/>
+            android:textSize="13sp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/detail"
@@ -41,8 +41,8 @@
             android:layout_height="35dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
-            android:orientation="horizontal" 
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -65,8 +65,15 @@
         android:id="@+id/route_map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_layout">
-    </com.amap.api.maps2d.MapView>
+        android:layout_above="@id/bottom_layout" />
 
+    <ImageView
+        android:id="@+id/iv_back_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dimen_20_dp"
+        android:src="@drawable/icon_close_map" />
 
 </RelativeLayout>

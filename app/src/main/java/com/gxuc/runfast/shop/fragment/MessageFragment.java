@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ import com.gxuc.runfast.shop.bean.message.MessageInfo;
 import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.view.recyclerview.EmptyRecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,17 +55,20 @@ import retrofit2.Response;
 public class MessageFragment extends Fragment {
 
 
-    Unbinder unbinder;
-//    @BindView(R.id.toolbar_title)
-//    TextView toolbarTitle;
+    //    @BindView(R.id.toolbar_title)
+    @BindView(R.id.iv_empty)
+    ImageView ivEmpty;
+    //    TextView toolbarTitle;
     @BindView(R.id.rv_message_list)
-    RecyclerView mRvMessageList;
+    EmptyRecyclerView recyclerView;
     @BindView(R.id.ll_empty_message)
     LinearLayout llEmptyMessage;
     @BindView(R.id.ll_not_login)
     LinearLayout llNotLogin;
     @BindView(R.id.tv_login)
     TextView tvLogin;
+
+    Unbinder unbinder;
     private Integer page = 1;
     private ArrayList<MessageInfo> messageInfoList;
     private MessageAdapter mAdapter;
@@ -87,10 +92,10 @@ public class MessageFragment extends Fragment {
 
     private void initData() {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRvMessageList.setLayoutManager(manager);
+        recyclerView.setLayoutManager(manager);
         messageInfoList = new ArrayList<>();
         mAdapter = new MessageAdapter(getActivity(), messageInfoList);
-        mRvMessageList.setAdapter(mAdapter);
+        recyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -139,8 +144,8 @@ public class MessageFragment extends Fragment {
                 String body = response.body().toString();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
-                    if (!body.contains("{\"relogin\":1}") && jsonObject.optBoolean("success")) {
-                        if (!TextUtils.isEmpty(body)) {
+                    if (!body.contains("{\"relogin\":1}")) {
+                        if (jsonObject.optBoolean("success") && !TextUtils.isEmpty(body)) {
                             dealMessageList(jsonObject.optJSONArray("data"));
                             llNotLogin.setVisibility(View.GONE);
                         }
@@ -150,6 +155,8 @@ public class MessageFragment extends Fragment {
                         llNotLogin.setVisibility(View.VISIBLE);
                         llEmptyMessage.setVisibility(View.GONE);
                     }
+                    recyclerView.setEmptyView(ivEmpty);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

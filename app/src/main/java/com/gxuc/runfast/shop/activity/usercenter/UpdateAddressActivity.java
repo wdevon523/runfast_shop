@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.amap.api.services.geocoder.RegeocodeAddress;
+import com.example.supportv1.utils.LogUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -22,6 +23,7 @@ import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.util.ToastUtil;
+import com.gxuc.runfast.shop.util.VaUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,14 +51,12 @@ public class UpdateAddressActivity extends ToolBarActivity {
     EditText etHouseNumber;
     @BindView(R.id.btn_delete_address)
     Button mBtnDeleteAddress;
-    @BindView(R.id.rb_home)
-    RadioButton rbHome;
-    @BindView(R.id.rb_company)
-    RadioButton rbCompany;
-    @BindView(R.id.rb_school)
-    RadioButton rbSchool;
-    @BindView(R.id.rg_tag)
-    RadioGroup rgTag;
+    @BindView(R.id.cb_home)
+    CheckBox cbHome;
+    @BindView(R.id.cb_company)
+    CheckBox cbCompany;
+    @BindView(R.id.cb_school)
+    CheckBox cbSchool;
     @BindView(R.id.cb_man)
     CheckBox cbMan;
     @BindView(R.id.cb_woman)
@@ -92,15 +92,15 @@ public class UpdateAddressActivity extends ToolBarActivity {
                 switch (mAddressInfo.tag) {
                     case 1:
                         tag = 1;
-                        rgTag.check(R.id.rb_home);
+                        cbHome.setChecked(true);
                         break;
                     case 2:
                         tag = 2;
-                        rgTag.check(R.id.rb_company);
+                        cbCompany.setChecked(true);
                         break;
                     case 3:
                         tag = 3;
-                        rgTag.check(R.id.rb_school);
+                        cbSchool.setChecked(true);
                         break;
                 }
             }
@@ -127,7 +127,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
         }
     }
 
-    @OnClick({R.id.layout_select_address, R.id.btn_save_address, R.id.btn_delete_address, R.id.rb_home, R.id.rb_company, R.id.rb_school, R.id.cb_man, R.id.cb_woman})
+    @OnClick({R.id.layout_select_address, R.id.btn_save_address, R.id.btn_delete_address, R.id.cb_home, R.id.cb_company, R.id.cb_school, R.id.cb_man, R.id.cb_woman})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_select_address:
@@ -150,14 +150,20 @@ public class UpdateAddressActivity extends ToolBarActivity {
             case R.id.btn_delete_address:
                 deleteAddress();
                 break;
-            case R.id.rb_home:
-                tag = 1;
+            case R.id.cb_home:
+                tag = cbHome.isChecked() ? 1 : -1;
+                cbCompany.setChecked(false);
+                cbSchool.setChecked(false);
                 break;
-            case R.id.rb_company:
-                tag = 2;
+            case R.id.cb_company:
+                tag = cbCompany.isChecked() ? 2 : -1;
+                cbHome.setChecked(false);
+                cbSchool.setChecked(false);
                 break;
-            case R.id.rb_school:
-                tag = 3;
+            case R.id.cb_school:
+                tag = cbSchool.isChecked() ? 3 : -1;
+                cbHome.setChecked(false);
+                cbCompany.setChecked(false);
                 break;
             case R.id.cb_man:
                 gender = 1;
@@ -183,7 +189,7 @@ public class UpdateAddressActivity extends ToolBarActivity {
         } else if (TextUtils.isEmpty(mUserPhone)) {
             ToastUtil.showToast("请填入手机号");
             return true;
-        } else if (mUserPhone.length() != 11) {
+        } else if (mUserPhone.length() != 11 || !VaUtils.isMobileNo(mUserPhone)) {
             ToastUtil.showToast("请填入正确的手机号");
             return true;
         } else if (TextUtils.isEmpty(mHouseNumber)) {

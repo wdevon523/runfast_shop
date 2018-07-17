@@ -49,6 +49,8 @@ public class BusinessPreferentialActivity extends ToolBarActivity {
 
     private ArrayList<NearByBusinessInfo> businessInfos = new ArrayList<>();
     private BusinessCategoryAdapter businessCategoryAdapter;
+    //0：特惠优选， 1：满减活动  5：减配送费
+    private int activityId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,7 +66,18 @@ public class BusinessPreferentialActivity extends ToolBarActivity {
 
     }
 
+    @Override
+    protected void onTitleChanged(CharSequence title, int color) {
+        super.onTitleChanged(title, color);
+        if (activityId != 0) {
+            tvToolbarTitle.setText("优惠专区");
+        } else {
+            tvToolbarTitle.setText("特惠优选");
+        }
+    }
+
     private void initData() {
+        activityId = getIntent().getIntExtra("activityId", 0);
         lat = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT);
         lon = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON);
         agentId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
@@ -133,33 +146,89 @@ public class BusinessPreferentialActivity extends ToolBarActivity {
             return;
         }
 
-        CustomApplication.getRetrofitNew().getPreferentialBusiness(agentId, lon, lat, currentPage, 10).enqueue(new MyCallback<String>() {
-            @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                String body = response.body();
-                try {
-                    JSONObject jsonObject = new JSONObject(body);
-                    if (jsonObject.optBoolean("success")) {
-                        JSONArray jsonArray = jsonObject.optJSONArray("data");
-                        if (jsonArray != null && jsonArray.length() > 0) {
-                            dealNearByBusinessData(jsonArray.toString());
+        if (activityId == 0) {
+            CustomApplication.getRetrofitNew().getPreferentialBusiness(agentId, lon, lat, currentPage, 10).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        if (jsonObject.optBoolean("success")) {
+                            JSONArray jsonArray = jsonObject.optJSONArray("data");
+                            if (jsonArray != null && jsonArray.length() > 0) {
+                                dealNearByBusinessData(jsonArray.toString());
+                            } else {
+                                isLastPage = true;
+                            }
                         } else {
-                            isLastPage = true;
+                            ToastUtil.showToast(jsonObject.optString("errorMsg"));
                         }
-                    } else {
-                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
 
-            }
-        });
+                }
+            });
 
+        } else if (activityId == 1) {
+            CustomApplication.getRetrofitNew().getFullLessZoneBusiness(agentId, lon, lat, currentPage, 10).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        if (jsonObject.optBoolean("success")) {
+                            JSONArray jsonArray = jsonObject.optJSONArray("data");
+                            if (jsonArray != null && jsonArray.length() > 0) {
+                                dealNearByBusinessData(jsonArray.toString());
+                            } else {
+                                isLastPage = true;
+                            }
+                        } else {
+                            ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+        } else {
+            CustomApplication.getRetrofitNew().getFreeDeliveryZoneBusiness(agentId, lon, lat, currentPage, 10).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    String body = response.body();
+                    try {
+                        JSONObject jsonObject = new JSONObject(body);
+                        if (jsonObject.optBoolean("success")) {
+                            JSONArray jsonArray = jsonObject.optJSONArray("data");
+                            if (jsonArray != null && jsonArray.length() > 0) {
+                                dealNearByBusinessData(jsonArray.toString());
+                            } else {
+                                isLastPage = true;
+                            }
+                        } else {
+                            ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+
+                }
+            });
+        }
     }
 
     private void dealNearByBusinessData(String data) {

@@ -9,25 +9,20 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
-import com.gxuc.runfast.shop.bean.FoodBean;
 import com.gxuc.runfast.shop.util.ViewUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import static com.gxuc.runfast.shop.activity.BusinessNewActivity.carAdapter;
 
 public class ShopCarView extends FrameLayout {
-    private TextView car_limit, tv_amount;
+    private TextView car_limit, tv_send_price, tv_amount, car_nonselect;
     public ImageView iv_shop_car;
     public TextView car_badge;
     public TextView cart_notice;
@@ -49,6 +44,7 @@ public class ShopCarView extends FrameLayout {
                 sheetScrolling = false;
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED || newState == BottomSheetBehavior.STATE_HIDDEN) {
                     blackView.setVisibility(View.GONE);
+                    cart_notice.setVisibility(TextUtils.isEmpty(cart_notice.getText()) ? GONE : VISIBLE);
                 }
             }
 
@@ -56,16 +52,27 @@ public class ShopCarView extends FrameLayout {
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 sheetScrolling = true;
                 blackView.setVisibility(View.VISIBLE);
+                cart_notice.setVisibility(GONE);
                 ViewCompat.setAlpha(blackView, slideOffset);
             }
         });
-        blackView.setOnTouchListener(new OnTouchListener() {
+
+        blackView.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
+            public void onClick(View v) {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                return true;
+//                cart_notice.setVisibility(TextUtils.isEmpty(cart_notice.getText()) ? GONE : VISIBLE);
             }
         });
+
+//        blackView.setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent motionEvent) {
+//                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                cart_notice.setVisibility(TextUtils.isEmpty(cart_notice.getText()) ? GONE : VISIBLE);
+//                return true;
+//            }
+//        });
     }
 
     public ShopCarView(@NonNull Context context) {
@@ -83,6 +90,8 @@ public class ShopCarView extends FrameLayout {
             iv_shop_car = findViewById(R.id.iv_shop_car);
             car_badge = findViewById(R.id.car_badge);
             car_limit = findViewById(R.id.car_limit);
+            tv_send_price = findViewById(R.id.tv_send_price);
+            car_nonselect = findViewById(R.id.car_nonselect);
             tv_amount = findViewById(R.id.tv_amount);
             shoprl = findViewById(R.id.car_rl);
             cart_notice = findViewById(R.id.cart_notice);
@@ -101,7 +110,7 @@ public class ShopCarView extends FrameLayout {
         }
     }
 
-    public void updateAmount(BigDecimal amount, BigDecimal startPay) {
+    public void updateAmount(BigDecimal amount, BigDecimal sendPrice, BigDecimal startPay, boolean suportSelf, Integer isopen) {
 //        HashMap<Integer, ArrayList<FoodBean>> specMap = new HashMap<>();
 //        BigDecimal totalPrice = new BigDecimal(0.0);
 //        BigDecimal payPrice = new BigDecimal(0.0);
@@ -168,8 +177,8 @@ public class ShopCarView extends FrameLayout {
             car_limit.setEnabled(false);
             car_limit.setText("¥" + startPay + " 起送");
             car_limit.setTextColor(Color.parseColor("#a8a8a8"));
-            car_limit.setBackgroundColor(Color.parseColor("#535353"));
-            findViewById(R.id.car_nonselect).setVisibility(View.VISIBLE);
+            car_limit.setBackgroundColor(getResources().getColor(R.color.transparent));
+            car_nonselect.setVisibility(View.VISIBLE);
             findViewById(R.id.amount_container).setVisibility(View.GONE);
             iv_shop_car.setImageResource(R.drawable.icon_not_shop_car);
             behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -177,8 +186,8 @@ public class ShopCarView extends FrameLayout {
             car_limit.setEnabled(false);
             car_limit.setText("还差 ¥" + startPay.subtract(amount) + " 起送");
             car_limit.setTextColor(Color.parseColor("#a8a8a8"));
-            car_limit.setBackgroundColor(Color.parseColor("#535353"));
-            findViewById(R.id.car_nonselect).setVisibility(View.GONE);
+            car_limit.setBackgroundColor(getResources().getColor(R.color.transparent));
+            car_nonselect.setVisibility(View.GONE);
             findViewById(R.id.amount_container).setVisibility(View.VISIBLE);
             iv_shop_car.setImageResource(R.drawable.icon_shop_car);
         } else {
@@ -186,12 +195,23 @@ public class ShopCarView extends FrameLayout {
 //            car_limit.setText("     去结算     ");
             car_limit.setText("去结算");
             car_limit.setTextColor(Color.WHITE);
-            car_limit.setBackgroundColor(Color.parseColor("#fba42a"));
-            findViewById(R.id.car_nonselect).setVisibility(View.GONE);
+            car_limit.setBackgroundColor(getResources().getColor(R.color.bg_fba42a));
+            car_nonselect.setVisibility(View.GONE);
             findViewById(R.id.amount_container).setVisibility(View.VISIBLE);
             iv_shop_car.setImageResource(R.drawable.icon_shop_car);
         }
+        car_nonselect.setText("另需配送费¥" + sendPrice.stripTrailingZeros().toPlainString() + (suportSelf ? " | 支持到店自取" : ""));
+        tv_send_price.setText("另需配送费¥" + sendPrice.stripTrailingZeros().toPlainString() + (suportSelf ? " | 支持到店自取" : ""));
         tv_amount.setText("¥" + amount);
+
+        if (isopen != 1){
+            car_limit.setText("已打烊");
+            car_limit.setEnabled(false);
+            car_limit.setTextColor(Color.parseColor("#a8a8a8"));
+            car_limit.setBackgroundColor(getResources().getColor(R.color.transparent));
+            iv_shop_car.setImageResource(R.drawable.icon_not_shop_car);
+        }
+
     }
 
     public void showBadge(int total) {

@@ -209,12 +209,13 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
             @Override
             public void afterTextChanged(Editable s) {
                 //检索查询地址
-                query = new PoiSearch.Query(s.toString(), "");
+                query = new PoiSearch.Query(s.toString(), "", mAddress.getCity());
                 //keyWord表示搜索字符串，
                 //第二个参数表示POI搜索类型，二者选填其一，选用POI搜索类型时建议填写类型代码，码表可以参考下方（而非文字）
                 //cityCode表示POI搜索区域，可以是城市编码也可以是城市名称，也可以传空字符串，空字符串代表全国在全国范围内进行搜索
 
-                query.setCityLimit(true);
+//                query.setCityLimit(true);
+                query.setDistanceSort(true);
                 query.setPageSize(10);// 设置每页最多返回多少条poiitem
                 query.setPageNum(1);//设置查询页码
                 pageNo = 1;
@@ -435,12 +436,12 @@ public class AddressManagerActivity extends ToolBarActivity implements AMap.OnMy
 //                }
                 break;
             case R.id.tv_current_address:
-//                Intent intent = new Intent();
-//                intent.putExtra("address", isSearch ? addressSearch.get(0).title : addresses.get(0).title);
-//                intent.putExtra("addressInfo", mAddress);
-//                intent.putExtra("addressLat", mAddressInfo);
-//                setResult(RESULT_OK, intent);
-//                finish();
+                Intent intent = new Intent();
+                intent.putExtra("address", isSearch ? addressSearch.get(0).title : addresses.get(0).title);
+                intent.putExtra("addressInfo", mAddress);
+                intent.putExtra("addressLat", isSearch ? addressSearch.get(0) : addresses.get(0));
+                setResult(RESULT_OK, intent);
+                finish();
                 break;
         }
     }

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_food_gray"
+    android:background="@color/bg_f3f4f5"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".fragment.MessageFragment">
@@ -25,10 +25,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.RecyclerView
+        <com.gxuc.runfast.shop.view.recyclerview.EmptyRecyclerView
             android:id="@+id/rv_message_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/iv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/bg_order_empty"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/ll_not_login"

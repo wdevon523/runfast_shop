@@ -76,7 +76,7 @@ public class DeliveryOrderDetailInfo {
     public String pickTime;
     public String remark;
     public Object suggestionCost;
-    public int tip;
+    public Integer tip;
     public int cuserId;
     public int driverId;
     public int fromId;

@@ -1,13 +1,12 @@
 package com.gxuc.runfast.shop.view;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.AdapterView;
@@ -41,6 +40,8 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
     TextView tvSortTitle;
     @BindView(R.id.iv_sort_arrow)
     ImageView ivSortArrow;
+    @BindView(R.id.tv_nearby_title)
+    TextView tvNearbyTitle;
     @BindView(R.id.tv_filter_title)
     TextView tvFilterTitle;
     @BindView(R.id.iv_filter_arrow)
@@ -160,15 +161,24 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         FilterInfo filterInfoFeature1 = new FilterInfo();
         filterInfoFeature1.name = "商家配送";
         filterInfoFeature1.type = 1;
-//        FilterInfo filterInfoFeature2 = new FilterInfo();
-//        filterInfoFeature2.name = "接受预定";
+        FilterInfo filterInfoFeature2 = new FilterInfo();
+        filterInfoFeature2.name = "支持自取";
+        filterInfoFeature2.type = 2;
         FilterInfo filterInfoFeature3 = new FilterInfo();
-        filterInfoFeature3.name = "支持自取";
+        filterInfoFeature3.name = "金牌商家";
         filterInfoFeature3.type = 3;
+        FilterInfo filterInfoFeature4 = new FilterInfo();
+        filterInfoFeature4.name = "新商家";
+        filterInfoFeature4.type = 4;
+        FilterInfo filterInfoFeature5 = new FilterInfo();
+        filterInfoFeature5.name = "0元起送";
+        filterInfoFeature5.type = 5;
         filterInfoFeatureList.add(filterInfoFeature);
         filterInfoFeatureList.add(filterInfoFeature1);
-//        filterInfoFeatureList.add(filterInfoFeature2);
+        filterInfoFeatureList.add(filterInfoFeature2);
         filterInfoFeatureList.add(filterInfoFeature3);
+        filterInfoFeatureList.add(filterInfoFeature4);
+        filterInfoFeatureList.add(filterInfoFeature5);
 
         filterInfoActList = new ArrayList<>();
         FilterInfo filterInfoAct = new FilterInfo();
@@ -178,7 +188,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         filterInfoAct1.name = "折扣商品";
         filterInfoAct1.type = 2;
         FilterInfo filterInfoAct2 = new FilterInfo();
-        filterInfoAct2.name = "减配送费";
+        filterInfoAct2.name = "免配送费";
         filterInfoAct2.type = 5;
         FilterInfo filterInfoAct3 = new FilterInfo();
         filterInfoAct3.name = "首单立减";
@@ -186,12 +196,16 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         FilterInfo filterInfoAct4 = new FilterInfo();
         filterInfoAct4.name = "进店领券";
         filterInfoAct4.type = 10;
+        FilterInfo filterInfoAct5 = new FilterInfo();
+        filterInfoAct5.name = "优惠商家";
+        filterInfoAct5.type = 0;
 
         filterInfoActList.add(filterInfoAct);
         filterInfoActList.add(filterInfoAct1);
         filterInfoActList.add(filterInfoAct2);
         filterInfoActList.add(filterInfoAct3);
         filterInfoActList.add(filterInfoAct4);
+        filterInfoActList.add(filterInfoAct5);
 
     }
 
@@ -224,12 +238,14 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.ll_category:
                 filterPosition = 0;
+                changeBold(0);
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
                 }
                 break;
             case R.id.ll_sort:
                 filterPosition = 1;
+                changeBold(1);
                 tvCategoryTitle.setText("综合排序");
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
@@ -237,6 +253,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
                 break;
             case R.id.ll_nearby:
                 filterPosition = 2;
+                changeBold(2);
                 tvCategoryTitle.setText("综合排序");
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
@@ -245,6 +262,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 
             case R.id.ll_filter:
                 filterPosition = 3;
+                changeBold(3);
                 if (onFilterClickListener != null) {
                     onFilterClickListener.onFilterClick(filterPosition);
                 }
@@ -264,7 +282,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
                 break;
             case R.id.tv_sure:
                 if (onFiltrateClickListener != null) {
-                    onFiltrateClickListener.onFiltrateClickListener(filterInfoFeatureList, filterInfoActList);
+                    onFiltrateClickListener.onFiltrateClick(filterInfoFeatureList, filterInfoActList);
                 }
                 hide();
                 break;
@@ -391,6 +409,13 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 filterInfoFeatureList.get(position).isCheck = !filterInfoFeatureList.get(position).isCheck;
+                if (position == 0 && filterInfoFeatureList.get(0).isCheck) {
+                    filterInfoFeatureList.get(1).isCheck = false;
+                }
+
+                if (position == 1 && filterInfoFeatureList.get(1).isCheck) {
+                    filterInfoFeatureList.get(0).isCheck = false;
+                }
                 filterFeatureAdaper.notifyDataSetChanged();
             }
         });
@@ -477,6 +502,10 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
         viewMaskBg.setVisibility(View.GONE);
         llContentListView.setVisibility(View.GONE);
         rlFilterContent.setVisibility(View.GONE);
+        if (onHideListener != null) {
+            onHideListener.onHide();
+        }
+
 //        ObjectAnimator.ofFloat(llContentListView, "translationY", 0, -panelHeight).setDuration(200).start();
     }
 
@@ -485,6 +514,13 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 //        this.mActivity = activity;
 //        this.filterData = filterData;
 //    }
+
+    public void changeBold(int position) {
+        tvCategoryTitle.setTypeface(position == 0 ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        tvSortTitle.setTypeface(position == 1 ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+        tvNearbyTitle.setTypeface(position == 2 ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
+    }
+
 
     // 是否显示
     public boolean isShowing() {
@@ -567,6 +603,7 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
 
     public void setTvCategoryTitle(FilterInfo filterInfo) {
         tvCategoryTitle.setText(filterInfo.name);
+        tvCategoryTitle.setTypeface(Typeface.DEFAULT_BOLD);
     }
 
     // 分类Item点击
@@ -577,7 +614,18 @@ public class FilterView extends LinearLayout implements View.OnClickListener {
     }
 
     public interface OnFiltrateClickListener {
-        void onFiltrateClickListener(ArrayList<FilterInfo> filterInfoFeatureList, ArrayList<FilterInfo> filterInfoActList);
+        void onFiltrateClick(ArrayList<FilterInfo> filterInfoFeatureList, ArrayList<FilterInfo> filterInfoActList);
+    }
+
+    // 分类Item点击
+    private OnHideListener onHideListener;
+
+    public void setOnHideListener(OnHideListener onHideListener) {
+        this.onHideListener = onHideListener;
+    }
+
+    public interface OnHideListener {
+        void onHide();
     }
 
 //

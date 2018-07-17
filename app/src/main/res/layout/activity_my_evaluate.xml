@@ -1,65 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/refreshLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/rl_top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="185dp"
+            android:background="@drawable/bg_mine">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="160dp"
-                android:background="@drawable/bg_mine">
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_25_dp"
+                android:padding="@dimen/dimen_10_dp"
+                android:src="@drawable/icon_back_black" />
 
 
-                <com.gxuc.runfast.shop.view.CircleImageView
-                    android:id="@+id/iv_head_logo"
-                    android:layout_width="@dimen/dimen_70_dp"
-                    android:layout_height="@dimen/dimen_70_dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/dimen_30_dp"
-                    android:src="@drawable/icon_default_head" />
+            <com.gxuc.runfast.shop.view.CircleImageView
+                android:id="@+id/iv_head_logo"
+                android:layout_width="@dimen/dimen_70_dp"
+                android:layout_height="@dimen/dimen_70_dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_50_dp"
+                android:src="@drawable/icon_default_head" />
 
-                <TextView
-                    android:id="@+id/tv_user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/iv_head_logo"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/dimen_5_dp"
-                    android:text="登录/注册"
-                    android:textColor="@color/text_333333"
-                    android:textSize="@dimen/dimen_15_dp" />
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/iv_head_logo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_5_dp"
+                android:textColor="@color/text_333333"
+                android:textSize="@dimen/dimen_15_dp" />
 
-                <TextView
-                    android:id="@+id/tv_tevaluate_"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_user_name"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="@dimen/dimen_5_dp"
-                    android:text="已贡献17条评价"
-                    android:textColor="@color/text_333333"
-                    android:textSize="@dimen/dimen_12_dp" />
+            <TextView
+                android:id="@+id/tv_evaluate_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_user_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dimen_5_dp"
+                android:textColor="@color/text_333333"
+                android:textSize="@dimen/dimen_12_dp" />
 
-            </RelativeLayout>
+        </RelativeLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/home_recycleview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:overScrollMode="never" />
 
-        </LinearLayout>
+        <!--<com.scwang.smartrefresh.layout.SmartRefreshLayout-->
+        <!--android:id="@+id/refreshLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical">-->
 
-</LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/evaluate_recycleview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/rl_top"
+            android:overScrollMode="never" />
+
+    </LinearLayout>
+
+    <!--</LinearLayout>-->
+
+    <!--</com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
+
+    <RelativeLayout
+        android:id="@+id/rl_evalute_more"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_50_dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:visibility="gone">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_1_dp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/biankuang_c4c4c4" />
+
+        <EditText
+            android:id="@+id/et_evaluate_more"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_40_dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/dimen_10_dp"
+            android:layout_marginRight="@dimen/dimen_10_dp"
+            android:layout_toLeftOf="@+id/tv_submit"
+            android:background="@null"
+            android:drawableBottom="@drawable/editext_bottom_line"
+            android:hint="追加评价"
+            android:singleLine="true"
+            android:textColor="@color/text_333333"
+            android:textColorHint="@color/text_666666"
+            android:textCursorDrawable="@color/bg_fba42a"
+            android:textSize="@dimen/dimen_13_dp" />
+
+        <TextView
+            android:id="@+id/tv_submit"
+            android:layout_width="@dimen/dimen_60_dp"
+            android:layout_height="@dimen/dimen_30_dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dimen_10_dp"
+            android:background="@drawable/bg_fb7d30"
+            android:gravity="center"
+            android:text="提交"
+            android:textColor="@color/text_333333" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

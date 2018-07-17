@@ -3,6 +3,7 @@ package com.gxuc.runfast.shop.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.gxuc.runfast.shop.bean.home.BusinessEvent;
 import com.gxuc.runfast.shop.bean.home.NearByBusinessInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.willy.ratingbar.BaseRatingBar;
 
 import org.xutils.x;
@@ -64,15 +66,35 @@ public class BusinessCategoryAdapter extends RecyclerView.Adapter {
 
 //        nearByBusinessViewHolder.tvHomeBusinessStartPriceAndShippingPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay + " | 配送费 ¥ " + nearByBusinessInfo.deliveryFee);
         nearByBusinessViewHolder.tvHomeBusinessStartPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay);
-        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥ " + (nearByBusinessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
+        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥ " + (nearByBusinessInfo.deliveryFee.stripTrailingZeros().toPlainString()));
         nearByBusinessViewHolder.ivHomeBusinessGold.setVisibility(nearByBusinessInfo.goldBusiness ? View.VISIBLE : View.GONE);
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setText(nearByBusinessInfo.isDeliver == 0 ? "快车转送" : "商家配送");
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setTextColor(nearByBusinessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.bg_44be99));
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setBackgroundResource(nearByBusinessInfo.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_44be99);
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setText(nearByBusinessInfo.isDeliver == 0 ? "快车专送" : "商家配送");
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setTextColor(nearByBusinessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.text_666666));
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setBackgroundResource(nearByBusinessInfo.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_666666);
         nearByBusinessViewHolder.tvHomeBusinessToTake.setVisibility(nearByBusinessInfo.suportSelf ? View.VISIBLE : View.GONE);
         nearByBusinessViewHolder.rbHomeBusinessEvaluate.setRating(nearByBusinessInfo.levelId);
 
         nearByBusinessViewHolder.viewClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+        nearByBusinessViewHolder.tvHomeBusinessClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+//        nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+
+        if (nearByBusinessInfo.isopen != 1 && !TextUtils.isEmpty(nearByBusinessInfo.startwork)) {
+//            String substring = nearByBusinessInfo.startwork.substring(11, 16);
+//            int hour = Integer.valueOf(substring.substring(0, 2)) + 1;
+//            if (hour < 10) {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 0" + hour + substring.substring(2, 5) + "配送");
+//            } else if (hour == 24) {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 00" + substring.substring(2, 5) + " 配送");
+//            } else {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 " + hour + substring.substring(2, 5) + "配送");
+//
+//            }
+            long time = SystemUtil.date2TimeStamp(nearByBusinessInfo.startwork, SystemUtil.DATE_FORMAT) + 60 * 60 * 1000;
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中" + SystemUtil.getTime(time).substring(11, 16) + "配送");
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(View.VISIBLE);
+        } else {
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(View.GONE);
+        }
 
         nearByBusinessViewHolder.llHomeBusinessContainAct.removeAllViews();
         nearByBusinessViewHolder.llHomeBusinessContainAct.setTag(false);
@@ -81,7 +103,17 @@ public class BusinessCategoryAdapter extends RecyclerView.Adapter {
                 View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
                 ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
                 TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
-                tvAct.setText(nearByBusinessInfo.activityList.get(i).name);
+                if (nearByBusinessInfo.activityList.get(i).ptype == 1) {
+                    String actStr = "";
+                    for (int j = 0; j < nearByBusinessInfo.activityList.get(i).fullLessList.size(); j++) {
+                        actStr += ("满" + nearByBusinessInfo.activityList.get(i).fullLessList.get(j).full.stripTrailingZeros().toPlainString() +
+                                "减" + nearByBusinessInfo.activityList.get(i).fullLessList.get(j).less.stripTrailingZeros().toPlainString() + ", ");
+                    }
+                    actStr = actStr.substring(0, actStr.length() - 2);
+                    tvAct.setText(actStr);
+                } else {
+                    tvAct.setText(nearByBusinessInfo.activityList.get(i).name);
+                }
                 showActImage(ivAct, nearByBusinessInfo.activityList.get(i));
                 if (i > 1) {
                     view.setVisibility(View.GONE);
@@ -130,7 +162,7 @@ public class BusinessCategoryAdapter extends RecyclerView.Adapter {
     }
 
     private void showActImage(ImageView ivAct, BusinessEvent businessEvent) {
-        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
         switch (businessEvent.ptype) {
             case 1:
                 ivAct.setImageResource(R.drawable.icon_reduce);
@@ -149,6 +181,21 @@ public class BusinessCategoryAdapter extends RecyclerView.Adapter {
                 break;
             case 6:
                 ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 7:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 8:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 9:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 10:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 11:
+                ivAct.setImageResource(R.drawable.icon_return);
                 break;
         }
     }
@@ -200,6 +247,8 @@ public class BusinessCategoryAdapter extends RecyclerView.Adapter {
         LinearLayout llHomeBusinessContainAct;
         @BindView(R.id.view_close)
         View viewClose;
+        @BindView(R.id.tv_home_business_close)
+        TextView tvHomeBusinessClose;
 
         NearByBusinessViewHolder(View view) {
             super(view);

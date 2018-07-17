@@ -333,6 +333,18 @@ public interface NetInterface {
                            @Field("password") String password);
 
     /**
+     * 跑腿余额支付
+     *
+     * @param orderId
+     * @param password
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.PAO_TUI_WALLET_PAY)
+    Call<String> paoTuiwalletPay(@Field("orderId") int orderId,
+                                 @Field("password") String password);
+
+    /**
      * 微信支付
      *
      * @param id
@@ -376,7 +388,7 @@ public interface NetInterface {
      */
     @FormUrlEncoded
     @POST(UrlConstant.ORDER_RECEIVE)
-    Call<String> receiveOrder(@Field("id") Integer id);
+    Call<String> receiveOrder(@Field("orderId") Integer id);
 
     /**
      * 确认订单获取商品
@@ -521,6 +533,7 @@ public interface NetInterface {
                                  @Field("fromType") String fromType,
                                  @Field("fromLng") double fromLng,
                                  @Field("fromLat") double fromLat,
+                                 @Field("fromName") String fromName,
                                  @Field("fromAddress") String fromAddress,
                                  @Field("type") String type,
                                  @Field("tip") int tip,
@@ -679,9 +692,11 @@ public interface NetInterface {
                                    @Field("sorting") int sorting,
                                    @FieldMap IdentityHashMap<String, Integer> actMap,
                                    @FieldMap IdentityHashMap<String, Integer> featuretMap,
-                                   @Field("catalogId") String catalogId,
+                                   @FieldMap IdentityHashMap<String, String> catalogMap,
                                    @Field("page") int page,
                                    @Field("size") int size);
+
+//    @Field("catalogId") String catalogId,
 
     /**
      * 获取商家详情
@@ -910,14 +925,31 @@ public interface NetInterface {
     Call<String> getUserInformation();
 
     /**
-     * 修改用户信息
+     * 修改用户email
      *
      * @return
      */
     @FormUrlEncoded
     @POST(UrlConstant.UPDATE_USER_INFO)
-    Call<String> updateUserInfo(@Field("nickname") String nickname,
-                                @Field("email") String email);
+    Call<String> updateUserEmail(@Field("email") String email);
+
+    /**
+     * 修改用户昵称
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_USER_INFO)
+    Call<String> updateUserNick(@Field("nickname") String nickname);
+
+    /**
+     * 修改用户头像
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.UPDATE_USER_INFO)
+    Call<String> updateUserPic(@Field("pic") String imagePath);
 
     /**
      * 商户加盟
@@ -1007,7 +1039,7 @@ public interface NetInterface {
                          @Field("account") String account);
 
     /**
-     * 获取用户银行卡账户列表
+     * 获取收藏商家列表
      *
      * @return
      */
@@ -1195,10 +1227,12 @@ public interface NetInterface {
     @FormUrlEncoded
     @POST(UrlConstant.EVALUATION)
     Call<String> postEvaluation(@Field("orderId") int orderId,
-                                @Field("businessScore") int businessScore,
-                                @Field("businessTags") String businessTags,
-                                @Field("driverScore") int driverScore,
+                                @Field("driverSatisfy") boolean driverSatisfy,
                                 @Field("driverTags") String driverTags,
+                                @Field("businessScore") int businessScore,
+                                @Field("tasteScore") int tasteScore,
+                                @Field("packagesScore") int packagesScore,
+                                @Field("anonymous") boolean anonymous,
                                 @Field("comment") String comment,
                                 @Field("isDeliver") int isDeliver);
 
@@ -1235,14 +1269,6 @@ public interface NetInterface {
     @POST(UrlConstant.RECEICER_BUSINESS_COUPON)
     Call<String> receiverBusinessCoupon(@Field("redActivityId") int redActivityId);
 
-    /**
-     * 领取红包
-     *
-     * @return
-     */
-    @FormUrlEncoded
-    @POST(UrlConstant.GET_COUPON)
-    Call<String> getCoupan(@Field("agentId") String agentId);
 
     /**
      * 可用商家代金券列表
@@ -1266,8 +1292,9 @@ public interface NetInterface {
      *
      * @return
      */
+    @FormUrlEncoded
     @POST(UrlConstant.GET_BUSINES_CATEGOTY)
-    Call<String> getBusinessCategory();
+    Call<String> getBusinessCategory(@Field("parentTypeId") int parentTypeId);
 
     /**
      * 获取特惠优选专区更多商家分页列表
@@ -1328,5 +1355,101 @@ public interface NetInterface {
     @POST(UrlConstant.GET_MY_EVALUATE)
     Call<String> getMyEvaluate();
 
+    /**
+     * 获取退款金额
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_REFUND_PRICE)
+    Call<String> getRefundPrice(@Field("orderId") int orderId,
+                                @FieldMap IdentityHashMap<String, String> orderItemId);
+
+    /**
+     * 退款
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.SUMBIT_REFUND)
+    Call<String> sumbitRefund(@Field("orderId") int orderId,
+                              @FieldMap IdentityHashMap<String, String> orderItemId,
+                              @Field("reason") String reason);
+
+    /**
+     * 删除评论
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.DELETE_EVALUATION)
+    Call<String> deleteEvaluate(@Field("commentId") int commentId);
+
+    /**
+     * 追加评论
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.EVALUATION_MORE)
+    Call<String> evaluateMore(@Field("commentId") int commonId,
+                              @Field("comment") String comment);
+
+    /**
+     * 首页领取红包
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_HOME_REDPACKAGE)
+    Call<String> getHomeRedpackge(@Field("agentId") String agentId);
+
+    /**
+     * 个人中心领取红包
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_NEW_REDPACKAGE)
+    Call<String> getNewRedpackge(@Field("agentId") String agentId);
+
+    /**
+     * 大额满减专区商家列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_FULLLESS_ZONE_BUSINESS)
+    Call<String> getFullLessZoneBusiness(@Field("agentId") String agentId,
+                                         @Field("userLng") String userLng,
+                                         @Field("userLat") String userLat,
+                                         @Field("page") int page,
+                                         @Field("size") int size);
+
+    /**
+     * 免配送费专区商家列表
+     *
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(UrlConstant.GET_FREE_DELIVERY_ZONE_BUSINESS)
+    Call<String> getFreeDeliveryZoneBusiness(@Field("agentId") String agentId,
+                                             @Field("userLng") String userLng,
+                                             @Field("userLat") String userLat,
+                                             @Field("page") int page,
+                                             @Field("size") int size);
+
+//    /**
+//     * 商家打烊，显示相同主营分类的商家列表
+//     *
+//     * @return
+//     */
+//    @FormUrlEncoded
+//    @POST(UrlConstant.GET_FREE_DELIVERY_ZONE_BUSINESS)
+//    Call<String> getFreeDeliveryZoneBusiness(@Field("agentId") String agentId,
+//                                             @Field("userLng") String userLng,
+//                                             @Field("userLat") String userLat,
+//                                             @Field("page") int page,
+//                                             @Field("size") int size);
 
 }

@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -30,6 +32,7 @@ import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.GlideImageLoader;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.FilterView;
 import com.gxuc.runfast.shop.view.IndicatorView;
@@ -145,7 +148,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
 //                        int typeId = Integer.parseInt(split[1]);
                         Intent data = new Intent(context, BreakfastActivity.class);
                         data.putExtra("typeName", advertInfo.typename);
-                        data.putExtra("typeId", advertInfo.type);
+                        data.putExtra("commonId", advertInfo.commonId);
                         context.startActivity(data);
                         break;
                     case 4://商家
@@ -168,6 +171,15 @@ public class HomeAdapter extends RecyclerView.Adapter {
                             webData.putExtra("url", ApiServiceFactory.WEB_HOST + advertInfo.linkAddr);
                         }
                         context.startActivity(webData);
+                        break;
+                    case 7://特惠优选
+                        context.startActivity(new Intent(context, BusinessPreferentialActivity.class));
+                        break;
+                    case 8://大额满减
+                        context.startActivity(new Intent(context, BusinessPreferentialActivity.class).putExtra("activityId", 1));
+                        break;
+                    case 9://免配送费
+                        context.startActivity(new Intent(context, BusinessPreferentialActivity.class).putExtra("activityId", 5));
                         break;
                 }
             }
@@ -218,16 +230,20 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     private void initAgentZoneBusiness(HomeDataViewHolder homeDataViewHolder, final HomeDataInfo homeDataInfo) {
         if (homeDataInfo.agentZoneBusinessList.size() < 2) {
+            homeDataViewHolder.tvPreferentialBuisness.setVisibility(View.GONE);
+            homeDataViewHolder.llPreferentialBuisness.setVisibility(View.GONE);
             return;
         }
+        homeDataViewHolder.tvPreferentialBuisness.setVisibility(View.VISIBLE);
+        homeDataViewHolder.llPreferentialBuisness.setVisibility(View.VISIBLE);
         x.image().bind(homeDataViewHolder.ivPreferentialBuisnessOne, UrlConstant.ImageBaseUrl + homeDataInfo.agentZoneBusinessList.get(0).special_img);
         x.image().bind(homeDataViewHolder.ivPreferentialBuisnessTwo, UrlConstant.ImageBaseUrl + homeDataInfo.agentZoneBusinessList.get(1).special_img);
 
         homeDataViewHolder.ivPreferentialBuisnessOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, BusinessNewActivity.class);
-                intent.putExtra("businessId", homeDataInfo.agentZoneBusinessList.get(0).busId);
+                Intent intent = new Intent(context, BusinessPreferentialActivity.class);
+                intent.putExtra("activityId", homeDataInfo.agentZoneBusinessList.get(0).ptype);
                 context.startActivity(intent);
             }
         });
@@ -235,14 +251,15 @@ public class HomeAdapter extends RecyclerView.Adapter {
         homeDataViewHolder.ivPreferentialBuisnessTwo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, BusinessNewActivity.class);
-                intent.putExtra("businessId", homeDataInfo.agentZoneBusinessList.get(1).busId);
+                Intent intent = new Intent(context, BusinessPreferentialActivity.class);
+                intent.putExtra("activityId", homeDataInfo.agentZoneBusinessList.get(1).ptype);
                 context.startActivity(intent);
             }
         });
     }
 
     private void initOffZoneGoods(HomeDataViewHolder homeDataViewHolder, final HomeDataInfo homeDataInfo) {
+        homeDataViewHolder.rlPreferentialMore.setVisibility(homeDataInfo.offZoneGoodsList.size() == 0 ? View.GONE : View.VISIBLE);
         OffZoneGoodAdapter offZoneGoodAdapter = new OffZoneGoodAdapter(context, homeDataInfo.offZoneGoodsList);
         homeDataViewHolder.preferentialGridview.setAdapter(offZoneGoodAdapter);
 //        homeDataViewHolder.preferentialGridview.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -266,7 +283,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
     }
 
-    private void initNearByBusiness(final NearByBusinessViewHolder nearByBusinessViewHolder, HomeDataInfo homeDataInfo, final int position) {
+    private void initNearByBusiness(final NearByBusinessViewHolder nearByBusinessViewHolder, final HomeDataInfo homeDataInfo, int position) {
         final NearByBusinessInfo nearByBusinessInfo = homeDataInfo.nearByBusinessInfo;
         BigDecimal distanceM = new BigDecimal(nearByBusinessInfo.distance);
         BigDecimal distanceKM = distanceM.divide(bigDecimal).setScale(2, RoundingMode.HALF_UP);
@@ -281,17 +298,36 @@ public class HomeAdapter extends RecyclerView.Adapter {
         nearByBusinessViewHolder.tvHomeBusinessTime.setText(nearByBusinessInfo.deliveryDuration + "分钟");
 
 //        nearByBusinessViewHolder.tvHomeBusinessStartPriceAndShippingPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay + " | 配送费 ¥ " + nearByBusinessInfo.deliveryFee);
-        nearByBusinessViewHolder.tvHomeBusinessStartPrice.setText("起送 ¥ " + nearByBusinessInfo.startPay);
-        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥ " + (nearByBusinessInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
+        nearByBusinessViewHolder.tvHomeBusinessStartPrice.setText("起送 ¥" + nearByBusinessInfo.startPay);
+        nearByBusinessViewHolder.tvHomeBusinessShippingPrice.setText("配送费 ¥" + (nearByBusinessInfo.deliveryFee.stripTrailingZeros().toPlainString()));
         nearByBusinessViewHolder.ivHomeBusinessGold.setVisibility(nearByBusinessInfo.goldBusiness ? View.VISIBLE : View.GONE);
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setText(nearByBusinessInfo.isDeliver == 0 ? "快车转送" : "商家配送");
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setTextColor(nearByBusinessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.bg_44be99));
-        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setBackgroundResource(nearByBusinessInfo.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_44be99);
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setText(nearByBusinessInfo.isDeliver == 0 ? "快车专送" : "商家配送");
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setTextColor(nearByBusinessInfo.isDeliver == 0 ? context.getResources().getColor(R.color.white) : context.getResources().getColor(R.color.text_666666));
+        nearByBusinessViewHolder.tvHomeBusinessIsCharge.setBackgroundResource(nearByBusinessInfo.isDeliver == 0 ? R.drawable.icon_orange_back : R.drawable.biankuang_666666);
         nearByBusinessViewHolder.tvHomeBusinessToTake.setVisibility(nearByBusinessInfo.suportSelf ? View.VISIBLE : View.GONE);
         nearByBusinessViewHolder.rbHomeBusinessEvaluate.setRating(nearByBusinessInfo.levelId);
 
         nearByBusinessViewHolder.viewClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+        nearByBusinessViewHolder.viewClose.setBackgroundResource(nearByBusinessInfo.bookable ? R.color.bg_33ffffff : R.color.bg_80ffffff);
         nearByBusinessViewHolder.tvHomeBusinessClose.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+//        nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(nearByBusinessInfo.isopen == 1 ? View.GONE : View.VISIBLE);
+        if (nearByBusinessInfo.isopen != 1 && !TextUtils.isEmpty(nearByBusinessInfo.startwork) && nearByBusinessInfo.bookable) {
+//            String substring = nearByBusinessInfo.startwork.substring(11, 16);
+//            int hour = Integer.valueOf(substring.substring(0, 2)) + 1;
+//            if (hour < 10) {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 0" + hour + substring.substring(2, 5) + "配送");
+//            } else if (hour == 24) {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 00" + substring.substring(2, 5) + " 配送");
+//            } else {
+//                nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中 " + hour + substring.substring(2, 5) + "配送");
+//
+//            }
+            long time = SystemUtil.date2TimeStamp(nearByBusinessInfo.startwork, SystemUtil.DATE_FORMAT) + 60 * 60 * 1000;
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setText("预定中" + SystemUtil.getTime(time).substring(11, 16) + "配送");
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(View.VISIBLE);
+        } else {
+            nearByBusinessViewHolder.tvHomeBusinessStatus.setVisibility(View.GONE);
+        }
 
         nearByBusinessViewHolder.llHomeBusinessContainAct.removeAllViews();
         nearByBusinessViewHolder.llHomeBusinessContainAct.setTag(false);
@@ -300,7 +336,18 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 View view = LayoutInflater.from(context).inflate(R.layout.item_business_act, null);
                 ImageView ivAct = (ImageView) view.findViewById(R.id.iv_act);
                 TextView tvAct = (TextView) view.findViewById(R.id.tv_act);
-                tvAct.setText(nearByBusinessInfo.activityList.get(i).name);
+                if (nearByBusinessInfo.activityList.get(i).ptype == 1) {
+                    String actStr = "";
+                    for (int j = 0; j < nearByBusinessInfo.activityList.get(i).fullLessList.size(); j++) {
+                        actStr += ("满" + nearByBusinessInfo.activityList.get(i).fullLessList.get(j).full.stripTrailingZeros().toPlainString() +
+                                "减" + nearByBusinessInfo.activityList.get(i).fullLessList.get(j).less.stripTrailingZeros().toPlainString() + ", ");
+                    }
+                    actStr = actStr.substring(0, actStr.length() - 2);
+                    tvAct.setText(actStr);
+                } else {
+                    tvAct.setText(nearByBusinessInfo.activityList.get(i).name);
+                }
+
                 showActImage(ivAct, nearByBusinessInfo.activityList.get(i));
                 if (i > 1) {
                     view.setVisibility(View.GONE);
@@ -314,12 +361,12 @@ public class HomeAdapter extends RecyclerView.Adapter {
 
         }
 
-
+        nearByBusinessViewHolder.itemView.setTag(position);
         nearByBusinessViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mOnNearByBusinessClickListener != null) {
-                    mOnNearByBusinessClickListener.onNearByBusinessClickListener(position, nearByBusinessInfo);
+                    mOnNearByBusinessClickListener.onNearByBusinessClickListener((int) v.getTag(), homeDataInfoList.get((int) v.getTag()).nearByBusinessInfo);
                 }
             }
         });
@@ -349,7 +396,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
     }
 
     private void showActImage(ImageView ivAct, BusinessEvent businessEvent) {
-        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
         switch (businessEvent.ptype) {
             case 1:
                 ivAct.setImageResource(R.drawable.icon_reduce);
@@ -368,6 +415,21 @@ public class HomeAdapter extends RecyclerView.Adapter {
                 break;
             case 6:
                 ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 7:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 8:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 9:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 10:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 11:
+                ivAct.setImageResource(R.drawable.icon_return);
                 break;
         }
     }
@@ -409,10 +471,16 @@ public class HomeAdapter extends RecyclerView.Adapter {
         IndicatorView idvHomeEntrance;
         @BindView(R.id.ll_home_entrance)
         LinearLayout llHomeEntrance;
+        @BindView(R.id.tv_preferential_buisness)
+        TextView tvPreferentialBuisness;
+        @BindView(R.id.ll_preferential_buisness)
+        LinearLayout llPreferentialBuisness;
         @BindView(R.id.iv_preferential_buisness_one)
         ImageView ivPreferentialBuisnessOne;
         @BindView(R.id.iv_preferential_buisness_two)
         ImageView ivPreferentialBuisnessTwo;
+        @BindView(R.id.rl_preferential_more)
+        RelativeLayout rlPreferentialMore;
         @BindView(R.id.tv_preferential_more)
         TextView tvPreferentialMore;
         @BindView(R.id.preferential_gridview)

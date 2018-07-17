@@ -29,7 +29,7 @@
         android:layout_alignParentRight="true"
         android:drawablePadding="@dimen/dimen_3_dp"
         android:drawableRight="@drawable/icon_bottom_arrow"
-        android:text="全部"
+        android:text=""
         android:textColor="@color/text_999999"
         android:textSize="@dimen/dimen_11_dp"
         android:visibility="gone" />

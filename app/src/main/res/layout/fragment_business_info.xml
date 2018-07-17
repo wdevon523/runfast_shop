@@ -264,6 +264,12 @@
 
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view_e5e5e5"
+            android:paddingLeft="@dimen/dimen_15_dp" />
+
         <LinearLayout
             android:id="@+id/ll_take_self"
             android:layout_width="match_parent"

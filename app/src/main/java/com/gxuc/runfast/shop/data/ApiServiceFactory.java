@@ -17,15 +17,16 @@ public final class ApiServiceFactory {
 
 
 //    public static final String HOST = "https://www.gxptkc.com/iwapb/";
-//    public static final String WEB_HOST = "https://www.gxptkc.com/web/";
+    public static final String WEB_HOST = "https://www.gxptkc.com/web/";
 
 
     public static final String HOST = "http://192.168.2.221:8080/iwapb/";
-    public static final String WEB_HOST = "http://192.168.2.221:8080/web/";
+//    public static final String WEB_HOST = "http://192.168.2.221:8080/web/";
 
     //跑腿功能地址
-    public static final String PAORTUI_HOST = "http://192.168.2.221:8088/api/";
-//    public static final String PAORTUI_HOST = "http://192.168.2.165:8087/api/";
+//    public static final String PAORTUI_HOST = "http://192.168.2.221:8088/api/";
+//    public static final String PAORTUI_HOST = "http://47.107.30.128:8081/api/";
+    public static final String PAORTUI_HOST = "http://app.gxptkc.com:8081/api/";
     //后面界面改动的新地址
 //    public static final String NEW_HOST = "http://192.168.2.221:8088/api/";
 

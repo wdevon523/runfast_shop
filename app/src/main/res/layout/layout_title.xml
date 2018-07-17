@@ -25,7 +25,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
         android:layout_marginRight="10dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/iv_setting_right"
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="@dimen/dimen_15_dp"
         android:visibility="gone">
 
         <TextView

@@ -4,20 +4,21 @@ public class HomeCategory {
 
 
     /**
-     * id : 266
-     * createTime : 2018-03-19 10:28:59
-     * icon : /runfast/upload/1521455257635.jpg
-     * link : business/list.do?typeId=13
-     * name : 早餐
-     * sort : 0
+     * id : 360
+     * createTime : 2018-07-02 18:28:28
+     * icon : upload/1530527301531.png
+     * link :
+     * name : 活动
+     * sort : 15
      * agentId : 39
      * agentName : 武汉测试代理商
      * typelink : 1
-     * typename : 早餐
-     * will : 0
+     * typename : 活动
+     * will : 1
+     * commonId : 82
      */
 
-    public String id;
+    public int id;
     public String createTime;
     public String icon;
     public String link;
@@ -28,5 +29,6 @@ public class HomeCategory {
     public int typelink;
     public String typename;
     public int will;
+    public int commonId;
 
 }

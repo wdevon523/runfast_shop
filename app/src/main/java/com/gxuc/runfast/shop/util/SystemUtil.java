@@ -204,7 +204,7 @@ public class SystemUtil {
     public static long date2TimeStamp(String date, String format) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(format);
-            return sdf.parse(date).getTime() / 1000;
+            return sdf.parse(date).getTime();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -264,7 +264,7 @@ public class BindMobileActivity extends ToolBarActivity {
         try {
             JSONObject jsonObject = new JSONObject(body);
             if (jsonObject.optBoolean("success")) {
-                ToastUtil.showToast(jsonObject.optString("msg"));
+                ToastUtil.showToast("登陆成功");
                 JSONObject object = jsonObject.optJSONObject("data");
                 UserInfo userInfo = JsonUtil.fromJson(object.optString("user"), UserInfo.class);
                 UserService.saveUserInfo(userInfo);

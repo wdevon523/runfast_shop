@@ -2,9 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/color_coupon_number" />
+    <solid android:color="@color/text_fb4e44" />
 
     <corners android:radius="20dp" />
-
 
 </shape>

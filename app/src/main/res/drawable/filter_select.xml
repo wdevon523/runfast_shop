@@ -3,7 +3,7 @@
     <item android:drawable="@drawable/bg_spec_check" android:state_checked="true">
 
     </item>
-    <item android:drawable="@drawable/biankuang_e5e5e5" android:state_pressed="false">
+    <item android:drawable="@drawable/biankuang_c4c4c4" android:state_pressed="false">
 
     </item>
 </selector>

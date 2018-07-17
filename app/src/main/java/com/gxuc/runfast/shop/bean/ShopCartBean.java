@@ -26,6 +26,7 @@ public class ShopCartBean implements Serializable {
      * userPhone : null
      * userAddress : null
      * userAddressTag : 0
+     * userAddressGender : 0
      * address : null
      * userAddressId : null
      * userAddressLat : null
@@ -49,6 +50,8 @@ public class ShopCartBean implements Serializable {
      * isCancel : null
      * refund : null
      * refundcontext : null
+     * bookTime : "2018-07-11 14:58:13"
+     * disTime : "2018-07-11 14:58:13"
      * payTime : null
      * payType : null
      * orderNo : null
@@ -68,6 +71,7 @@ public class ShopCartBean implements Serializable {
      * suportSelf : null
      * selfMobile : null
      * suportSelf : null
+     * redTips : null
      */
 
     public String orderId;
@@ -87,11 +91,12 @@ public class ShopCartBean implements Serializable {
     public String userPhone;
     public String userAddress;
     public Integer userAddressTag;
+    public Integer userAddressGender;
     public String address;
     public String userAddressId;
     public String userAddressLat;
     public String userAddressLng;
-    public int deliveryFee;
+    public BigDecimal deliveryFee;
     public int finalDeliveryFee;
     public Object oldShopper;
     public Object oldShopperId;
@@ -110,6 +115,8 @@ public class ShopCartBean implements Serializable {
     public boolean isCancel;
     public Object refund;
     public Object refundcontext;
+    public String bookTime;
+    public String disTime;
     public String payTime;
     public int payType;
     public String orderNo;
@@ -120,6 +127,7 @@ public class ShopCartBean implements Serializable {
     public BigDecimal cartDisprice;
     public BigDecimal offAmount;
     public String cartTips;
+    public String redTips;
     public String limitTips;
     public Object distance;
     public int totalNum;

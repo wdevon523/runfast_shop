@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -52,10 +53,12 @@ OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter, OnRouteSear
 	
 	private RelativeLayout mBottomLayout;
 	private TextView mRotueTimeDes, mRouteDetailDes;
+	private ImageView ivBackMap;
 	private ProgressDialog progDialog = null;// 搜索时进度条
 
 	private Double endLat;
 	private Double endLng;
+
 	@Override
 	protected void onCreate(Bundle bundle) {
 		super.onCreate(bundle);
@@ -63,6 +66,14 @@ OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter, OnRouteSear
 
 		mContext = this.getApplicationContext();
 		mapView = (MapView) findViewById(R.id.route_map);
+		ivBackMap = (ImageView) findViewById(R.id.iv_back_map);
+		ivBackMap.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+
 		mapView.onCreate(bundle);// 此方法必须重写
 //        loginResponse = BaseApplication.context().getLoginResponse();
 		if (!TextUtils.isEmpty(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLAT)) && !TextUtils.isEmpty(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.POINTLON))) {

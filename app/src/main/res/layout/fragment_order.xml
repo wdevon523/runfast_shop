@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_f3f4f5"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".fragment.OrderFragment">
@@ -13,8 +14,8 @@
         style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dimen_50_dp"
-        android:background="@color/white"
         android:layout_marginTop="@dimen/dimen_25_dp"
+        android:background="@color/white"
         android:gravity="center"
         android:text="订单"
         android:textColor="@color/text_333333"
@@ -38,13 +39,21 @@
                 app:layout_srlBackgroundColor="@android:color/transparent"
                 app:layout_srlSpinnerStyle="Scale" />
 
-            <android.support.v7.widget.RecyclerView
+            <com.gxuc.runfast.shop.view.recyclerview.EmptyRecyclerView
                 android:id="@+id/recycler_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/color_food_gray" />
 
         </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        <ImageView
+            android:id="@+id/iv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/bg_order_empty"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/ll_not_login"
@@ -66,7 +75,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dimen_40_dp"
-                android:text="您还没有登陆，请登录后查看消息" />
+                android:text="您还没有登陆，请登录后查看订单" />
 
             <TextView
                 android:id="@+id/tv_login"

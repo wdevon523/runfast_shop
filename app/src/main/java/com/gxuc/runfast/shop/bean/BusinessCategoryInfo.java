@@ -15,7 +15,7 @@ public class BusinessCategoryInfo {
      * children : [{"id":26,"content":null,"createTime":null,"name":"面条","parent_id":1,"deleted":null,"children":null},{"id":27,"content":null,"createTime":null,"name":"粥","parent_id":1,"deleted":null,"children":null}]
      */
 
-    public int id;
+    public String id;
     public String content;
     public String createTime;
     public String name;

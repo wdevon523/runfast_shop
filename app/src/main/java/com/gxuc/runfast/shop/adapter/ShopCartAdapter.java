@@ -55,12 +55,13 @@ public class ShopCartAdapter extends RecyclerView.Adapter {
 
         shopCartViewHolder.tvShoppingCartBusinessPackPrice.setText("¥" + shopCartBean.totalPackageFee);
         shopCartViewHolder.tvShoppingCartBusinessPreferentialPrice.setText("¥" + shopCartBean.offAmount);
+        shopCartViewHolder.tvShoppingCartBusinessTotalPreferential.setText("已优惠" + shopCartBean.offAmount + "元");
 
-        shopCartViewHolder.tvShoppingCartBusinessTotalPrice.setText("¥" + shopCartBean.cartPrice);
+        shopCartViewHolder.tvShoppingCartBusinessTotalPrice.setText("¥" + shopCartBean.totalPay);
 
         shopCartViewHolder.llShoppingCartBusinessGoods.removeAllViews();
 
-        ShopCartGoodAdapter shopCartGoodAdapter = new ShopCartGoodAdapter(context, shopCartBean.cartItems, shopCartBean.businessId);
+        ShopCartGoodAdapter shopCartGoodAdapter = new ShopCartGoodAdapter(context, shopCartBean.cartItems, shopCartBean.businessId, false);
         boolean isAllCheck = true;
         for (int i = 0; i < shopCartBean.cartItems.size(); i++) {
             shopCartViewHolder.llShoppingCartBusinessGoods.addView(shopCartGoodAdapter.getView(i, null, null));

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.supportv1.utils.JsonUtil;
@@ -18,6 +19,7 @@ import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.activity.MyEvaluateActivity;
 import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
+import com.gxuc.runfast.shop.activity.usercenter.AboutActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.activity.usercenter.ConsultationActivity;
 import com.gxuc.runfast.shop.activity.usercenter.CouponActivity;
@@ -61,6 +63,8 @@ import retrofit2.Response;
  */
 public class MineFragment extends Fragment {
 
+    @BindView(R.id.ll_mine_top)
+    LinearLayout llMineTop;
     @BindView(R.id.iv_head)
     CircleImageView ivHead;
     @BindView(R.id.tv_user_name)
@@ -147,7 +151,7 @@ public class MineFragment extends Fragment {
     private void updateUi() {
         userInfo = UserService.getUserInfo(getActivity());
         if (!TextUtils.isEmpty(userInfo.pic)) {
-            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.pic, NetConfig.optionsHeadImage);
+            x.image().bind(ivHead, UrlConstant.ImageBaseUrl + userInfo.pic, NetConfig.optionsLogoImage);
         }
         tvUserName.setText(TextUtils.isEmpty(userInfo.nickname) ? userInfo.mobile : userInfo.nickname);
         tvUserInfo.setVisibility(View.VISIBLE);
@@ -262,12 +266,12 @@ public class MineFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.iv_head, R.id.tv_user_name, R.id.layout_address, R.id.layout_collection, R.id.layout_evalute, R.id.layout_my_wallet, R.id.layout_red_package, R.id.layout_integral, R.id.layout_business_join, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about, R.id.layout_help_center})
+    @OnClick({R.id.ll_mine_top, R.id.tv_user_name, R.id.layout_address, R.id.layout_collection, R.id.layout_evalute, R.id.layout_my_wallet, R.id.layout_red_package, R.id.layout_integral, R.id.layout_business_join, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about, R.id.layout_help_center})
     public void onViewClicked(View view) {
         userInfo = UserService.getUserInfo(getActivity());
 
         switch (view.getId()) {
-            case R.id.iv_head://头像
+            case R.id.ll_mine_top://头像
                 if (userInfo == null || userInfo.id == null) {
                     startActivity(new Intent(getContext(), LoginQucikActivity.class));
                     return;
@@ -339,8 +343,8 @@ public class MineFragment extends Fragment {
                 startActivity(new Intent(getContext(), ConsultationActivity.class));
                 break;
             case R.id.layout_about://关于
-//                startActivity(new Intent(getContext(), AboutActivity.class));
-                startActivity(new Intent(getContext(), PurchasesActivity.class));
+                startActivity(new Intent(getContext(), AboutActivity.class));
+//                startActivity(new Intent(getContext(), PurchasesActivity.class));
 //                startActivity(new Intent(getContext(), SubmitOrderActivity.class));
                 break;
             case R.id.layout_help_center://帮助中心

@@ -30,14 +30,14 @@
                 android:textColor="#757575"
                 android:textSize="@dimen/dimen_15_dp" />
 
-                <TextView
-                    android:id="@+id/tv_spec"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="三两"
-                    android:textSize="@dimen/dimen_12_dp"
-                    android:visibility="gone" />
+            <TextView
+                android:id="@+id/tv_spec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="三两"
+                android:textSize="@dimen/dimen_12_dp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -71,6 +71,7 @@
             android:layout_height="wrap_content"
             android:padding="2dp"
             android:src="@drawable/icon_add_product" />
+
     </LinearLayout>
 
     <View

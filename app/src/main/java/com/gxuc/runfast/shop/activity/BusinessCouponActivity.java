@@ -142,6 +142,9 @@ public class BusinessCouponActivity extends ToolBarActivity {
                     if (jsonObject.optBoolean("success")) {
                         if (!TextUtils.equals("null", jsonObject.optString("data"))) {
                             ShopCartBean shopCartBean = JsonUtil.fromJson(jsonObject.optString("data"), ShopCartBean.class);
+                            if (TextUtils.isEmpty(shopCartBean.redTips)){
+                                ToastUtil.showToast(shopCartBean.redTips);
+                            }
                             Intent intent = new Intent();
                             intent.putExtra("shopCartBean", shopCartBean);
                             intent.putExtra("paramJson", paramJson.toString());

@@ -1,18 +1,13 @@
 package com.gxuc.runfast.shop.activity.purchases;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gxuc.runfast.shop.R;
@@ -20,15 +15,10 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.fragment.DeliveryFragment;
 import com.gxuc.runfast.shop.fragment.PurchaseFragment;
 
-import java.lang.reflect.Field;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static android.support.design.widget.TabLayout.MODE_FIXED;
-
-import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.NoScrollViewPager;
 
 /**

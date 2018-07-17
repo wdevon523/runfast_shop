@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.gxuc.runfast.shop.R;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.PayChannelActivity;
 import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressManagerActivity;
@@ -25,6 +26,7 @@ import com.gxuc.runfast.shop.bean.Address;
 import com.gxuc.runfast.shop.bean.PurchaseInfo;
 import com.gxuc.runfast.shop.bean.PurchaseOrderInfo;
 import com.gxuc.runfast.shop.bean.address.AddressBean;
+import com.gxuc.runfast.shop.config.UserService;
 import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.CustomConstant;
@@ -166,14 +168,22 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
                 startActivityForResult(intent, 1001);
                 break;
             case R.id.tv_address:
-                Intent data = new Intent(getContext(), AddressSelectActivity.class);
-                data.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(data, 1002);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent data = new Intent(getContext(), AddressSelectActivity.class);
+                    data.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(data, 1002);
+                }
                 break;
             case R.id.rl_address:
-                Intent intentAddr = new Intent(getContext(), AddressSelectActivity.class);
-                intentAddr.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
-                startActivityForResult(intentAddr, 1002);
+                if (UserService.getUserInfo(getContext()) == null) {
+                    startActivity(new Intent(getContext(), LoginQucikActivity.class).putExtra("isRelogin", true));
+                } else {
+                    Intent intentAddr = new Intent(getContext(), AddressSelectActivity.class);
+                    intentAddr.putExtra(IntentFlag.KEY, IntentFlag.PURCHASE);
+                    startActivityForResult(intentAddr, 1002);
+                }
                 break;
             case R.id.rl_coupon:
                 break;
@@ -250,7 +260,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
                         String data = jsonObject.optString("data");
                         purchaseInfo = GsonUtil.fromJson(data, PurchaseInfo.class);
                         tvSendPrice.setText("¥ " + purchaseInfo.baseFee / 100);
-                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString() + "元");
+                        tvTotalPrice.setText(purchaseInfo.deliveryFee.divide(new BigDecimal("100")).stripTrailingZeros().toPlainString() + "元");
                         tvDistance.setText(purchaseInfo.distance + "米");
                         tvEstimateTime.setText("预计" + purchaseInfo.deliveryDuration + "分钟内送达");
                     } else {
@@ -272,7 +282,7 @@ public class PurchaseFragment extends Fragment implements TipDialog.OnDialogClic
 
     private void requestConfirmPurchase(boolean iSspecified) {
 
-        CustomApplication.getRetrofitNew().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, "DAIGOU", tip, addressInfo.id, lng, lat).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().confirmPurchase(goodsDescription, fromType, iSspecified ? mdestinationAddrLat.latLng.longitude : 0, iSspecified ? mdestinationAddrLat.latLng.latitude : 0, destinationAddr, iSspecified ? mdestinationAddrLat.address : "", "DAIGOU", tip, addressInfo.id, lng, lat).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

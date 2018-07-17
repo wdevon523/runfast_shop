@@ -75,7 +75,6 @@
                 android:gravity="center"
                 android:text="明天"
                 android:textColor="@color/text_333333"
-
                 android:textSize="@dimen/dimen_14_dp" />
 
         </LinearLayout>

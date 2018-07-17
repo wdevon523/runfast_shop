@@ -92,7 +92,7 @@
                     android:id="@+id/tv_food_limit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/round_bg_fb7d30"
+                    android:background="@drawable/round_biankuang_ff9f14"
                     android:paddingBottom="@dimen/dimen_2_dp"
                     android:paddingLeft="@dimen/dimen_5_dp"
                     android:paddingRight="@dimen/dimen_5_dp"

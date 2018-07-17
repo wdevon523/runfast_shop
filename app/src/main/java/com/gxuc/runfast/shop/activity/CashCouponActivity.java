@@ -3,7 +3,6 @@ package com.gxuc.runfast.shop.activity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.View;
 
 import com.example.supportv1.utils.JsonUtil;
@@ -53,7 +52,7 @@ public class CashCouponActivity extends ToolBarActivity implements View.OnClickL
 
     private void initData() {
 //        businessId = getIntent().getIntExtra("businessId", 0);
-        mAdapter = new CashCouponAdapter(businessCouponInfoList, this, this);
+        mAdapter = new CashCouponAdapter(businessCouponInfoList, this, this, false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(mAdapter);
         getNetData();
@@ -81,7 +80,7 @@ public class CashCouponActivity extends ToolBarActivity implements View.OnClickL
 
         String agantId = SharePreferenceUtil.getInstance().getStringValue(CustomConstant.AGENTID);
 
-        CustomApplication.getRetrofitNew().getCoupan(agantId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getNewRedpackge(agantId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();

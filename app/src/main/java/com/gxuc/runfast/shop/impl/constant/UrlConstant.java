@@ -11,11 +11,12 @@ import com.gxuc.runfast.shop.data.ApiServiceFactory;
  */
 public class UrlConstant {
 
-    public static final String HOST = ApiServiceFactory.HOST;
+    public static final String HOST = ApiServiceFactory.PAORTUI_HOST;
     public static final String BaseUrl = ApiServiceFactory.BASE_URL;
 
-    //    public static final String ImageBaseUrl = "http://image.gxptkc.com";
-    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
+    public static final String ImageBaseUrl = "http://image.gxptkc.com/";
+//    public static final String ImageBaseUrl = "http://192.168.2.221:8080";
+//    public static final String ImageBaseUrl = "http://192.168.2.192:8082";
 
     public static final String ImageHeadBaseUrl = "http://image.gxptkc.com/";
 
@@ -103,7 +104,7 @@ public class UrlConstant {
     /***
      * 上传图片
      */
-    public static final String UPLOAD_PIC = HOST + "fileUpload.do";
+    public static final String UPLOAD_PIC = HOST + "user/wm/my/fileUpload";
 
     /***
      * 更换头像
@@ -332,6 +333,10 @@ public class UrlConstant {
      */
     public static final String WALLET_PAY = "user/wm/order/wallletPay";
     /**
+     * 跑腿钱包支付
+     */
+    public static final String PAO_TUI_WALLET_PAY = "user/order/wallletPay";
+    /**
      * 支付宝支付
      */
     public static final String ALIPAY_PAY = "pay/alipayresultmap.do";
@@ -348,7 +353,7 @@ public class UrlConstant {
     /**
      * 确认收货
      */
-    public static final String ORDER_RECEIVE = "userOrder/receive.do";
+    public static final String ORDER_RECEIVE = "user/wm/order/complete";
 
     /**
      * 取消订单
@@ -376,11 +381,6 @@ public class UrlConstant {
      * 选择收货地址
      */
     public static final String SELECT_ADDR = "userOrder/busshowps.do";
-
-    /**
-     * 评价
-     */
-    public static final String EVALUATION = "userComment/poaddBusinessComment.do";
 
     /**
      * 微信充值
@@ -421,7 +421,7 @@ public class UrlConstant {
     /**
      * 检查版本
      */
-    public static final String GET_DRIVER_LATLNG = "user/getDriverLocation.do";
+    public static final String GET_DRIVER_LATLNG = "user/wm/order/driverLocation";
 
     /**
      * 根据商品id获取店家id
@@ -740,10 +740,6 @@ public class UrlConstant {
      */
     public static final String RECEICER_BUSINESS_COUPON = "user/wm/redPacket/pick";
 
-    /***
-     * 优惠券领取中心列表
-     */
-    public static final String GET_COUPON = "user/wm/home/redActivityForPick";
 
     /**
      * 优惠券领取中心列表
@@ -758,7 +754,7 @@ public class UrlConstant {
     /**
      * 商家分类列表
      */
-    public static final String GET_BUSINES_CATEGOTY = "user/wm/home/businessType";
+    public static final String GET_BUSINES_CATEGOTY = "user/wm/home/businessSubTypes";
 
     /**
      * 获取特惠优选专区更多商家分页列表
@@ -789,6 +785,56 @@ public class UrlConstant {
      * 获取用户评价列表
      */
     public static final String GET_MY_EVALUATE = "user/wm/my/listComment";
+
+    /**
+     * 获取退款金额
+     */
+    public static final String GET_REFUND_PRICE = "user/wm/order/applyRefundInfo";
+
+    /**
+     * 退款
+     */
+    public static final String SUMBIT_REFUND = "user/wm/order/applyRefund";
+
+    /**
+     * 评价
+     */
+    public static final String EVALUATION = "user/wm/business/addComment";
+
+    /**
+     * 删除评价
+     */
+    public static final String DELETE_EVALUATION = "user/wm/business/deleteComment";
+
+    /**
+     * 追加评论
+     */
+    public static final String EVALUATION_MORE = "user/wm/business/reComment";
+
+    /***
+     * 首页领取红包
+     */
+    public static final String GET_HOME_REDPACKAGE = "user/wm/home/redActivityForPick";
+
+    /***
+     * 个人中心领取红包
+     */
+    public static final String GET_NEW_REDPACKAGE = "user/wm/my/redActivityForPick";
+
+    /***
+     * 优惠专区商家列表
+     */
+    public static final String GET_ZONE_BUSINESS = "user/wm/home/zoneBusiness";
+
+    /***
+     * 大额满减专区商家列表
+     */
+    public static final String GET_FULLLESS_ZONE_BUSINESS = "user/wm/home/fullLessZoneBusiness";
+
+    /***
+     * 免配送费专区商家列表
+     */
+    public static final String GET_FREE_DELIVERY_ZONE_BUSINESS = "user/wm/home/freeDeliveryZoneBusiness";
 
 
 }

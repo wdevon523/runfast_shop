@@ -15,9 +15,11 @@ import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.CartItemsBean;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
+import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 
 import org.xutils.x;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,11 +29,13 @@ public class ShopCartGoodAdapter extends BaseAdapter {
 
     private Context context = null;
     private List<CartItemsBean> cartItemsBeanList;
+    private boolean isRefund;
     private int businessId;
 
-    public ShopCartGoodAdapter(Context context, List<CartItemsBean> cartItemsBeanList, int businessId) {
+    public ShopCartGoodAdapter(Context context, List<CartItemsBean> cartItemsBeanList, int businessId, boolean isRefund) {
         this.context = context;
         this.cartItemsBeanList = cartItemsBeanList;
+        this.isRefund = isRefund;
         this.businessId = businessId;
     }
 
@@ -68,14 +72,20 @@ public class ShopCartGoodAdapter extends BaseAdapter {
         viewHolder.tvShoppingCartGoodNum.setText("x" + cartItemsBean.num);
         viewHolder.tvShoppingCartGoodSpec.setText(cartItemsBean.standarOptionName);
 
-        if (cartItemsBean.totalDisprice == null) {
+        if (cartItemsBean.totalDisprice == null || cartItemsBean.totalDisprice.compareTo(BigDecimal.ZERO) == 0) {
             viewHolder.tvShoppingCartGoodOldprice.setVisibility(View.GONE);
-            viewHolder.tvShoppingCartGoodDisprice.setText("¥" + cartItemsBean.totalPrice);
+            viewHolder.tvShoppingCartGoodDisprice.setText("¥" + cartItemsBean.totalPrice.stripTrailingZeros().toPlainString());
         } else {
             viewHolder.tvShoppingCartGoodOldprice.setVisibility(View.VISIBLE);
-            viewHolder.tvShoppingCartGoodDisprice.setText("¥" + cartItemsBean.totalDisprice);
-            viewHolder.tvShoppingCartGoodOldprice.setText("¥" + cartItemsBean.totalPrice);
+            viewHolder.tvShoppingCartGoodDisprice.setText("¥" + cartItemsBean.totalDisprice.stripTrailingZeros().toPlainString());
+            viewHolder.tvShoppingCartGoodOldprice.setText("¥" + cartItemsBean.totalPrice.stripTrailingZeros().toPlainString());
             viewHolder.tvShoppingCartGoodOldprice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+
+        if (isRefund) {
+            viewHolder.tvShoppingCartGoodOldprice.setVisibility(View.GONE);
+            viewHolder.tvShoppingCartGoodDisprice.setVisibility(View.GONE);
+            viewHolder.swipeMenuLayout.setSwipeEnable(false);
         }
 
         viewHolder.cbShoppingcartGoods.setTag(position);
@@ -105,7 +115,14 @@ public class ShopCartGoodAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public void setList(List<CartItemsBean> cartItemsBeanList) {
+        this.cartItemsBeanList = cartItemsBeanList;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder {
+        @BindView(R.id.swipeMenuLayout)
+        SwipeMenuLayout swipeMenuLayout;
         @BindView(R.id.cb_shoppingcart_goods)
         CheckBox cbShoppingcartGoods;
         @BindView(R.id.iv_shopping_cart_good_logo)

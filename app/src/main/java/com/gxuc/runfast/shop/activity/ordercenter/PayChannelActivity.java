@@ -142,9 +142,9 @@ public class PayChannelActivity extends ToolBarActivity {
         llLeftTime.setVisibility(isPaotui ? View.GONE : View.VISIBLE);
         mBtnToPay.setText("确认支付 ¥ " + price);
         tvTotalPrice.setText(price + "");
-        tvBusinessNameAndOrderCode.setText(businessName + "-" + orderCode);
+        tvBusinessNameAndOrderCode.setText((TextUtils.isEmpty(businessName) ? "订单号: " : businessName + "-") + orderCode);
 
-        long passTime = System.currentTimeMillis() - (SystemUtil.date2TimeStamp(createTime, SystemUtil.DATE_FORMAT) * 1000);
+        long passTime = System.currentTimeMillis() - SystemUtil.date2TimeStamp(createTime, SystemUtil.DATE_FORMAT);
 
         if (passTime > TEN_MINUTE) {
             llLeftTime.setVisibility(View.GONE);
@@ -219,6 +219,7 @@ public class PayChannelActivity extends ToolBarActivity {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
                         Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+                        intent.putExtra("isPaotui", isPaotui);
                         intent.putExtra("orderId", orderId);
                         intent.putExtra("logo", logo);
                         intent.putExtra("price", price);
@@ -498,19 +499,35 @@ public class PayChannelActivity extends ToolBarActivity {
 
     private void requestWalletPay(String password) {
         CustomProgressDialog.startProgressDialog(this);
-        CustomApplication.getRetrofitNew().walletPay(orderId, MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
-            @Override
-            public void onSuccessResponse(Call<String> call, Response<String> response) {
-                mPayInputDialog.dismiss();
-                CustomProgressDialog.stopProgressDialog();
-                dealWalletPay(response.body());
-            }
+        if (isPaotui) {
+            CustomApplication.getRetrofitNew().paoTuiwalletPay(orderId, MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    mPayInputDialog.dismiss();
+                    CustomProgressDialog.stopProgressDialog();
+                    dealWalletPay(response.body());
+                }
 
-            @Override
-            public void onFailureResponse(Call<String> call, Throwable t) {
-                CustomProgressDialog.stopProgressDialog();
-            }
-        });
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+                    CustomProgressDialog.stopProgressDialog();
+                }
+            });
+        } else {
+            CustomApplication.getRetrofitNew().walletPay(orderId, MD5Util.MD5(password)).enqueue(new MyCallback<String>() {
+                @Override
+                public void onSuccessResponse(Call<String> call, Response<String> response) {
+                    mPayInputDialog.dismiss();
+                    CustomProgressDialog.stopProgressDialog();
+                    dealWalletPay(response.body());
+                }
+
+                @Override
+                public void onFailureResponse(Call<String> call, Throwable t) {
+                    CustomProgressDialog.stopProgressDialog();
+                }
+            });
+        }
     }
 
     private void showPayInputDialog() {
@@ -568,6 +585,7 @@ public class PayChannelActivity extends ToolBarActivity {
             if (object.optBoolean("success")) {
                 ToastUtil.showToast("支付成功");
                 Intent intent = new Intent(PayChannelActivity.this, PaySuccessActivity.class);
+                intent.putExtra("isPaotui", isPaotui);
                 intent.putExtra("orderId", orderId);
                 intent.putExtra("logo", logo);
                 intent.putExtra("price", price);

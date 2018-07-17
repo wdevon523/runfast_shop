@@ -1,5 +1,6 @@
 package com.gxuc.runfast.shop.view;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.usercenter.AboutActivity;
 import com.gxuc.runfast.shop.util.Comm;
+import com.gxuc.runfast.shop.util.PermissionsChecker;
+import com.gxuc.runfast.shop.util.ToastUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,6 +67,10 @@ public class MyAutoUpdate {
 
     private boolean interceptFlag = false;
 
+    static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    };
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -93,6 +100,8 @@ public class MyAutoUpdate {
      * @param version_info
      */
     public void showNoticeDialog(String version_info, final String downloadUrl) {
+        final PermissionsChecker mPermissionsChecker = new PermissionsChecker(mContext);
+
         // 构造对话框
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle("更新提示");
@@ -101,6 +110,10 @@ public class MyAutoUpdate {
         builder.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                if (mPermissionsChecker.judgePermissions(PERMISSIONS)) {
+                    ToastUtil.showToast("请先开启存储权限");
+                    return;
+                }
                 // 启动后台服务下载apk
                 dialog.dismiss();
                 showDownloadDialog(downloadUrl);

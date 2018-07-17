@@ -46,6 +46,15 @@ public class SharePreferenceUtil {
         return mSharedPreferences.getInt(key, 0);
     }
 
+    public void putLongValue(String key, long value) {
+        mEditor.putLong(key, value);
+        mEditor.commit();
+    }
+
+    public long getLongValue(String key) {
+        return mSharedPreferences.getLong(key, 0);
+    }
+
     public void putBooleanValue(String key, Boolean value) {
         mEditor.putBoolean(key, value);
         mEditor.commit();

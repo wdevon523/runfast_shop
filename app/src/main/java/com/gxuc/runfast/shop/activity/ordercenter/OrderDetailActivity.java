@@ -1,6 +1,9 @@
 package com.gxuc.runfast.shop.activity.ordercenter;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,6 +38,7 @@ import com.example.supportv1.utils.JsonUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.activity.MainActivity;
+import com.gxuc.runfast.shop.activity.RefundActivity;
 import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.adapter.OrderGoodsNewAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
@@ -55,6 +59,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.x;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -88,6 +94,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     LinearLayout mLlManDeliverTime;
     @BindView(R.id.tv_man_deliver_time)
     TextView mTvManDeliverTime;
+    @BindView(R.id.btn_refund)
+    Button mBtnRefund;
     @BindView(R.id.btn_buy_again)
     Button mBtnBuyAgain;
     @BindView(R.id.btn_pay_now)
@@ -506,9 +514,9 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 orderDetailInfo.status == 4 ||
                 orderDetailInfo.status == 5) {
             mLlManDeliverTime.setVisibility(View.VISIBLE);
-            mTvManDeliverTime.setText(orderDetailInfo.deliveryDuration + "");
+            mTvManDeliverTime.setText(orderDetailInfo.disTime + "");
         } else {
-            mLlManDeliverTime.setVisibility(View.INVISIBLE);
+            mLlManDeliverTime.setVisibility(View.GONE);
         }
 
         showBtnStatus(orderDetailInfo.status);
@@ -530,7 +538,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         tvDriverType.setText(orderDetailInfo.isDeliver == 0 ? "快车专送" : "商家配送");
 
 //        ImageLoaderUtil.displayImage(this, mIvOrderDetailBusinessImg, orderDetailInfo.goodsSellRecord.logo);
-        x.image().bind(mIvOrderDetailBusinessImg, UrlConstant.ImageBaseUrl + orderDetailInfo.businessImg, NetConfig.optionsHeadImage);
+        x.image().bind(mIvOrderDetailBusinessImg, UrlConstant.ImageBaseUrl + orderDetailInfo.businessImg, NetConfig.optionsLogoImage);
         mTvOrderDetailBusinessName.setText(orderDetailInfo.businessName);
 
         llContainProduct.removeAllViews();
@@ -539,25 +547,32 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             llContainProduct.addView(orderGoodsNewAdapter.getView(i, null, null));
         }
 
-        tvOrderDetailOldShipping.setVisibility(orderDetailInfo.deliveryFee == orderDetailInfo.finalDeliveryFee ? View.GONE : View.VISIBLE);
-        tvOrderDetailOldShipping.setText(orderDetailInfo.deliveryFee == 0 ? "" : "¥ " + orderDetailInfo.deliveryFee);
+        tvOrderDetailOldShipping.setVisibility(orderDetailInfo.deliveryFee.compareTo(orderDetailInfo.finalDeliveryFee) == 0 ? View.GONE : View.VISIBLE);
+        tvOrderDetailOldShipping.setText(orderDetailInfo.deliveryFee.compareTo(BigDecimal.ZERO) == 0 ? "" : "¥ " + orderDetailInfo.deliveryFee);
         tvOrderDetailOldShipping.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
-        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.finalDeliveryFee);
-        tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.totalPackageFee);
-        tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.offAmount);
-        mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.cartDisprice));
-        mTvOrderDetailCouponPrice.setText("¥ " + orderDetailInfo.offAmount);
-        mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.totalPay);
+        tvOrderDetailShowps.setText("¥ " + orderDetailInfo.finalDeliveryFee.stripTrailingZeros().toPlainString());
+        tvOrderDetailPackaging.setText("¥ " + orderDetailInfo.totalPackageFee.stripTrailingZeros().toPlainString());
+        tvOrderDetailCoupons.setText("-¥ " + orderDetailInfo.offAmount.stripTrailingZeros().toPlainString());
+        mTvOrderDetailPrice.setText("¥ " + (orderDetailInfo.cartDisprice.stripTrailingZeros().toPlainString()));
+        mTvOrderDetailCouponPrice.setText("¥ " + orderDetailInfo.offAmount.stripTrailingZeros().toPlainString());
+        mTvOrderDetailSubPrice.setText("¥ " + orderDetailInfo.totalPay.stripTrailingZeros().toPlainString());
         mTvOrderDetailDeliverType.setText(orderDetailInfo.isDeliver == 0 ? "快车专送" : "商家配送");
         tvOrderDetailCreatTime.setText(orderDetailInfo.createTime);
 //        if (!TextUtils.isEmpty(orderDetailInfo.readyTime) || !TextUtils.equals(orderDetailInfo.readyTime, "null")) {
-//            mTvOrderDetailDeliverTime.setText(orderDetailInfo.disTime);
+        mTvOrderDetailDeliverTime.setText(orderDetailInfo.bookTime);
 //            mLlOrderDetailDeliverTime.setVisibility(View.VISIBLE);
 //        } else {
 //            mLlOrderDetailDeliverTime.setVisibility(View.GONE);
 //        }
+        String gender;
+        if (orderDetailInfo.userAddressGender == null) {
+            gender = "先生";
+        } else {
+            gender = orderDetailInfo.userAddressGender == 0 ? "女士" : "先生";
+        }
+        mTvOrderDetailManPhone.setText(orderDetailInfo.userSuportSelf ? "到店自取" : orderDetailInfo.userName + " " + gender + "  " + orderDetailInfo.userPhone);
         mTvOrderDetailManInfo.setText(orderDetailInfo.userAddress + orderDetailInfo.address);
-        mTvOrderDetailManPhone.setText(orderDetailInfo.userName + "  " + orderDetailInfo.userPhone);
+        mTvOrderDetailManInfo.setVisibility(orderDetailInfo.userSuportSelf ? View.GONE : View.VISIBLE);
         mTvOrderDetailNumber.setText(orderDetailInfo.orderNo);
         if (orderDetailInfo.isPay != null && orderDetailInfo.isPay == 1) {
             mLlOrderDetailPatType.setVisibility(View.VISIBLE);
@@ -576,14 +591,14 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
     private void requestDriverLatLng(String shopperId) {
 
-        CustomApplication.getRetrofit().getDriverLatLng(shopperId).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getDriverLatLng(shopperId).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
-                        driverInfo = GsonUtil.fromJson(jsonObject.optString("driver"), DriverInfo.class);
+                        driverInfo = GsonUtil.fromJson(jsonObject.optString("data"), DriverInfo.class);
                         if (driverInfo != null) {
                             drawDriverMarkers();
                         }
@@ -609,6 +624,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             mBtnBuyAgain.setVisibility(View.VISIBLE);
             rlContactBusiness.setVisibility(View.VISIBLE);
 
+            mBtnRefund.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
@@ -621,6 +637,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             //-1：订单取消
             mBtnBuyAgain.setVisibility(View.VISIBLE);
 
+            mBtnRefund.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
@@ -632,10 +649,11 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             viewTop.setVisibility(View.GONE);
         } else if (status == 0) {
             //0：客户下单
+            mBtnBuyAgain.setVisibility(View.VISIBLE);
             mBtnPayNow.setVisibility(View.VISIBLE);
             mBtnCancelOrder.setVisibility(View.VISIBLE);
 
-            mBtnBuyAgain.setVisibility(View.GONE);
+            mBtnRefund.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
             rlContactBusiness.setVisibility(View.GONE);
             rlDriverInfo.setVisibility(View.GONE);
@@ -644,42 +662,56 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             viewTop.setVisibility(View.GONE);
         } else if (status == 1 || status == 2) {
             //1：客户已付款  2：商家接单
-            mBtnCancelOrder.setVisibility(View.VISIBLE);
+            mBtnBuyAgain.setVisibility(View.VISIBLE);
+            mBtnRefund.setVisibility(View.GONE);
             rlContactBusiness.setVisibility(View.VISIBLE);
             mMapView.setVisibility(View.VISIBLE);
             viewTop.setVisibility(View.VISIBLE);
 
+            mBtnCancelOrder.setVisibility(View.VISIBLE);
             mBtnPayNow.setVisibility(View.GONE);
             mBtnConfirmCompleted.setVisibility(View.GONE);
-            mBtnBuyAgain.setVisibility(View.GONE);
             rlDriverInfo.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
         } else if (status == 3) {
             //3：骑手接单
+            mBtnBuyAgain.setVisibility(View.VISIBLE);
+            mBtnRefund.setVisibility(View.GONE);
+            rlContactBusiness.setVisibility(View.VISIBLE);
+            rlDriverInfo.setVisibility(View.VISIBLE);
+            mMapView.setVisibility(View.VISIBLE);
+            viewTop.setVisibility(View.VISIBLE);
+
             mBtnCancelOrder.setVisibility(View.VISIBLE);
+            mBtnConfirmCompleted.setVisibility(View.GONE);
+            mBtnPayNow.setVisibility(View.GONE);
+            mBtnAppraise.setVisibility(View.GONE);
+        } else if (status == 4) {
+            //4：商品打包
+            mBtnBuyAgain.setVisibility(View.VISIBLE);
+            mBtnRefund.setVisibility(View.GONE);
             rlContactBusiness.setVisibility(View.VISIBLE);
             rlDriverInfo.setVisibility(View.VISIBLE);
             mMapView.setVisibility(View.VISIBLE);
             viewTop.setVisibility(View.VISIBLE);
 
             mBtnConfirmCompleted.setVisibility(View.GONE);
+            mBtnCancelOrder.setVisibility(View.VISIBLE);
             mBtnPayNow.setVisibility(View.GONE);
-            mBtnBuyAgain.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
-        }
-//        else if (status == 4) {
-//        }
-        else if (status == 4 || status == 5) {
-            //4：商品打包 ，5：商品配送
-            mBtnConfirmCompleted.setVisibility(View.VISIBLE);
+
+        } else if (status == 5) {
+            //5：商品配送
+            mBtnBuyAgain.setVisibility(View.VISIBLE);
             rlContactBusiness.setVisibility(View.VISIBLE);
             rlDriverInfo.setVisibility(View.VISIBLE);
             mMapView.setVisibility(View.VISIBLE);
             viewTop.setVisibility(View.VISIBLE);
 
-            mBtnCancelOrder.setVisibility(View.GONE);
+            mBtnConfirmCompleted.setVisibility(View.GONE);
+            mBtnRefund.setVisibility(View.GONE);
+            mBtnCancelOrder.setVisibility(View.VISIBLE);
             mBtnPayNow.setVisibility(View.GONE);
-            mBtnBuyAgain.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
         }
 //        else if (status == 6) {
@@ -692,6 +724,11 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             rlDriverInfo.setVisibility(View.VISIBLE);
             mBtnAppraise.setVisibility(orderDetailInfo.isComent == null
                     ? View.VISIBLE : View.GONE);
+            if (orderDetailInfo.isRefund == null || orderDetailInfo.isRefund == 3) {
+                mBtnRefund.setVisibility(View.VISIBLE);
+            } else {
+                mBtnRefund.setVisibility(View.GONE);
+            }
 
             mBtnCancelOrder.setVisibility(View.GONE);
             mBtnPayNow.setVisibility(View.GONE);
@@ -702,6 +739,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         } else {
             mBtnBuyAgain.setVisibility(View.VISIBLE);
 
+            mBtnRefund.setVisibility(View.GONE);
             rlContactBusiness.setVisibility(View.GONE);
             rlDriverInfo.setVisibility(View.GONE);
             mBtnAppraise.setVisibility(View.GONE);
@@ -714,14 +752,24 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 
     }
 
-    @OnClick({R.id.tv_order_man_state, R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.rl_contact_business, R.id.btn_contact_driver, R.id.btn_appraise, R.id.rl_business_name})
+    @OnClick({R.id.tv_order_man_state, R.id.btn_refund, R.id.btn_buy_again, R.id.btn_pay_now, R.id.btn_confirm_completed, R.id.btn_cancel_order, R.id.rl_contact_business, R.id.btn_contact_driver, R.id.btn_appraise, R.id.rl_business_name, R.id.tv_copy})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_business_name:
-                Intent businessIntent = new Intent(OrderDetailActivity.this, BusinessNewActivity.class);
+                Intent businessIntent = new Intent(this, BusinessNewActivity.class);
                 businessIntent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
                 businessIntent.putExtra("businessId", orderDetailInfo.businessId);
                 startActivity(businessIntent);
+                break;
+            case R.id.btn_refund:
+                Intent refundIntent = new Intent(this, RefundActivity.class);
+                refundIntent.putExtra("cartItems", (Serializable) orderDetailInfo.cartItems);
+                refundIntent.putExtra("orderId", orderId);
+                refundIntent.putExtra("businessId", orderDetailInfo.businessId);
+                refundIntent.putExtra("businessName", orderDetailInfo.businessName);
+                refundIntent.putExtra("businessImg", orderDetailInfo.businessImg);
+                refundIntent.putExtra("deliveryFee", orderDetailInfo.deliveryFee + "");
+                startActivity(refundIntent);
                 break;
 
             //订单状态
@@ -795,8 +843,13 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 evaluationIntent.putExtra("oid", orderId);
                 evaluationIntent.putExtra("logo", orderDetailInfo.businessImg);
                 evaluationIntent.putExtra("businessName", orderDetailInfo.businessName);
-                evaluationIntent.putExtra("isDeliver", orderDetailInfo.isDeliver);
+                evaluationIntent.putExtra("shopper", orderDetailInfo.shopper);
                 startActivity(evaluationIntent);
+                break;
+            case R.id.tv_copy:
+                ClipboardManager systemService = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                systemService.setPrimaryClip(ClipData.newPlainText("text", orderDetailInfo.orderNo));
+                ToastUtil.showToast("已复制到剪贴板");
                 break;
         }
     }
@@ -904,6 +957,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("已提交申请，等待商家处理");
                         getOrderDetail(orderId);
                     } else {
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));

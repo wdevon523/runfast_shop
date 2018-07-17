@@ -45,13 +45,13 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         helper.setText(R.id.tv_name, item.getName())
                 .setText(R.id.tv_price, "¥" + item.getPrice().stripTrailingZeros().toPlainString())
                 .setText(R.id.tv_sale, "销量" + item.getSalesnum())
-                .setText(R.id.tv_discribe, item.getContent())
+                .setText(R.id.tv_discribe, TextUtils.isEmpty(item.getContent()) || TextUtils.equals("null", item.getContent()) ? "" : item.getContent())
 //                .setImageResource(R.id.iv_food, item.getIcon())
                 .addOnClickListener(R.id.addwidget)
                 .addOnClickListener(R.id.rl_spec)
                 .addOnClickListener(R.id.food_main);
 
-        x.image().bind((ImageView) helper.getView(R.id.iv_food), UrlConstant.ImageBaseUrl + item.getImgPath());
+        x.image().bind((ImageView) helper.getView(R.id.iv_food), UrlConstant.ImageBaseUrl + item.getImgPath(), NetConfig.optionsLogoImage);
 
 //        LogUtil.d("devonxxx" ,UrlConstant.ImageBaseUrl + item.getImgPath());
 
@@ -75,6 +75,11 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
 //                .setVisible(R.id.addwidget, item.getGoodsSellStandardList().size() == 1)
 //                .setVisible(R.id.rl_spec, item.getGoodsSellStandardList().size() > 1);
 
+        if (item.getNum() == 0) {
+            helper.setVisible(R.id.addwidget, false)
+                    .setVisible(R.id.rl_spec, false);
+        }
+
         helper.setVisible(R.id.tv_spec_num, item.getSelectCount() > 0)
                 .setText(R.id.tv_spec_num, item.getSelectCount() + "");
 
@@ -89,6 +94,8 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
                 //赠品
             } else if (item.getGoodsSellStandardList().get(0).activityType == 4) {
                 //特价
+                helper.setVisible(R.id.tv_act, true)
+                        .setText(R.id.tv_act, "特价");
             }
 
         } else {
@@ -98,7 +105,7 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         if (item.getGoodsSellStandardList().get(0).isLimited != null) {
             if (item.getGoodsSellStandardList().get(0).isLimited == 1) {
                 helper.setVisible(R.id.tv_limit, true)
-                        .setText(R.id.tv_limit, "每单限购" + item.getGoodsSellStandardList().get(0).limitNum + "件");
+                        .setText(R.id.tv_limit, "每单限" + item.getGoodsSellStandardList().get(0).limitNum + "份优惠");
             } else {
                 helper.setVisible(R.id.tv_limit, false);
             }
@@ -126,7 +133,7 @@ public class FoodNewAdapter extends BaseQuickAdapter<FoodBean, BaseViewHolder> {
         }
         helper.getConvertView().setContentDescription(item.getType());
 
-        if (businessDetail != null && !businessDetail.isopen) {
+        if (businessDetail != null && businessDetail.isopen != 1) {
             helper.setVisible(R.id.addwidget, false);
             helper.setVisible(R.id.rl_spec, false);
         }

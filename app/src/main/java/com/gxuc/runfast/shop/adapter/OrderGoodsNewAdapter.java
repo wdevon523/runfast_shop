@@ -18,6 +18,7 @@ import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
 import org.xutils.x;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,10 +66,10 @@ public class OrderGoodsNewAdapter extends BaseAdapter {
 
         viewHolder.tvOrderDetailGoodSpec.setText(cartItemsBean.standarOptionName);
 
-        viewHolder.tvOrderDetailGoodOldPrice.setVisibility(cartItemsBean.totalDisprice == null ? View.GONE : View.VISIBLE);
+        viewHolder.tvOrderDetailGoodOldPrice.setVisibility(cartItemsBean.totalDisprice == null || cartItemsBean.totalDisprice.compareTo(BigDecimal.ZERO) == 0 ? View.GONE : View.VISIBLE);
 
-        viewHolder.tvOrderDetailGoodPrice.setText("¥ " + (cartItemsBean.totalDisprice == null ? cartItemsBean.totalPrice : cartItemsBean.totalDisprice));
-        viewHolder.tvOrderDetailGoodOldPrice.setText("¥ " + cartItemsBean.totalPrice);
+        viewHolder.tvOrderDetailGoodPrice.setText("¥ " + (cartItemsBean.totalDisprice == null || cartItemsBean.totalDisprice.compareTo(BigDecimal.ZERO) == 0 ? cartItemsBean.totalPrice.stripTrailingZeros().toPlainString() : cartItemsBean.totalDisprice.stripTrailingZeros().toPlainString()));
+        viewHolder.tvOrderDetailGoodOldPrice.setText("¥ " + cartItemsBean.totalPrice.stripTrailingZeros().toPlainString());
         viewHolder.tvOrderDetailGoodOldPrice.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG | Paint.ANTI_ALIAS_FLAG);
 
 //        if (goodsSellRecordChildren.getActivityType() != null) {

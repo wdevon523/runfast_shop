@@ -31,6 +31,7 @@ import com.netease.nis.captcha.Captcha;
 import com.netease.nis.captcha.CaptchaListener;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.UMShareConfig;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import org.json.JSONException;
@@ -66,6 +67,7 @@ public class LoginQucikActivity extends ToolBarActivity {
     /*验证码SDK,该Demo采用异步获取方式*/
     private UserCaptchaTask mUserCaptchaTask = null;
     private Captcha mCaptcha;
+    private int REQUEST_LOGIN = 1003;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +80,18 @@ public class LoginQucikActivity extends ToolBarActivity {
         initCaptcha();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        UMShareAPI.get(this).release();
+    }
+
     private void initView() {
         etUserName.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.MOBILE));
 //        etUserCode.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD));
+        UMShareConfig config = new UMShareConfig();
+        config.isNeedAuthOnGetUserInfo(true);
+        UMShareAPI.get(this).setShareConfig(config);
     }
 
     private void initCaptcha() {
@@ -194,8 +205,9 @@ public class LoginQucikActivity extends ToolBarActivity {
                 break;
 
             case R.id.iv_weixin_login:
-                ToastUtil.showToast("微信登录稍后开通");
-//                UMShareAPI.get(this).getPlatformInfo(this, SHARE_MEDIA.WEIXIN, authListener);
+//                ToastUtil.showToast("微信登录稍后开通");
+                UMShareAPI.get(this).getPlatformInfo(this, SHARE_MEDIA.WEIXIN, authListener);
+//                UMShareAPI.get(this).doOauthVerify(this, SHARE_MEDIA.WEIXIN, authListener);
 //                SendAuth.Req req = new Req();
 //                req.scope = "snsapi_userinfo";
 //                req.state = "wechat_sdk_demo_test";
@@ -203,10 +215,10 @@ public class LoginQucikActivity extends ToolBarActivity {
                 break;
 
             case R.id.iv_qq_login:
-                UMShareAPI.get(this).doOauthVerify(this, SHARE_MEDIA.QQ, authListener);
+                UMShareAPI.get(this).getPlatformInfo(this, SHARE_MEDIA.QQ, authListener);
                 break;
             case R.id.iv_password_login:
-                startActivity(new Intent(this, LoginActivity.class));
+                startActivityForResult(new Intent(this, LoginActivity.class).putExtra("isRelogin", isRelogin), REQUEST_LOGIN);
                 break;
         }
     }
@@ -298,7 +310,9 @@ public class LoginQucikActivity extends ToolBarActivity {
                 String token = object.optString("token");
                 SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, phone);
                 SharePreferenceUtil.getInstance().putStringValue("token", token);
-                startActivity(new Intent(this, MainActivity.class));
+                if (!isRelogin) {
+                    startActivity(new Intent(this, MainActivity.class));
+                }
                 finish();
             } else {
                 ToastUtil.showToast(jsonObject.optString("errorMsg"));
@@ -324,6 +338,8 @@ public class LoginQucikActivity extends ToolBarActivity {
 //            etUserCode.setText(password);
         } else if (requestCode == 1002) {
             etUserCode.setText(SharePreferenceUtil.getInstance().getStringValue(CustomConstant.PASSWORD));
+        } else if (requestCode == REQUEST_LOGIN){
+            finish();
         }
     }
 
@@ -429,7 +445,9 @@ public class LoginQucikActivity extends ToolBarActivity {
                 SharePreferenceUtil.getInstance().putStringValue(CustomConstant.THIRD_LOGIN_TYPR, thirdLoginType);
                 SharePreferenceUtil.getInstance().putStringValue("token", token);
 //                user.setPassword(user.getPassword());
-                startActivity(new Intent(this, MainActivity.class));
+                if (!isRelogin) {
+                    startActivity(new Intent(this, MainActivity.class));
+                }
                 finish();
             } else {
                 Intent intent = new Intent(this, BindMobileActivity.class);
@@ -441,5 +459,6 @@ public class LoginQucikActivity extends ToolBarActivity {
             e.printStackTrace();
         }
     }
+
 
 }

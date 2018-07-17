@@ -61,7 +61,7 @@
     <View
         android:id="@+id/view_one"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_1_dp"
+        android:layout_height="1px"
         android:layout_below="@+id/tv_order_shop_time"
         android:layout_marginLeft="@dimen/dimen_50_dp"
         android:layout_marginTop="@dimen/dimen_5_dp"
@@ -73,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/view_one"
-        android:layout_marginLeft="@dimen/dimen_50_dp"
+        android:layout_marginLeft="@dimen/dimen_40_dp"
         android:layout_marginTop="@dimen/dimen_10_dp"
         android:orientation="horizontal">
 

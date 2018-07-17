@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_home_redpackage"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tv_total_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10_dp"
+            android:includeFontPadding="false"
+            android:text="送你 24 元红包"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_24_dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_5_dp"
+            android:includeFontPadding="false"
+            android:text="赶快下单使用吧"
+            android:textColor="@color/white"
+            android:textSize="@dimen/dimen_18_dp"
+            android:textStyle="bold" />
+
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_marginTop="@dimen/dimen_60_dp"-->
+        <!--android:layout_height="260dp"-->
+        <!--android:background="@color/white"></LinearLayout>-->
+
+
+        <com.gxuc.runfast.shop.view.MaxHeightView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_30_dp"
+            android:paddingTop="@dimen/dimen_10_dp"
+            android:paddingBottom="@dimen/dimen_10_dp"
+            app:mhv_HeightDimen="260dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/redPack_recycle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.gxuc.runfast.shop.view.MaxHeightView>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_25_dp"
+        android:src="@drawable/icon_close_white" />
+
+
+</LinearLayout>

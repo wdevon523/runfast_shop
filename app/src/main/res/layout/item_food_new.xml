@@ -28,12 +28,12 @@
 
             <TextView
                 android:id="@+id/tv_no_food_store"
-                android:layout_width="@dimen/dimen_85_dp"
+                android:layout_width="@dimen/dimen_75_dp"
                 android:layout_height="@dimen/dimen_20_dp"
                 android:layout_alignBottom="@+id/iv_food"
                 android:background="@color/bg_7f000000"
                 android:gravity="center"
-                android:text="缺货"
+                android:text="售罄"
                 android:textColor="@color/white"
                 android:visibility="gone" />
 
@@ -139,39 +139,44 @@
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/tv_act"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_name"
                 android:layout_below="@+id/tv_price"
                 android:layout_marginTop="@dimen/dimen_5_dp"
-                android:background="@drawable/round_biankuang_eb532f"
-                android:includeFontPadding="false"
-                android:paddingBottom="@dimen/dimen_1_dp"
-                android:paddingLeft="@dimen/dimen_4_dp"
-                android:paddingRight="@dimen/dimen_4_dp"
-                android:paddingTop="@dimen/dimen_1_dp"
-                android:text="7折"
-                android:textColor="@color/text_eb532f"
-                android:textSize="@dimen/dimen_9_dp"
-                android:visibility="gone" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/tv_limit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_price"
-                android:layout_marginLeft="@dimen/dimen_5_dp"
-                android:layout_marginTop="@dimen/dimen_5_dp"
-                android:layout_toRightOf="@+id/tv_act"
-                android:includeFontPadding="false"
-                android:paddingLeft="@dimen/dimen_2_dp"
-                android:paddingRight="@dimen/dimen_2_dp"
-                android:text="每单限购1份"
-                android:textColor="@color/text_eb532f"
-                android:textSize="@dimen/dimen_11_dp"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/tv_act"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/dimen_5_dp"
+                    android:background="@drawable/round_biankuang_eb532f"
+                    android:includeFontPadding="false"
+                    android:paddingBottom="@dimen/dimen_1_dp"
+                    android:paddingLeft="@dimen/dimen_4_dp"
+                    android:paddingRight="@dimen/dimen_4_dp"
+                    android:paddingTop="@dimen/dimen_1_dp"
+                    android:text="7折"
+                    android:textColor="@color/text_eb532f"
+                    android:textSize="@dimen/dimen_9_dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tv_limit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:paddingLeft="@dimen/dimen_2_dp"
+                    android:paddingRight="@dimen/dimen_2_dp"
+                    android:text="每单限购1份"
+                    android:textColor="@color/text_eb532f"
+                    android:textSize="@dimen/dimen_10_dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 

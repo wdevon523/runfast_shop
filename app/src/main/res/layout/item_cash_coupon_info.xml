@@ -1,69 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/dimen_15_dp"
-    android:paddingBottom="@dimen/dimen_15_dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:gravity="center_vertical"
-    android:background="@color/color_white">
+    android:orientation="vertical">
 
-
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="¥"
-        android:textSize="18sp"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="5dp"
-        android:textColor="@color/color_coupon_number"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="@dimen/dimen_10_dp">
 
-    <TextView
-        android:id="@+id/tv_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="10"
-        android:textSize="35sp"
-        android:layout_marginLeft="5dp"
-        android:textColor="@color/color_coupon_number"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
-        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/linearLayout_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="¥"
+                    android:textColor="@color/text_fb4e44"
+                    android:textSize="@dimen/dimen_12_dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="100"
+                    android:textColor="@color/text_fb4e44"
+                    android:textSize="@dimen/dimen_30_dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_full"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="满30元可用"
+                android:textColor="@color/text_666666"
+                android:textSize="@dimen/dimen_10_dp" />
+
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="肯德基宅急送"
-            android:textSize="16sp"
-            android:textColor="@color/color_address_black"/>
-        <TextView
-            android:id="@+id/tv_full"
+            android:layout_marginLeft="@dimen/dimen_80_dp"
+            android:text="麦当劳肯德基"
+            android:textColor="@color/text_333333"
+            android:textSize="@dimen/dimen_14_dp" />
+        <!--android:layout_toRightOf="@+id/linearLayout_left"-->
+
+        <ImageView
+            android:id="@+id/iv_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="满30元可用"
-            android:textSize="11sp"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/color_text_gray"/>
-    </LinearLayout>
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/tv_get_coupon"
-        android:layout_width="73dp"
-        android:layout_height="22dp"
-        android:gravity="center"
-        android:textSize="12sp"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/coupon_background"
-        android:textColor="@color/color_white"
-        android:text="立即领取"/>
+            android:layout_alignLeft="@+id/tv_name"
+            android:layout_below="@+id/tv_name"
+            android:layout_marginTop="@dimen/dimen_3_dp" />
+
+        <TextView
+            android:id="@+id/tv_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_name"
+            android:layout_below="@+id/iv_type"
+            android:layout_marginTop="@dimen/dimen_3_dp"
+            android:text="有效期至： 2018-07-05"
+            android:textColor="@color/text_666666"
+            android:textSize="@dimen/dimen_8_dp" />
+
+        <TextView
+            android:id="@+id/tv_get_coupon"
+            android:layout_width="@dimen/dimen_60_dp"
+            android:layout_height="22dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/coupon_background"
+            android:gravity="center"
+            android:text="立即领取"
+            android:textColor="@color/color_white"
+            android:textSize="@dimen/dimen_10_dp" />
+
+    </RelativeLayout>
 
 </LinearLayout>

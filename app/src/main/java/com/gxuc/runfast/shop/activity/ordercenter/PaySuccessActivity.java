@@ -11,6 +11,7 @@ import com.gxuc.runfast.shop.activity.ToolBarActivity;
 import com.gxuc.runfast.shop.activity.purchases.DeliveryOrderDetailActivity;
 import com.gxuc.runfast.shop.bean.order.OrderDetail;
 import com.gxuc.runfast.shop.bean.order.OrderInfo;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
 import org.xutils.x;
@@ -61,7 +62,7 @@ public class PaySuccessActivity extends ToolBarActivity {
         logo = getIntent().getStringExtra("logo");
         isPaotui = getIntent().getBooleanExtra("isPaotui", false);
 
-        x.image().bind(ivBusinessAvater, UrlConstant.ImageBaseUrl + logo);
+        x.image().bind(ivBusinessAvater, UrlConstant.ImageBaseUrl + logo, NetConfig.optionsLogoImage);
         tvPayBusinessName.setText(businessName);
         tvPayPrice.setText("¥" + (price));
     }

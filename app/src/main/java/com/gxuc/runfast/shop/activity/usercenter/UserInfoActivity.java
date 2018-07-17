@@ -130,7 +130,7 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
 
     private void updateUi() {
         if (!TextUtils.isEmpty(userInfo.pic)) {
-            x.image().bind(ivHead, UrlConstant.ImageHeadBaseUrl + userInfo.pic, NetConfig.optionsHeadImage);
+            x.image().bind(ivHead, UrlConstant.ImageBaseUrl + userInfo.pic, NetConfig.optionsHeadImage);
         }
         tvUserNickname.setText(TextUtils.isEmpty(userInfo.nickname) ? userInfo.mobile : userInfo.nickname);
         tvUserPhone.setText(TextUtils.isEmpty(userInfo.mobile) ? "添加" : userInfo.mobile);
@@ -468,11 +468,13 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
             ToastUtil.showToast("文件不存在");
             return;
         }
-        ToastUtil.showToast("文件正在上传");
+//        ToastUtil.showToast("文件正在上传");
         RequestParams uploadParams = new RequestParams(UrlConstant.UPLOAD_PIC);
+        uploadParams.addHeader("token", SharePreferenceUtil.getInstance().getStringValue("token"));
         uploadParams.setAsJsonContent(true);
         List<KeyValue> list = new ArrayList<>();
-        list.add(new KeyValue("upfile", file));
+//        list.add(new KeyValue("upfile", file));
+        list.add(new KeyValue("file", file));
         list.add(new KeyValue("json", "1"));
         MultipartBody body = new MultipartBody(list, "UTF-8");
         uploadParams.setRequestBody(body);
@@ -483,11 +485,10 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
                 Log.d("params", "params = " + result);
                 try {
                     JSONObject jsonObject = new JSONObject(result);
-                    String imagePath = jsonObject.optString("filePath");
-                    userInfo.pic = imagePath;
-                    updateUserInfo(imagePath);
-                    UserService.saveUserInfo(userInfo);
-                    x.image().bind(ivHead, UrlConstant.ImageBaseUrl + imagePath, NetConfig.optionsHeadImage);
+                    if (jsonObject.optBoolean("success")) {
+                        String imagePath = jsonObject.optString("data");
+                        requestUpdatePic(imagePath);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -499,12 +500,38 @@ public class UserInfoActivity extends ToolBarActivity implements View.OnClickLis
             }
 
             @Override
+
             public void onCancelled(CancelledException cex) {
 
             }
 
             @Override
             public void onFinished() {
+
+            }
+        });
+
+    }
+
+    private void requestUpdatePic(final String imagePath) {
+        CustomApplication.getRetrofitNew().updateUserPic(imagePath).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    if (jsonObject.optBoolean("success")) {
+                        userInfo.pic = imagePath;
+//                    updateUserInfo(imagePath);
+                        UserService.saveUserInfo(userInfo);
+                        x.image().bind(ivHead, UrlConstant.ImageBaseUrl + imagePath, NetConfig.optionsHeadImage);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
 
             }
         });

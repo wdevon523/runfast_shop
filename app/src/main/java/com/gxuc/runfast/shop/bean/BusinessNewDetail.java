@@ -100,6 +100,8 @@ public class BusinessNewDetail {
      * mainOrgName : null
      * account : 6217 9952 0025 7267 119
      * teamname : null
+     * mainTypeId : 143
+     * bookable : false
      */
 
     public String inner_image;
@@ -147,7 +149,7 @@ public class BusinessNewDetail {
     public int packTime;
     public int status;
     public String mini_imgPath;
-    public boolean isopen;
+    public Integer isopen;
     public Object wm_mobile;
     public int agentId;
     public Object mainImg;
@@ -194,7 +196,10 @@ public class BusinessNewDetail {
     public Object mainOrgName;
     public String account;
     public boolean enshrined;
+    public boolean bookable;
     public Object teamname;
+    public String mainTypeId;
     public List<BusinessEvent> activityList;
+    public List<DeliveryRange> deliveryRange;
 
 }

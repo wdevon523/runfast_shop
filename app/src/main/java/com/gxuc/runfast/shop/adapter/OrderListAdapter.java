@@ -69,42 +69,42 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         final OrderInformation orderInfo = data.get(position);
         holder.itemView.setTag(position);
         holder.tv_order_shop_name.setText(orderInfo.businessName);
-        holder.tv_order_shop_state.setText(orderInfo.statStr);
-//        switch (orderInfo.status) {
-//            case -3:
-//                holder.tv_order_shop_state.setText("商家拒单");
-//                break;
-//            case -1:
-//                holder.tv_order_shop_state.setText("订单取消");
-//                break;
-//            case 0:
-//                holder.tv_order_shop_state.setText("客户下单");
-//                break;
-//            case 1:
-//                holder.tv_order_shop_state.setText("客户已付款");
-//                break;
-//            case 2:
-//                holder.tv_order_shop_state.setText("商家接单");
-//                break;
-//            case 3:
-//                holder.tv_order_shop_state.setText("骑手接单");
-//                break;
-//            case 4:
-//                holder.tv_order_shop_state.setText("商品打包");
-//                break;
-//            case 5:
-//                holder.tv_order_shop_state.setText("商品配送");
-//                break;
-//            case 6:
-//                holder.tv_order_shop_state.setText("商品送达");
-//                break;
-//            case 7:
-//                holder.tv_order_shop_state.setText("确认收货");
-//                break;
-//            case 8:
-//                holder.tv_order_shop_state.setText("订单完成");
-//                break;
-//        }
+//        holder.tv_order_shop_state.setText(orderInfo.statStr);
+        switch (orderInfo.status) {
+            case -3:
+                holder.tv_order_shop_state.setText("商家拒单");
+                break;
+            case -1:
+                holder.tv_order_shop_state.setText("订单取消");
+                break;
+            case 0:
+                holder.tv_order_shop_state.setText("客户下单");
+                break;
+            case 1:
+                holder.tv_order_shop_state.setText("客户已付款");
+                break;
+            case 2:
+                holder.tv_order_shop_state.setText("商家接单");
+                break;
+            case 3:
+                holder.tv_order_shop_state.setText("骑手接单");
+                break;
+            case 4:
+                holder.tv_order_shop_state.setText("商品打包");
+                break;
+            case 5:
+                holder.tv_order_shop_state.setText("商品配送");
+                break;
+            case 6:
+                holder.tv_order_shop_state.setText("商品送达");
+                break;
+            case 7:
+                holder.tv_order_shop_state.setText("确认收货");
+                break;
+            case 8:
+                holder.tv_order_shop_state.setText("订单完成");
+                break;
+        }
 
         holder.ll_contain_goods.removeAllViews();
         for (int i = 0; i < orderInfo.cartItems.size(); i++) {
@@ -118,7 +118,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
 
         holder.tv_order_shop_time.setText(orderInfo.createTime);
 
-        String orderPriceStr = "共" + orderInfo.totalNum + "件商品，实付" + "¥ " + String.valueOf(orderInfo.totalPay);
+        String orderPriceStr = "共" + orderInfo.totalNum + "件商品，实付" + "¥ " + orderInfo.totalPay.stripTrailingZeros().toPlainString();
         SpannableString spanString = new SpannableString(orderPriceStr);
         StyleSpan span = new StyleSpan(Typeface.BOLD);
         spanString.setSpan(span, orderPriceStr.indexOf("¥"), orderPriceStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -148,11 +148,14 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         });
 
 //        holder.tv_order_shop_complain.setVisibility((orderInfo.getStatus() == 8 && orderInfo.getIsComent() == null) ? View.VISIBLE : View.GONE);
-        holder.tv_order_confirm_completed.setVisibility(orderInfo.status >= 5 && orderInfo.status <= 7 ? View.VISIBLE : View.GONE);
-        holder.tv_order_call_driver.setVisibility(orderInfo.status >= 3 ? View.VISIBLE : View.GONE);
-        holder.tv_order_call_business.setVisibility(orderInfo.status >= 2 ? View.VISIBLE : View.GONE);
+
+
+//        holder.tv_order_confirm_completed.setVisibility(orderInfo.status >= 5 && orderInfo.status <= 7 ? View.VISIBLE : View.GONE);
+//        holder.tv_order_call_driver.setVisibility(orderInfo.status >= 3 ? View.VISIBLE : View.GONE);
+//        holder.tv_order_call_business.setVisibility(orderInfo.status >= 2 ? View.VISIBLE : View.GONE);
         holder.tv_order_pay_now.setVisibility(orderInfo.status == 0 ? View.VISIBLE : View.GONE);
-        holder.tv_order_shop_again.setVisibility(orderInfo.status < 0 || orderInfo.status == 8 ? View.VISIBLE : View.GONE);
+//        holder.tv_order_shop_again.setVisibility(orderInfo.status <= 0 || orderInfo.status == 8 ? View.VISIBLE : View.GONE);
+        holder.tv_order_shop_again.setVisibility(View.VISIBLE);
 
         holder.tv_order_shop_complain.setOnClickListener(new View.OnClickListener() {
             @Override

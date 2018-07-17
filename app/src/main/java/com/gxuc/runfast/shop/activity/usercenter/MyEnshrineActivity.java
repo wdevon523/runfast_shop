@@ -123,11 +123,12 @@ public class MyEnshrineActivity extends ToolBarActivity {
         recyclerViewList.setAdapter(mEnshrineAdapter);
 
         mEnshrineAdapter.setOnItemClickListener(new EnshrineAdapter.OnItemClickListener() {
+
             @Override
-            public void onItemClick(View view, BusinessNewDetail businessNewDetail) {
+            public void onItemClick(int position, BusinessNewDetail enshrine) {
                 Intent intent = new Intent(MyEnshrineActivity.this, BusinessNewActivity.class);
                 intent.putExtra(IntentFlag.KEY, IntentFlag.ORDER_LIST);
-                intent.putExtra("businessId", businessNewDetail.id);
+                intent.putExtra("businessId", enshrine.id);
                 startActivity(intent);
             }
         });

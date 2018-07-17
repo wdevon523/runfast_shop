@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.gxuc.runfast.shop.R;
 
+import org.xutils.common.util.DensityUtil;
 import org.xutils.image.ImageOptions;
 
 /**
@@ -52,10 +53,11 @@ public class NetConfig {
     public static ImageOptions optionsLogoImage =
             new ImageOptions.Builder()
                     //设置图片的位图
-                    .setConfig(Bitmap.Config.RGB_565)
+//                    .setConfig(Bitmap.Config.RGB_565)
+                    .setSize(DensityUtil.dip2px(120), DensityUtil.dip2px(120))
                     //设置是否使用内存缓存
                     .setUseMemCache(true)
-                    .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
+//                    .setImageScaleType(ImageView.ScaleType.CENTER_CROP)
                     .setPlaceholderScaleType(ImageView.ScaleType.CENTER_CROP)
                     //设置加载过程中的图片
                     .setLoadingDrawableId(R.drawable.icon_not_shop_car)

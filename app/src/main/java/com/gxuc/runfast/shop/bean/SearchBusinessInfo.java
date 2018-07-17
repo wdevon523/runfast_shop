@@ -103,6 +103,7 @@ public class SearchBusinessInfo {
      * mainOrgName : null
      * account : 12312312312312312
      * teamname : null
+     * bookable : false
      */
 
     public Object inner_image;
@@ -177,9 +178,10 @@ public class SearchBusinessInfo {
     public Object startTime1;
     public Object licenseAddress;
     public Object countyName;
-    public Object suportSelf;
+    public boolean suportSelf;
     public String address;
     public boolean enshrined;
+    public boolean bookable;
     public String mobile;
     public Object mainExpirationDate;
     public String levelName;

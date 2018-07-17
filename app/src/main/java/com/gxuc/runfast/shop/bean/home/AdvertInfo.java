@@ -18,6 +18,7 @@ public class AdvertInfo {
      * typename : 爆炒空心菜
      * type : 0
      * num : 1
+     * commonId : 61
      * content : null
      */
 
@@ -35,6 +36,7 @@ public class AdvertInfo {
     public String typename;
     public int type;
     public int num;
+    public int commonId;
     public Object content;
 
 }

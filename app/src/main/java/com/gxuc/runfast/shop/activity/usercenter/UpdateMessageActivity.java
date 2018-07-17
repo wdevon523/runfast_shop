@@ -362,6 +362,7 @@ public class UpdateMessageActivity extends ToolBarActivity {
         try {
             JSONObject jsonObject = new JSONObject(body);
             if (jsonObject.optBoolean("success")) {
+                ToastUtil.showToast("修改密码成功");
                 setResult(RESULT_OK);
                 finish();
             } else {

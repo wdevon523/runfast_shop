@@ -128,7 +128,10 @@ public class LoginActivity extends ToolBarActivity {
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.MOBILE, phone);
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.PASSWORD, password);
                         SharePreferenceUtil.getInstance().putStringValue("token", token);
-                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        if (!isRelogin) {
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        }
+                        setResult(RESULT_OK);
                         finish();
                     } else {
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));

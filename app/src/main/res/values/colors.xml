@@ -433,9 +433,11 @@
     <color name="bg_fdf2d5">#fdf2d5</color>
     <color name="bg_3b3b3b">#3b3b3b</color>
     <color name="bg_878787">#878787</color>
+    <color name="bg_fafafa">#fafafa</color>
     <color name="bg_f4f4f4">#f4f4f4</color>
     <color name="bg_f6f6f6">#f6f6f6</color>
     <color name="bg_f8f8f8">#f8f8f8</color>
+    <color name="bg_e7e7e7">#e7e7e7</color>
 
     <color name="bg_eaf8e1">#eaf8e1</color>
     <color name="text_7bce49">#7bce49</color>
@@ -447,6 +449,7 @@
     <color name="text_ffae16">#ffae16</color>
 
     <color name="bg_80ffffff">#80ffffff</color>
+    <color name="bg_33ffffff">#33ffffff</color>
     <color name="bg_60000000">#60000000</color>
 
 </resources>

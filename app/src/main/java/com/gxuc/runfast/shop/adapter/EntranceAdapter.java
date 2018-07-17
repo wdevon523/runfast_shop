@@ -13,7 +13,13 @@ import android.widget.TextView;
 import com.example.supportv1.utils.DeviceUtil;
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.activity.BreakfastActivity;
+import com.gxuc.runfast.shop.activity.LoginQucikActivity;
+import com.gxuc.runfast.shop.activity.WebActivity;
+import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.bean.home.HomeCategory;
+import com.gxuc.runfast.shop.config.NetConfig;
+import com.gxuc.runfast.shop.config.UserService;
+import com.gxuc.runfast.shop.data.ApiServiceFactory;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 
 import org.xutils.x;
@@ -68,19 +74,36 @@ public class EntranceAdapter extends RecyclerView.Adapter<EntranceAdapter.Entran
          * 在给View绑定显示的数据时，计算正确的position = position + mIndex * mPageSize，
          */
         final int pos = position + mIndex * mPageSize;
-        holder.entranceNameTextView.setText(homeEntrances.get(pos).typename);
+        holder.entranceNameTextView.setText(homeEntrances.get(pos).name);
 //        holder.entranceIconImageView.setImageResource(homeEntrances.get(pos).getImage());
 
-        x.image().bind(holder.entranceIconImageView, UrlConstant.ImageBaseUrl + homeEntrances.get(pos).icon);
+        x.image().bind(holder.entranceIconImageView, UrlConstant.ImageBaseUrl + homeEntrances.get(pos).icon, NetConfig.optionsLogoImage);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 HomeCategory homeCategory = homeEntrances.get(pos);
-                // TODO: 2017/5/24 点击事件
-                Intent intent = new Intent(mContext, BreakfastActivity.class);
-                intent.putExtra("typeName", homeCategory.typename);
-                mContext.startActivity(intent);
+
+                if (homeCategory.typelink == 1) {//商家分类列表
+                    Intent intent = new Intent(mContext, BreakfastActivity.class);
+                    intent.putExtra("commonId", homeCategory.commonId);
+                    intent.putExtra("typeName", homeCategory.typename);
+                    mContext.startActivity(intent);
+                } else if (homeCategory.typelink == 4) {//自定义
+                    Intent webData = new Intent(mContext, WebActivity.class);
+                    if (homeCategory.link.contains("http")) {
+                        webData.putExtra("url", homeCategory.link);
+                    } else {
+                        webData.putExtra("url", ApiServiceFactory.WEB_HOST + homeCategory.link);
+                    }
+                    mContext.startActivity(webData);
+                } else if (homeCategory.typelink == 5) {//跑腿
+//                    if (UserService.getUserInfo(mContext) != null) {
+                    mContext.startActivity(new Intent(mContext, PurchasesActivity.class));
+//                    }else {
+//                        mContext.startActivity(new Intent(mContext, LoginQucikActivity.class));
+//                    }
+                }
             }
         });
     }

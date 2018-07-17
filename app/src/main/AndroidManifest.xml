@@ -204,7 +204,8 @@
         <activity
             android:name=".activity.usercenter.JoinBusinessActivity"
             android:label="加盟合作"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.usercenter.ConsultationActivity"
             android:label="客服咨询"
@@ -310,7 +311,7 @@
             android:name=".activity.purchases.PurchasesActivity"
             android:label="跑腿代购"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="stateHidden" />
 
         <activity
             android:name=".activity.purchases.DeliveryOrderActivity"
@@ -377,7 +378,8 @@
         <activity
             android:name=".activity.MyEvaluateActivity"
             android:label="我的评价"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->
         <!-- 若不启用该功能可删除该组件，将不拉起其他应用也不能被其他应用拉起 -->

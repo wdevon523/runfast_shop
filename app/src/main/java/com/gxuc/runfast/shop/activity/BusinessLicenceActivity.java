@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import com.gxuc.runfast.shop.R;
 import com.gxuc.runfast.shop.bean.business.SafetyRecordImg;
+import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.view.ZFlowLayout;
 
@@ -46,7 +47,7 @@ public class BusinessLicenceActivity extends ToolBarActivity {
                 ImageView ivImage = (ImageView) view.findViewById(R.id.iv_image);
 //                LinearLayoutCompat.LayoutParams lp = new LinearLayoutCompat.LayoutParams(296, 240);
 //                ivImage.setLayoutParams(new LinearLayout.LayoutParams(lp));
-                x.image().bind(ivImage, UrlConstant.ImageBaseUrl + businessLicenceList.get(i).imgUrl);
+                x.image().bind(ivImage, UrlConstant.ImageBaseUrl + businessLicenceList.get(i).imgUrl, NetConfig.optionsLogoImage);
                 flImgContain.addView(view, layoutParams);
                 view.setTag(UrlConstant.ImageBaseUrl + businessLicenceList.get(i).imgUrl);
                 view.setOnClickListener(new View.OnClickListener() {

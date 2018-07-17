@@ -119,8 +119,9 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         recyclerHourMinute.setLayoutManager(linearLayoutManager);
         recyclerHourMinute.setAdapter(hourMinuteChooseAdapter);
 
-        initTodayTime();
-
+        if (showTomorrow) {
+            initTodayTime();
+        }
     }
 
     private void initTime() {
@@ -145,10 +146,52 @@ public class TimeChooseDialog extends Dialog implements View.OnClickListener, Ho
         hourMinuteChooseAdapter.notifyDataSetChanged();
         String nowDateFormat = SystemUtil.getNowDateFormat();
 
-        timesList.add("立即配送");
+//        timesList.add("立即配送");
+
 
         int mHour = Integer.valueOf(nowDateFormat.substring(11, 13));
         int mMinuts = Integer.valueOf(nowDateFormat.substring(14, 16));
+
+//        if (!showTomorrow) {
+//            for (int i = mHour + 1; i < 24; i++) {
+//                for (int j = 0; j < 6; j++) {
+//                    if (j % 2 == 0) {
+//                        if (i < 10) {
+//                            timesList.add("0" + i + ":" + j + "0");
+//                        } else {
+//                            timesList.add(i + ":" + j + "0");
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
+
+        for (int i = mHour; i < 24; i++) {
+            for (int j = 0; j < 6; j++) {
+                if ((i == mHour && j > mMinuts / 10) || i > mHour) {
+                    if (j % 2 == 0) {
+                        if (i < 10) {
+                            timesList.add("0" + i + ":" + j + "0");
+                        } else {
+                            timesList.add(i + ":" + j + "0");
+                        }
+                    }
+                }
+            }
+        }
+//        }
+        hourMinuteChooseAdapter.setList(timesList, day);
+    }
+
+    public void initTodayTime(String disTime) {
+        timesList.clear();
+        hourMinuteChooseAdapter.notifyDataSetChanged();
+
+//        long time = SystemUtil.date2TimeStamp(disTime, SystemUtil.DATE_FORMAT) + 20 * 60 * 1000;
+//        String startTime = SystemUtil.getTime(time);
+
+        int mHour = Integer.valueOf(disTime.substring(11, 13));
+        int mMinuts = Integer.valueOf(disTime.substring(14, 16));
 
         for (int i = mHour; i < 24; i++) {
             for (int j = 0; j < 6; j++) {

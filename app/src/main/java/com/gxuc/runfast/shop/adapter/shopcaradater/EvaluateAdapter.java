@@ -59,21 +59,25 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //        }
 //        if (holder instanceof EvaluateViewHolder) {
         EvaluateViewHolder evaluateViewHolder = (EvaluateViewHolder) holder;
-        evaluateViewHolder.tvUserName.setText(TextUtils.isEmpty(evaluateInfo.userName) ? "匿名用户" : evaluateInfo.userName);
+        evaluateViewHolder.tvUserName.setText(evaluateInfo.anonymous ? "匿名用户" : evaluateInfo.userName);
         evaluateViewHolder.tvEvaluateTime.setText(evaluateInfo.createTime.substring(0, 10));
+        evaluateViewHolder.tvTasteAndPackage.setText("口味: " + evaluateInfo.tasteScore + "星  包装： " + evaluateInfo.packagesScore + "星");
+
         if (TextUtils.isEmpty(evaluateInfo.content)) {
             evaluateViewHolder.tvContent.setVisibility(View.GONE);
         } else {
             evaluateViewHolder.tvContent.setVisibility(View.VISIBLE);
             evaluateViewHolder.tvContent.setText(evaluateInfo.content);
         }
-        evaluateViewHolder.tvFlag.setText(evaluateInfo.shangstr);
 
-        if (TextUtils.isEmpty(evaluateInfo.recontent)) {
+        evaluateViewHolder.tvFlag.setVisibility(TextUtils.isEmpty(evaluateInfo.recontent) ? View.GONE : View.VISIBLE);
+        evaluateViewHolder.tvFlag.setText("追评: " + evaluateInfo.recontent);
+
+        if (TextUtils.isEmpty(evaluateInfo.shangstr)) {
             evaluateViewHolder.layoutBusiness.setVisibility(View.GONE);
         } else {
             evaluateViewHolder.layoutBusiness.setVisibility(View.VISIBLE);
-            evaluateViewHolder.tvReply.setText(evaluateInfo.recontent);
+            evaluateViewHolder.tvReply.setText(evaluateInfo.shangstr);
         }
 
         evaluateViewHolder.rb_order_evaluate.setRating((float) (evaluateInfo.score + 2));
@@ -101,7 +105,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public class EvaluateViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvUserName, tvEvaluateTime, tvContent, tvFlag, tvReply;
+        public TextView tvUserName, tvTasteAndPackage, tvEvaluateTime, tvContent, tvFlag, tvReply;
         public LinearLayout layoutBusiness;
         public ImageView ivHead;
         public BaseRatingBar rb_order_evaluate;
@@ -111,6 +115,7 @@ public class EvaluateAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             ivHead = (ImageView) itemView.findViewById(R.id.iv_head);
             tvUserName = (TextView) itemView.findViewById(R.id.tv_user_name);
             tvEvaluateTime = (TextView) itemView.findViewById(R.id.tv_evaluate_time);
+            tvTasteAndPackage = (TextView) itemView.findViewById(R.id.tv_taste_and_package);
             tvContent = (TextView) itemView.findViewById(R.id.tv_content);
             tvFlag = (TextView) itemView.findViewById(R.id.tv_flag);
             tvReply = (TextView) itemView.findViewById(R.id.tv_business_reply);

@@ -120,7 +120,7 @@ public class OrderGoodsAdapter extends BaseAdapter {
     }
 
     private void showActImage(ImageView ivAct, GoodsSellRecordChildren goodsSellRecordChildren) {
-        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券
+        //ptype:1满减,2打折,3赠品,4特价,5满减免运费,6优惠券,7免部分配送费,8新用户立减活动,9首单立减活动,10商户红包,11下单返红包,12 通用红包 代理商红包
         switch (goodsSellRecordChildren.getActivityType()) {
             case 1:
                 ivAct.setImageResource(R.drawable.icon_reduce);
@@ -139,6 +139,21 @@ public class OrderGoodsAdapter extends BaseAdapter {
                 break;
             case 6:
                 ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 7:
+                ivAct.setImageResource(R.drawable.icon_free);
+                break;
+            case 8:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 9:
+                ivAct.setImageResource(R.drawable.icon_new);
+                break;
+            case 10:
+                ivAct.setImageResource(R.drawable.icon_coupon);
+                break;
+            case 11:
+                ivAct.setImageResource(R.drawable.icon_return);
                 break;
         }
     }

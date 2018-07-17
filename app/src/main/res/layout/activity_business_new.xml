@@ -30,6 +30,11 @@
                     android:layout_height="160dp"
                     android:scaleType="fitXY" />
 
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp"
+                    android:background="@color/bg_60000000" />
+
                 <TextView
                     android:id="@+id/tv_hello"
                     android:layout_width="wrap_content"
@@ -52,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/dimen_15_dp"
                         android:layout_marginRight="@dimen/dimen_15_dp"
-                        android:layout_marginTop="@dimen/dimen_60_dp"
+                        android:layout_marginTop="@dimen/dimen_50_dp"
                         android:background="@drawable/icon_order_back"
                         android:orientation="vertical"
                         android:padding="@dimen/dimen_20_dp">
@@ -101,27 +106,44 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="@dimen/dimen_3_dp"
                                 android:layout_toRightOf="@+id/iv_shop"
                                 android:background="@drawable/icon_orange_back"
-                                android:paddingLeft="@dimen/dimen_2_dp"
-                                android:paddingRight="@dimen/dimen_2_dp"
+                                android:gravity="center"
                                 android:text="商家配送·约60分钟"
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/dimen_10_dp" />
 
-                            <TextView
-                                android:id="@+id/tv_get_coupon"
+                            <LinearLayout
+                                android:id="@+id/ll_get_coupon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentBottom="true"
                                 android:layout_marginLeft="@dimen/dimen_10_dp"
                                 android:layout_toRightOf="@+id/tv_send_type"
-                                android:background="@drawable/bg_fb7d30"
-                                android:paddingLeft="@dimen/dimen_10_dp"
-                                android:paddingRight="@dimen/dimen_10_dp"
-                                android:text="领券"
-                                android:textColor="@color/white"
-                                android:textSize="@dimen/dimen_10_dp" />
+                                android:background="@drawable/icon_bg_coupon"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:visibility="gone">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="领¥"
+                                    android:textColor="@color/text_fb4e44"
+                                    android:textSize="@dimen/dimen_9_dp" />
+
+                                <TextView
+                                    android:id="@+id/tv_max_coupon"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginRight="@dimen/dimen_3_dp"
+                                    android:includeFontPadding="false"
+                                    android:text="100"
+                                    android:textColor="@color/text_fb4e44"
+                                    android:textSize="@dimen/dimen_11_dp" />
+
+                            </LinearLayout>
 
                         </RelativeLayout>
 
@@ -129,12 +151,10 @@
                             android:id="@+id/tv_shop_notice"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/tv_shop_name"
-                            android:layout_marginTop="@dimen/dimen_15_dp"
+                            android:layout_marginTop="@dimen/dimen_10_dp"
                             android:drawableLeft="@drawable/icon_notice"
                             android:drawablePadding="@dimen/dimen_10_dp"
                             android:maxLines="3"
-                            android:text="这是一家仔细看还不如乍一看的店"
                             android:textColor="@color/text_666666"
                             android:textSize="@dimen/dimen_12_dp" />
 
@@ -158,12 +178,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:title="西湖小鱼庄"
+                app:contentInsetLeft="0dp"
+                app:navigationIcon="@drawable/icon_back_white"
+                android:paddingLeft="-7dp"
                 app:contentInsetStart="0dp"
+                app:contentInsetStartWithNavigation="0dp"
                 app:layout_collapseMode="pin">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
+                    <!--<ImageView-->
+                        <!--android:id="@+id/iv_toolbar_back"-->
+                        <!--android:layout_width="@dimen/dimen_25_dp"-->
+                        <!--android:layout_height="@dimen/dimen_25_dp"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:padding="@dimen/dimen_5_dp"-->
+                        <!--android:layout_marginLeft="@dimen/dimen_10_dp"-->
+                        <!--android:src="@drawable/icon_back_gray" />-->
 
                     <TextView
                         android:id="@+id/tool_bar_business_name"
@@ -171,7 +204,32 @@
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
                         android:textColor="#FF333333"
-                        android:textSize="@dimen/dimen_20_dp" />
+                        android:textSize="@dimen/dimen_20_dp"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dimen_30_dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="@dimen/dimen_20_dp"
+                        android:layout_toLeftOf="@+id/iv_favorite"
+                        android:background="@drawable/round_bg_e7e7e7"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/dimen_18_dp"
+                            android:drawableLeft="@drawable/icon_search"
+                            android:drawablePadding="@dimen/dimen_5_dp"
+                            android:gravity="center_vertical"
+                            android:text="输入商品名称"
+                            android:textColor="@color/text_999999"
+                            android:textSize="@dimen/dimen_12_dp" />
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iv_menu_more"
@@ -179,7 +237,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="@dimen/dimen_15_dp"
+                        android:layout_marginRight="@dimen/dimen_17_dp"
                         android:src="@drawable/icon_share_business" />
 
                     <!--<ImageView-->
@@ -197,7 +255,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="@dimen/dimen_15_dp"
                         android:layout_toLeftOf="@+id/iv_menu_more"
-                        android:src="@drawable/icon_collection_yes" />
+                        android:src="@drawable/icon_not_favorite" />
 
                     <ImageView
                         android:id="@+id/iv_search"

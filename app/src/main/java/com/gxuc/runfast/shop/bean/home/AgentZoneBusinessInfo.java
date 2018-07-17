@@ -49,7 +49,7 @@ public class AgentZoneBusinessInfo {
      * activityTargetList : []
      */
 
-    public String id;
+    public int id;
     public int busId;
     public String busname;
     public String createTime;

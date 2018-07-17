@@ -10,6 +10,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +36,11 @@ import com.gxuc.runfast.shop.activity.BusinessNewActivity;
 import com.gxuc.runfast.shop.activity.SearchProductActivity;
 import com.gxuc.runfast.shop.activity.ShopCartActivity;
 import com.gxuc.runfast.shop.activity.ordercenter.OrderDetailActivity;
+import com.gxuc.runfast.shop.activity.usercenter.JoinBusinessActivity;
 import com.gxuc.runfast.shop.adapter.HomeAdapter;
 import com.gxuc.runfast.shop.application.CustomApplication;
 import com.gxuc.runfast.shop.bean.Address;
+import com.gxuc.runfast.shop.bean.BusinessCouponInfo;
 import com.gxuc.runfast.shop.bean.FilterInfo;
 import com.gxuc.runfast.shop.bean.RecentlyOrderInfo;
 import com.gxuc.runfast.shop.bean.ShopCartBean;
@@ -54,10 +59,12 @@ import com.gxuc.runfast.shop.impl.constant.CustomConstant;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.ColorUtil;
 import com.gxuc.runfast.shop.util.SharePreferenceUtil;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.ChatView;
 import com.gxuc.runfast.shop.view.CircleImageView;
 import com.gxuc.runfast.shop.view.FilterView;
+import com.gxuc.runfast.shop.view.HomeRedpackageDialog;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshLoadMoreListener;
@@ -91,6 +98,14 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     TextView tvTopAddress;
     @BindView(R.id.tv_shop_cart_num)
     TextView tvShopCartNum;
+    @BindView(R.id.ll_no_business)
+    LinearLayout llNoBusiness;
+    @BindView(R.id.tv_join_us)
+    TextView tvJoinUs;
+    @BindView(R.id.ll_no_net)
+    LinearLayout llNoNet;
+    @BindView(R.id.tv_refresh)
+    TextView tvrefresh;
     @BindView(R.id.ll_home_top)
     LinearLayout llHomeTop;
     @BindView(R.id.ll_top_address)
@@ -146,6 +161,9 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     private RecentlyOrderInfo recentlyOrderInfo;
     private UserInfo userInfo;
     float fraction;
+    private boolean isTooShort;
+    private ArrayList<BusinessCouponInfo> businessCouponInfoList;
+    private HomeRedpackageDialog homeRedpackageDialog;
 
     @Nullable
     @Override
@@ -181,6 +199,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                 userInfo = UserService.getUserInfo(getActivity());
                 requestAllShopCart();
                 if (agentInfo != null) {
+                    requestRedPackage();
                     requestRecentlyOrder();
                 }
             } else {
@@ -269,7 +288,6 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
         tvDeliverTime = (TextView) chatView.findViewById(R.id.tv_deliver_time);
 //        chatView.show();
 
-
         mLayoutManager = new LinearLayoutManager(getContext());
         homeRecycleview.setLayoutManager(mLayoutManager);
         homeAdapter = new HomeAdapter(getContext(), myMapLocation, homeDataInfoList);
@@ -352,7 +370,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                 }
 //
 //                Log.d("scrollY", "mRefreshLayout.isEnabled() = " + smartRefreshLayout.isEnabled());
-//                Log.d("scrollY", "scrollY = " + dy + ",height =" + titleViewHeight);
+//                Log.d("devonxxx", "scrollY = " + scrollY + ",height =" + titleViewHeight);
 
                 if (scrollY >= titleViewHeight) {
 //                    llSearch.setLayoutParams(layoutParams);
@@ -377,7 +395,8 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 //                LogUtil.d("devon", "-----homeTopViewHeight-------" + homeTopViewHeight + "-----homeTopViewTop-------" + homeTopViewTop + "----scrollY----" + scrollY + "+++++++++++" + (homeTopViewHeight + homeTopViewTop));
 
 //                if (homeTopViewHeight + homeTopViewTop - homeMarginHeight <= 40) {
-                if (homeTopViewHeight + homeTopViewTop <= 30 || mLayoutManager.findFirstVisibleItemPosition() > 0) {
+                if (homeTopViewHeight + homeTopViewTop <= 40 || mLayoutManager.findFirstVisibleItemPosition() > 0 || isTooShort) {
+//                if (homeTopViewHeight + homeTopViewTop <= 40) {
                     realFilterView.setVisibility(View.VISIBLE);
                 } else {
                     realFilterView.setVisibility(View.GONE);
@@ -424,7 +443,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                 } else {
                     realFilterView.show(position);
                 }
-
+                realFilterView.changeBold(position);
             }
         });
 
@@ -434,15 +453,21 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             public void onFilterClick(int position) {
                 if (position == 1) {
                     sorting = 2;
+                    realFilterView.hide();
                     requestNearbyBusiness();
                     scrollToBusinessTop();
                 } else if (position == 2) {
                     sorting = 3;
+                    realFilterView.hide();
                     requestNearbyBusiness();
                     scrollToBusinessTop();
                 } else {
                     realFilterView.show(position);
                 }
+                if (fakeFilterView != null) {
+                    fakeFilterView.changeBold(position);
+                }
+                realFilterView.changeBold(position);
             }
         });
 
@@ -455,8 +480,9 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                 if (fakeFilterView != null) {
                     fakeFilterView.setTvCategoryTitle(filterInfo);
                 }
-                requestNearbyBusiness();
+                realFilterView.setTvCategoryTitle(filterInfo);
                 scrollToBusinessTop();
+                requestNearbyBusiness();
 
             }
         });
@@ -464,7 +490,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
         //筛选，完成
         realFilterView.setOnFiltrateClickListener(new FilterView.OnFiltrateClickListener() {
             @Override
-            public void onFiltrateClickListener(ArrayList<FilterInfo> filterInfoFeatureList, ArrayList<FilterInfo> filterInfoActList) {
+            public void onFiltrateClick(ArrayList<FilterInfo> filterInfoFeatureList, ArrayList<FilterInfo> filterInfoActList) {
                 featureMap.clear();
                 actMap.clear();
                 for (int i = 0; i < filterInfoFeatureList.size(); i++) {
@@ -473,9 +499,15 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                     }
                 }
 
-                for (int i = 0; i < filterInfoActList.size(); i++) {
-                    if (filterInfoActList.get(i).isCheck) {
+                if (filterInfoActList.get(5).isCheck) {
+                    for (int i = 0; i < filterInfoActList.size() - 1; i++) {
                         actMap.put(new String("activityType"), filterInfoActList.get(i).type);
+                    }
+                } else {
+                    for (int i = 0; i < filterInfoActList.size(); i++) {
+                        if (filterInfoActList.get(i).isCheck) {
+                            actMap.put(new String("activityType"), filterInfoActList.get(i).type);
+                        }
                     }
                 }
 
@@ -484,6 +516,16 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
                 requestNearbyBusiness();
             }
 
+        });
+
+        realFilterView.setOnHideListener(new FilterView.OnHideListener() {
+            @Override
+            public void onHide() {
+                if (isTooShort) {
+                    isTooShort = false;
+                    realFilterView.setVisibility(View.GONE);
+                }
+            }
         });
 
         homeAdapter.setOnNearByBusinessClickListener(new HomeAdapter.OnNearByBusinessClickListener() {
@@ -499,17 +541,36 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     private void scrollToBusinessTop() {
         int firstItem = mLayoutManager.findFirstVisibleItemPosition();
         int lastItem = mLayoutManager.findLastVisibleItemPosition();
-        if (1 <= firstItem) {
-            homeRecycleview.scrollToPosition(1);
-            homeRecycleview.smoothScrollBy(0, -120);
-        } else if (1 <= lastItem) {
-            int top = homeRecycleview.getChildAt(1 - firstItem).getTop() - 120;
+        isTooShort = false;
+        if (homeRecycleview.getChildAt(1 - firstItem) != null && homeAdapter.getItemCount() > 4) {
+            int top = homeRecycleview.getChildAt(1 - firstItem).getTop() - 105;
             homeRecycleview.smoothScrollBy(0, top);
         } else {
-            homeRecycleview.scrollToPosition(1);
-            homeRecycleview.smoothScrollBy(0, -120);
-//                    move = true;
+            if (homeRecycleview.getChildAt(1 - firstItem) != null) {
+                int top = homeRecycleview.getChildAt(1 - firstItem).getTop() - 105;
+                homeRecycleview.smoothScrollBy(0, top);
+            }
+            isTooShort = true;
+            realFilterView.setVisibility(View.VISIBLE);
         }
+
+//        if (1 <= firstItem) {
+//            homeRecycleview.scrollToPosition(1);
+//            homeRecycleview.smoothScrollBy(0, -110);
+//        } else if (2 < lastItem) {
+//            int top = homeRecycleview.getChildAt(1 - firstItem).getTop() - 105;
+//            homeRecycleview.smoothScrollBy(0, top);
+//        } else {
+//            isTooShort = true;
+//            realFilterView.setVisibility(View.VISIBLE);
+//            if (firstItem != 0 && lastItem != 0) {
+//                int top = homeRecycleview.getChildAt(1 - firstItem).getTop() - 105;
+//                homeRecycleview.smoothScrollBy(0, top);
+//            }
+//            homeRecycleview.scrollToPosition(1);
+//            homeRecycleview.smoothScrollBy(0, -10);
+//                    move = true;
+//        }
     }
 
     private void refreshData() {
@@ -536,6 +597,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             userInfo = UserService.getUserInfo(getActivity());
             requestAllShopCart();
             if (agentInfo != null) {
+                requestRedPackage();
                 requestRecentlyOrder();
             }
         } else {
@@ -582,12 +644,18 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     }
 
     private void fillRecentlyOrder() {
-        x.image().bind(ivHomeBusinessLogo, UrlConstant.ImageBaseUrl + recentlyOrderInfo.businessImg, NetConfig.optionsHeadImage);
+        chatView.hide();
+
+        x.image().bind(ivHomeBusinessLogo, UrlConstant.ImageBaseUrl + recentlyOrderInfo.businessImg, NetConfig.optionsLogoImage);
         tvHomeOrderStatus.setText(recentlyOrderInfo.statStr);
-        tvDeliverTime.setText(recentlyOrderInfo.disTime);
+
+        SpannableStringBuilder builder = new SpannableStringBuilder("预计送达: " + recentlyOrderInfo.disTime.substring(11, 16));
+        ForegroundColorSpan span = new ForegroundColorSpan(getResources().getColor(R.color.text_fb4e44));
+        builder.setSpan(span, 6, builder.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvDeliverTime.setText(builder);
 
         if (!isHidden()) {
-            if (recentlyOrderInfo.status >= 0 && recentlyOrderInfo.status < 8) {
+            if (recentlyOrderInfo.status >= 1 && recentlyOrderInfo.status < 8) {
                 chatView.show();
             }
         }
@@ -601,8 +669,6 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             rlShopppingCart.setVisibility(View.GONE);
             return;
         }
-
-        rlShopppingCart.setVisibility(View.VISIBLE);
 
         CustomApplication.getRetrofitNew().getAllShopCart().enqueue(new MyCallback<String>() {
             @Override
@@ -640,6 +706,7 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             }
         }
         tvShopCartNum.setVisibility(total == 0 ? View.GONE : View.VISIBLE);
+        rlShopppingCart.setVisibility(total == 0 ? View.GONE : View.VISIBLE);
         tvShopCartNum.setText(total + "");
     }
 
@@ -648,16 +715,20 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
+                llNoNet.setVisibility(View.GONE);
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
+                        llNoBusiness.setVisibility(View.GONE);
                         String data = jsonObject.optString("data");
                         agentInfo = JsonUtil.fromJson(data, AgentInfo.class);
                         SharePreferenceUtil.getInstance().putStringValue(CustomConstant.AGENTID, agentInfo.id);
                         requestRecentlyOrder();
+                        requestRedPackage();
                         requestGetHomeAct();
                     } else {
-                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+//                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                        llNoBusiness.setVisibility(View.VISIBLE);
                     }
 
                 } catch (JSONException e) {
@@ -667,7 +738,8 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 
             @Override
             public void onFailureResponse(Call<String> call, Throwable t) {
-
+                llNoNet.setVisibility(View.VISIBLE);
+                llNoBusiness.setVisibility(View.GONE);
             }
         });
 
@@ -741,13 +813,18 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
             return;
         }
 
-        CustomApplication.getRetrofitNew().getNearByBusiness(agentInfo.id, pointLon, pointLat, sorting, actMap, featureMap, "", currentPage, 10).enqueue(new MyCallback<String>() {
+        CustomApplication.getRetrofitNew().getNearByBusiness(agentInfo.id, pointLon, pointLat, sorting, actMap, featureMap, new IdentityHashMap<String, String>(), currentPage, 10).enqueue(new MyCallback<String>() {
             @Override
             public void onSuccessResponse(Call<String> call, Response<String> response) {
                 String body = response.body();
                 try {
                     JSONObject jsonObject = new JSONObject(body);
                     if (jsonObject.optBoolean("success")) {
+                        if (currentPage == 0) {
+                            homeDataInfoList.clear();
+                            homeDataInfoList.add(homeDataInfo);
+                            homeAdapter.setHomeDataInfoList(homeDataInfoList);
+                        }
                         JSONArray jsonArray = jsonObject.optJSONArray("data");
                         if (jsonArray != null && jsonArray.length() > 0) {
                             dealNearByBusinessData(jsonArray.toString());
@@ -770,11 +847,6 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
     }
 
     private void dealNearByBusinessData(String data) {
-        if (currentPage == 0) {
-            homeDataInfoList.clear();
-            homeDataInfoList.add(homeDataInfo);
-        }
-
         nearByBusinessInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<NearByBusinessInfo>>() {
         }.getType());
         for (int i = 0; i < nearByBusinessInfoList.size(); i++) {
@@ -785,9 +857,119 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
         homeAdapter.setHomeDataInfoList(homeDataInfoList);
     }
 
-    @OnClick({R.id.ll_top_address, R.id.ll_search, R.id.rl_shoppping_cart})
+    private void requestRedPackage() {
+        if (userInfo == null) {
+            return;
+        }
+        long timeMillis = System.currentTimeMillis();
+        long redPackageTime = SharePreferenceUtil.getInstance().getLongValue(CustomConstant.RED_PACKAGE_TIME);
+        if (timeMillis - redPackageTime < 10800000) {
+            return;
+        }
+        SharePreferenceUtil.getInstance().putLongValue(CustomConstant.RED_PACKAGE_TIME, timeMillis);
+
+        CustomApplication.getRetrofitNew().getHomeRedpackge(agentInfo.id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        JSONArray data = jsonObject.optJSONArray("data");
+                        if (data != null && data.length() > 0) {
+                            dealCoupon(data.toString());
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    /**
+     * 解析数据
+     *
+     * @param data
+     */
+    private void dealCoupon(String data) {
+
+        businessCouponInfoList = JsonUtil.fromJson(data, new TypeToken<ArrayList<BusinessCouponInfo>>() {
+        }.getType());
+
+        if (businessCouponInfoList != null && businessCouponInfoList.size() > 0) {
+//            mAdapter.setList(businessCouponInfoList);
+            homeRedpackageDialog = new HomeRedpackageDialog(getContext(), businessCouponInfoList, new HomeRedpackageDialog.OnDialogClickListener() {
+                @Override
+                public void onDialogClick(int position) {
+                    BusinessCouponInfo businessCouponInfo = businessCouponInfoList.get(position);
+                    receiverCoupon(position, businessCouponInfo);
+                }
+            });
+            homeRedpackageDialog.show();
+        }
+    }
+
+
+    /**
+     * 领取优惠券
+     */
+    private void receiverCoupon(final int position, final BusinessCouponInfo businessCouponInfo) {
+
+        CustomApplication.getRetrofitNew().receiverBusinessCoupon(businessCouponInfo.id).enqueue(new MyCallback<String>() {
+            @Override
+            public void onSuccessResponse(Call<String> call, Response<String> response) {
+                String body = response.body();
+                try {
+                    JSONObject jsonObject = new JSONObject(body);
+                    if (jsonObject.optBoolean("success")) {
+                        ToastUtil.showToast("领取成功");
+//                        homeRedpackageDialog.dismiss();
+                        businessCouponInfo.picked = true;
+                        homeRedpackageDialog.updateData(businessCouponInfoList);
+
+                        if (businessCouponInfo.ptype == 10) {
+                            if (homeRedpackageDialog.isShowing()) {
+                                homeRedpackageDialog.dismiss();
+                            }
+                            Intent intent = new Intent(getContext(), BusinessNewActivity.class);
+                            intent.putExtra("businessId", businessCouponInfo.busId);
+                            startActivity(intent);
+                        }
+                    } else {
+                        ToastUtil.showToast(jsonObject.optString("errorMsg"));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailureResponse(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
+    @OnClick({R.id.tv_refresh, R.id.tv_join_us, R.id.ll_top_address, R.id.ll_search, R.id.rl_shoppping_cart})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tv_refresh:
+                refreshData();
+                break;
+            case R.id.tv_join_us:
+                startActivity(new Intent(getContext(), JoinBusinessActivity.class));
+                break;
             case R.id.ll_top_address:
                 Intent intent = new Intent(getContext(), AddressAdminActivity.class);
                 Address address = new Address();
@@ -821,12 +1003,14 @@ public class HomeFragment extends Fragment implements AMapLocationListener {
 
         if (requestCode == HOME_SELECT) {
             Address address = (Address) data.getParcelableExtra("Address");
-            fillView(address);
-            pointLat = address.latLng.latitude;
-            pointLon = address.latLng.longitude;
-            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLAT, String.valueOf(pointLat));
-            SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLON, String.valueOf(pointLon));
-            refreshData();
+            if (address != null && address.latLng != null) {
+                fillView(address);
+                pointLat = address.latLng.latitude;
+                pointLon = address.latLng.longitude;
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLAT, String.valueOf(pointLat));
+                SharePreferenceUtil.getInstance().putStringValue(CustomConstant.POINTLON, String.valueOf(pointLon));
+                refreshData();
+            }
         }
     }
 

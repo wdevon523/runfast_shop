@@ -32,9 +32,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:includeFontPadding="false"
         android:layout_alignTop="@+id/iv_head"
         android:layout_marginRight="@dimen/dimen_10_dp"
+        android:includeFontPadding="false"
         android:text="2017-01-22"
         android:textSize="@dimen/dimen_12_dp" />
 
@@ -51,13 +51,26 @@
         app:srb_starPadding="1dp" />
 
     <TextView
-        android:id="@+id/tv_content"
+        android:id="@+id/tv_taste_and_package"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/tv_user_name"
         android:layout_below="@+id/rb_order_evaluate"
+        android:layout_marginTop="@dimen/dimen_5_dp"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:textColor="@color/text_666666"
+        android:textSize="@dimen/dimen_12_dp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tv_user_name"
+        android:layout_below="@+id/tv_taste_and_package"
         android:layout_marginRight="@dimen/dimen_10_dp"
-        android:layout_marginTop="@dimen/dimen_10_dp"
+        android:layout_marginTop="@dimen/dimen_5_dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textColor="@color/color_text_gray_two" />
@@ -69,11 +82,10 @@
         android:layout_alignLeft="@+id/tv_user_name"
         android:layout_below="@+id/tv_content"
         android:layout_marginTop="@dimen/dimen_5_dp"
-        android:drawableLeft="@drawable/icon_label"
-        android:text="服务不错，干净卫生"
         android:textColor="@color/color_text_gray"
         android:textSize="@dimen/dimen_11_dp"
         android:visibility="gone" />
+    <!--android:drawableLeft="@drawable/icon_label"-->
 
     <LinearLayout
         android:id="@+id/layout_business"
