@@ -8,9 +8,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:paddingLeft="@dimen/dimen_20_dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_20_dp"
-        android:layout_height="wrap_content">
+        android:paddingLeft="@dimen/dimen_20_dp">
 
         <TextView
             android:id="@+id/tv_order_man_state"
@@ -32,33 +32,16 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_man_deliver_time"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_man_deliver_time"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dimen_5_dp"
         android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="预计送达时间"
-            android:textColor="@color/text_999999"
-            android:textSize="@dimen/dimen_12_dp" />
-
-        <TextView
-            android:id="@+id/tv_man_deliver_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:text="11:04"
-            android:textColor="@color/color_orange_select"
-            android:textSize="@dimen/dimen_12_dp" />
-
-    </LinearLayout>
+        android:text="11:04"
+        android:textColor="@color/color_orange_select"
+        android:textSize="@dimen/dimen_12_dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

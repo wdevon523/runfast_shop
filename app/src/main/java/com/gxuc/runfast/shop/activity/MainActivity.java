@@ -180,8 +180,10 @@ public class MainActivity extends ToolBarActivity implements RadioGroup.OnChecke
                         viewNewVersion.setVisibility(jsonObject.optBoolean("success") ? View.VISIBLE : View.GONE);
                         if (jsonObject.optBoolean("success")) {
                             JSONObject data = jsonObject.optJSONObject("data");
-                            MyAutoUpdate myAutoUpdate = new MyAutoUpdate(MainActivity.this);
-                            myAutoUpdate.showNoticeDialog(data.optString("serverDescription"), data.optString("serverUrl"));
+                            if (data != null) {
+                                MyAutoUpdate myAutoUpdate = new MyAutoUpdate(MainActivity.this);
+                                myAutoUpdate.showNoticeDialog(data.optString("serverDescription"), data.optString("serverUrl"));
+                            }
                         }
                         CustomApplication.isNeedUpdate = jsonObject.optBoolean("success");
                     } catch (JSONException e) {

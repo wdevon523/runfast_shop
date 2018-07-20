@@ -72,8 +72,10 @@ public class AboutActivity extends ToolBarActivity {
                         JSONObject jsonObject = new JSONObject(body);
                         if (jsonObject.optBoolean("success")) {
                             JSONObject data = jsonObject.optJSONObject("data");
-                            MyAutoUpdate myAutoUpdate = new MyAutoUpdate(AboutActivity.this);
-                            myAutoUpdate.showNoticeDialog(data.optString("serverDescription"), data.optString("serverUrl"));
+                            if (data != null) {
+                                MyAutoUpdate myAutoUpdate = new MyAutoUpdate(AboutActivity.this);
+                                myAutoUpdate.showNoticeDialog(data.optString("serverDescription"), data.optString("serverUrl"));
+                            }
                         } else {
                             ToastUtil.showToast(jsonObject.optString("msg"));
                         }

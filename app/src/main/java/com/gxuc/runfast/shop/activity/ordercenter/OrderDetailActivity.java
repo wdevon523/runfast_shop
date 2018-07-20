@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -51,6 +52,7 @@ import com.gxuc.runfast.shop.data.IntentFlag;
 import com.gxuc.runfast.shop.impl.MyCallback;
 import com.gxuc.runfast.shop.impl.constant.UrlConstant;
 import com.gxuc.runfast.shop.util.GsonUtil;
+import com.gxuc.runfast.shop.util.SystemUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.util.ViewUtils;
 import com.gxuc.runfast.shop.view.CircleImageView;
@@ -90,8 +92,6 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     ImageView ivCloseMap;
     @BindView(R.id.tv_order_man_state)
     TextView mTvOrderManState;
-    @BindView(R.id.ll_man_deliver_time)
-    LinearLayout mLlManDeliverTime;
     @BindView(R.id.tv_man_deliver_time)
     TextView mTvManDeliverTime;
     @BindView(R.id.btn_refund)
@@ -179,6 +179,8 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
     private LatLng businessLatLng;
     private LatLng driverLatLng;
     private LatLng userLatLng;
+    private CountDownTimer countDownTimer;
+    private long TEN_MINUTE = 1000 * 60 * 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -386,6 +388,10 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
         super.onDestroy();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
     }
 
     @Override
@@ -508,15 +514,15 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             requestDriverLatLng(orderDetailInfo.shopperId);
         }
         mTvOrderManState.setText(orderDetailInfo.statStr);
-
-        if (orderDetailInfo.status == 2 ||
-                orderDetailInfo.status == 3 ||
-                orderDetailInfo.status == 4 ||
-                orderDetailInfo.status == 5) {
-            mLlManDeliverTime.setVisibility(View.VISIBLE);
-            mTvManDeliverTime.setText(orderDetailInfo.disTime + "");
+        if (orderDetailInfo.status == 0) {
+            showCountDownTime();
+            mTvManDeliverTime.setVisibility(View.VISIBLE);
+        } else if (orderDetailInfo.status > 0 && orderDetailInfo.status < 7) {
+            mTvManDeliverTime.setVisibility(View.VISIBLE);
+            mTvManDeliverTime.setText("预计送达时间: " + orderDetailInfo.disTime + "");
         } else {
-            mLlManDeliverTime.setVisibility(View.GONE);
+            mTvManDeliverTime.setVisibility(View.VISIBLE);
+            mTvManDeliverTime.setText("感谢您对跑腿快车的信任，期待再次光临");
         }
 
         showBtnStatus(orderDetailInfo.status);
@@ -587,6 +593,39 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
             mLlOrderDetailPatType.setVisibility(View.GONE);
         }
         mTvOrderDetailRemark.setText(orderDetailInfo.remark);
+    }
+
+    private void showCountDownTime() {
+
+        long passTime = System.currentTimeMillis() - SystemUtil.date2TimeStamp(orderDetailInfo.createTime, SystemUtil.DATE_FORMAT);
+
+        countDownTimer = new CountDownTimer(TEN_MINUTE - passTime, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long minuteLong = millisUntilFinished / 1000 / 60;
+                String minute = minuteLong + "";
+                if (minuteLong < 10) {
+                    minute = "0" + minuteLong;
+                }
+                long secondLong = millisUntilFinished / 1000 % 60;
+                String second = secondLong + "";
+                if (secondLong < 10) {
+                    second = "0" + secondLong;
+                }
+
+                mTvManDeliverTime.setText("剩余支付时间: " + minute + ":" + second);
+            }
+
+            @Override
+            public void onFinish() {
+                finish();
+            }
+        };
+
+        if (countDownTimer != null) {
+            countDownTimer.start();
+        }
+
     }
 
     private void requestDriverLatLng(String shopperId) {
@@ -790,7 +829,7 @@ public class OrderDetailActivity extends ToolBarActivity implements View.OnClick
 //                payChannelIntent.putExtra("price", orderDetailInfo.goodsSellRecord.price);
                 payChannelIntent.putExtra("orderId", orderId);
                 payChannelIntent.putExtra("orderCode", orderDetailInfo.orderNo);
-                payChannelIntent.putExtra("price", orderDetailInfo.totalPay);
+                payChannelIntent.putExtra("price", orderDetailInfo.totalPay.doubleValue());
                 payChannelIntent.putExtra("businessName", orderDetailInfo.businessName);
                 payChannelIntent.putExtra("logo", orderDetailInfo.businessImg);
                 payChannelIntent.putExtra("createTime", orderDetailInfo.createTime);

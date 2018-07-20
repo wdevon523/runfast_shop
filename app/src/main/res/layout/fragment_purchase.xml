@@ -291,7 +291,8 @@
                 android:id="@+id/rl_coupon"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen_46_dp"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"

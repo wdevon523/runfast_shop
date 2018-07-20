@@ -220,7 +220,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
     protected void onResume() {
         super.onResume();
         userInfo = UserService.getUserInfo(this);
-        requestBufisnessGoods();
+        requestBusinessDetail();
         requestBusinessCoupon();
     }
 
@@ -263,8 +263,6 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
 
         specSelectInfo = new SpecSelectInfo();
         specSelectInfo.optionIdMap = new HashMap<Integer, SubOptionInfo>();
-
-        requestBusinessDetail();
 //        requestBufisnessGoods();
     }
 
@@ -405,6 +403,7 @@ public class BusinessNewActivity extends BaseActivity implements AddWidget.OnAdd
                         String data = jsonObject.optString("data");
                         businessInfo = JsonUtil.fromJson(data, BusinessNewDetail.class);
                         fillBusinessDetailView();
+                        requestBufisnessGoods();
                     } else {
                         businessInfo = new BusinessNewDetail();
                         ToastUtil.showToast(jsonObject.optString("errorMsg"));

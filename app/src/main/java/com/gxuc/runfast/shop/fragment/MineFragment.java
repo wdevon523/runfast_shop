@@ -3,10 +3,7 @@ package com.gxuc.runfast.shop.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.supportv1.utils.JsonUtil;
-import com.google.gson.reflect.TypeToken;
 import com.gxuc.runfast.shop.activity.LoginQucikActivity;
 import com.gxuc.runfast.shop.activity.MyEvaluateActivity;
-import com.gxuc.runfast.shop.activity.purchases.PurchasesActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AboutActivity;
 import com.gxuc.runfast.shop.activity.usercenter.AddressSelectActivity;
 import com.gxuc.runfast.shop.activity.usercenter.ConsultationActivity;
@@ -29,7 +24,6 @@ import com.gxuc.runfast.shop.activity.usercenter.MyEnshrineActivity;
 import com.gxuc.runfast.shop.activity.usercenter.UserInfoActivity;
 import com.gxuc.runfast.shop.activity.usercenter.WalletActivity;
 import com.gxuc.runfast.shop.application.CustomApplication;
-import com.gxuc.runfast.shop.bean.coupon.CouponBean;
 import com.gxuc.runfast.shop.bean.user.UserInfo;
 import com.gxuc.runfast.shop.config.NetConfig;
 import com.gxuc.runfast.shop.config.UserService;
@@ -43,12 +37,9 @@ import com.gxuc.runfast.shop.util.SharePreferenceUtil;
 import com.gxuc.runfast.shop.util.ToastUtil;
 import com.gxuc.runfast.shop.view.CircleImageView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.x;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -266,7 +257,7 @@ public class MineFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.ll_mine_top, R.id.tv_user_name, R.id.layout_address, R.id.layout_collection, R.id.layout_evalute, R.id.layout_my_wallet, R.id.layout_red_package, R.id.layout_integral, R.id.layout_business_join, R.id.layout_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about, R.id.layout_help_center})
+    @OnClick({R.id.ll_mine_top, R.id.tv_user_name, R.id.layout_address, R.id.layout_collection, R.id.layout_evalute, R.id.layout_my_wallet, R.id.layout_red_package, R.id.layout_integral, R.id.layout_business_join, R.id.layout_join, R.id.layout_driver_join, R.id.layout_complaint, R.id.layout_consulting, R.id.layout_about, R.id.layout_help_center})
     public void onViewClicked(View view) {
         userInfo = UserService.getUserInfo(getActivity());
 
@@ -333,8 +324,14 @@ public class MineFragment extends Fragment {
 
                 break;
 
-            case R.id.layout_join://加盟
+            case R.id.layout_business_join://商家入驻
                 startActivity(new Intent(getContext(), JoinBusinessActivity.class));
+                break;
+            case R.id.layout_join://加盟
+//                startActivity(new Intent(getContext(), JoinFirstActivity.class));
+                break;
+            case R.id.layout_driver_join://骑手招募
+//                startActivity(new Intent(getContext(), JoinDriverActivity.class));
                 break;
             case R.id.layout_complaint://投诉
                 startActivity(new Intent(getContext(), ComplaintActivity.class));

@@ -111,7 +111,7 @@ public class OrderInformation {
     public Object isReceive;
     public Integer isPay;
     public Integer isRefund;
-    public Object isComent;
+    public Integer isComent;
     public Integer isCancel;
     public Object refund;
     public Object refundcontext;

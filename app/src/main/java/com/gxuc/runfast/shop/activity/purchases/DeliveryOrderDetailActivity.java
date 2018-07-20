@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -139,7 +142,12 @@ public class DeliveryOrderDetailActivity extends ToolBarActivity {
         tvTipPrice.setText("¥ " + deliveryOrderDetailInfo.tip);
 
         tvTotalPrice.setText("总计 ¥" + deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
-        tvActualPay.setText("实付 ¥" + (deliveryOrderDetailInfo.amountPayable == null ? "0" : deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString()));
+
+        String totalPay = "实付 ¥" + (deliveryOrderDetailInfo.amountPayable == null ? "0" : deliveryOrderDetailInfo.amountPayable.divide(new BigDecimal(100)).stripTrailingZeros().toPlainString());
+        SpannableStringBuilder builder = new SpannableStringBuilder(totalPay);
+        ForegroundColorSpan graySpan = new ForegroundColorSpan(getResources().getColor(R.color.text_fb4e44));
+        builder.setSpan(graySpan, 3, totalPay.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvActualPay.setText(builder);
         tvExpectedTime.setText(TextUtils.isEmpty(deliveryOrderDetailInfo.pickTime) ? "立即配送" : deliveryOrderDetailInfo.pickTime);
         tvDeliveryDistance.setText(deliveryOrderDetailInfo.distance + "米");
 

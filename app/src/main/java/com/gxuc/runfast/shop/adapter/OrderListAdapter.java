@@ -78,7 +78,7 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
                 holder.tv_order_shop_state.setText("订单取消");
                 break;
             case 0:
-                holder.tv_order_shop_state.setText("客户下单");
+                holder.tv_order_shop_state.setText("等待支付");
                 break;
             case 1:
                 holder.tv_order_shop_state.setText("客户已付款");
@@ -129,13 +129,14 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
         holder.tv_order_pay_now.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                OrderInformation orderInformation = data.get((int) v.getTag());
                 Intent payChannelIntent = new Intent(context, PayChannelActivity.class);
-                payChannelIntent.putExtra("orderId", orderInfo.orderId);
-                payChannelIntent.putExtra("orderCode", orderInfo.orderNo);
-                payChannelIntent.putExtra("price", orderInfo.totalPay);
-                payChannelIntent.putExtra("businessName", orderInfo.businessName);
-                payChannelIntent.putExtra("logo", orderInfo.businessImg);
-                payChannelIntent.putExtra("createTime", orderInfo.createTime);
+                payChannelIntent.putExtra("orderId", orderInformation.orderId);
+                payChannelIntent.putExtra("orderCode", orderInformation.orderNo);
+                payChannelIntent.putExtra("price", orderInformation.totalPay.doubleValue());
+                payChannelIntent.putExtra("businessName", orderInformation.businessName);
+                payChannelIntent.putExtra("logo", orderInformation.businessImg);
+                payChannelIntent.putExtra("createTime", orderInformation.createTime);
                 context.startActivity(payChannelIntent);
             }
         });
@@ -147,12 +148,13 @@ public class OrderListAdapter extends RecyclerView.Adapter<OrderListAdapter.Orde
             }
         });
 
-//        holder.tv_order_shop_complain.setVisibility((orderInfo.getStatus() == 8 && orderInfo.getIsComent() == null) ? View.VISIBLE : View.GONE);
+        holder.tv_order_shop_complain.setVisibility((orderInfo.status == 8 && orderInfo.isComent == null) ? View.VISIBLE : View.GONE);
 
 
 //        holder.tv_order_confirm_completed.setVisibility(orderInfo.status >= 5 && orderInfo.status <= 7 ? View.VISIBLE : View.GONE);
 //        holder.tv_order_call_driver.setVisibility(orderInfo.status >= 3 ? View.VISIBLE : View.GONE);
 //        holder.tv_order_call_business.setVisibility(orderInfo.status >= 2 ? View.VISIBLE : View.GONE);
+        holder.tv_order_pay_now.setTag(position);
         holder.tv_order_pay_now.setVisibility(orderInfo.status == 0 ? View.VISIBLE : View.GONE);
 //        holder.tv_order_shop_again.setVisibility(orderInfo.status <= 0 || orderInfo.status == 8 ? View.VISIBLE : View.GONE);
         holder.tv_order_shop_again.setVisibility(View.VISIBLE);

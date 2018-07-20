@@ -143,7 +143,7 @@ public class OrderTimeChooseDialog extends Dialog implements View.OnClickListene
             int startMin = Integer.valueOf(start.substring(3, 5));
             int endHour = Integer.valueOf(end.substring(0, 2));
             int endtMin = Integer.valueOf(end.substring(3, 5));
-            if (mHour <= endHour && mMinuts <= endtMin) {
+            if (mHour < endHour || (mHour == endHour && mMinuts <= endtMin)) {
                 for (int j = mHour; j <= endHour; j++) {
                     for (int k = 0; k < 6; k++) {
                         if ((j == mHour && k > mMinuts / 10) || j > mHour) {

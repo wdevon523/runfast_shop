@@ -312,6 +312,9 @@ public class SubmitOrderActivity extends ToolBarActivity {
         if (mHour < 10) {
             sendTime = nowTime.substring(0, 11) + "0" + mHour + ":00:00";
             takeTime = nowTime.substring(0, 11) + "0" + mHour + ":00:00";
+        } else if (mHour == 24){
+            sendTime = nowTime.substring(0, 11)  + "23:59:00";
+            takeTime = nowTime.substring(0, 11)  + "23:59:00";
         } else {
             sendTime = nowTime.substring(0, 11) + mHour + ":00:00";
             takeTime = nowTime.substring(0, 11) + mHour + ":00:00";
